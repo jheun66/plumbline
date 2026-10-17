@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # reproduction
 
-> Basis: intent 1.3 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners), §7 (layers kept out of git), §11 (M0).
+> Basis: intent 1.4 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners), §7 (layers kept out of git), §11 (M0).
 
 ## 1. Responsibilities
 

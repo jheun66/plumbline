@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # changes
 
-> Basis: intent 1.3 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.4 (the lead records gaps), §11 (M1).
+> Basis: intent 1.4 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.4 (the lead records gaps), §11 (M1).
 
 ## 1. Responsibilities
 
@@ -76,6 +76,13 @@ When a change is opened, the lead decides which layer is wrong.
 - The lead records a gap item as `proposed` as soon as the gap is found, and records the user's answer with its date.
 - When a gap item is confirmed, the gap's layer is changed first, then the layers below (`layers`). When it is rejected, the upper layer stays as it is and the layers below follow it.
 - While a gap item is `proposed`, no layer below its layer is edited within its change. Other changes are not held back by it.
+
+### Wording fixes
+
+- A wording fix changes no meaning: it makes a document say what a confirmed decision, or another part of the same layer, already says. It is not a gap item.
+- The lead makes it at once, writes in the change record which words were aligned to what, and tells the user in the same report. For a layer kept out of git, the record names only the locations.
+- When the user objects, the point is recorded as a proposed gap item and handled like any other.
+- A fix that adds or changes what a layer states, or that has to choose between two readings neither of which a confirmed decision settles, is not a wording fix.
 
 ### The current change
 
@@ -202,6 +209,7 @@ flowchart TD
 - **A change's name is the date it was opened followed by a slug.** Names then sort by time and need no counter. Rejected: sequence numbers, which two branches or two people can pick at the same time. (Design-level — confirmed 2026-10-17)
 - **The diagnosis is fixed when the change is opened; a gap found later is a gap item.** Whether the diagnosis was right is checked when the change closes (intent §8.2), which needs the diagnosis as it was made. (Design-level — confirmed 2026-10-17)
 - **The layers a change touches are derived from its diagnosis and its confirmed gap items, not written separately.** A separate list could disagree with them. (Design-level — confirmed 2026-10-17)
+- **A wording fix is made at once and reported, without a gap item; an objection turns it into a gap item.** intent §8.1, §8.4. The change record says what was aligned to what, so the user can check each fix afterwards. A fix that must choose between readings is not a wording fix, because no confirmed decision makes the choice. Rejected: recording a wording fix as a gap item that is confirmed at once, which a date from the user cannot honestly carry. (Design-level — confirmed 2026-10-18)
 - **For a layer kept out of git, a gap item names only the location and what the layer below needs; the proposed wording goes to the user, not into the record.** Change records are in git, and the proposed wording would be content of that layer. (Design-level — confirmed 2026-10-17)
 - **The body of a change record is free text with no template.** No check reads it; what it must hold is listed above, and its words are the project's. (Design-level — confirmed 2026-10-17)
 - **From the first reproduction on, each milestone's work is one change with diagnosis `design`.** A gap found while the milestone's documents are written or its impl is built then has a change to be recorded in, the gap guard holds back the layers below it, status shows the work in progress, and the checks at closing (M2) cover the milestone's impl. Rejected: opening a change only when a gap is found, which leaves the milestone's work out of status and leaves its impl unchecked when no gap came up. (Design-level — confirmed 2026-10-17)
@@ -219,6 +227,7 @@ These are judgment checks, made during the M1 Done of intent §11, on the exampl
 
 - one change of each diagnosis is opened and closed, and each records its diagnosis, its tasks, how its result was confirmed, and its commits; the intent-level change raises the intent version;
 - after the reproduction, the milestone's work is done in a change of its own with diagnosis `design`, and a gap found during it is recorded in that change;
+- a wording fix is made at once, written in the change record and told to the user, and no gap item is recorded for it;
 - a gap item found while a change is open is recorded as proposed, answered with a date, and, when confirmed at the design layer, leads to a section 5 line with the confirmed marker and a link to the change;
 - no change record holds content of the intent when the intent is kept out of git.
 

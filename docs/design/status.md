@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # status
 
-> Basis: intent 1.3 — §5.2 (the rules version, settings changed since the reproduction, newer rules only with a network), §5.5, §7 (where status reads the milestone; a layer not present), §8.1 (what status shows), §11 (M1).
+> Basis: intent 1.4 — §5.2 (the rules version, settings changed since the reproduction, newer rules only with a network), §5.5, §7 (where status reads the milestone; a layer not present), §8.1 (what status shows), §11 (M1).
 
 ## 1. Responsibilities
 

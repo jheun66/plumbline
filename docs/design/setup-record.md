@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # setup-record
 
-> Basis: intent 1.3 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record).
+> Basis: intent 1.4 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record).
 
 ## 1. Responsibilities
 

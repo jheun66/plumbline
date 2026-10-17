@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # guards
 
-> Basis: intent 1.3 — §2.2 (a hook that blocks without end), §5.3, §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1).
+> Basis: intent 1.4 — §2.2 (a hook that blocks without end), §5.3, §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1).
 
 ## 1. Responsibilities
 

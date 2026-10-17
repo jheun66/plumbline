@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # design-docs
 
-> Basis: intent 1.3 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
+> Basis: intent 1.4 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
 
 ## 1. Responsibilities
 
@@ -62,6 +62,7 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 - A decision the design makes because intent does not is a design-level decision. It is written in section 5 of the module document it belongs to.
 - It carries the template's design-level marker: confirmed with the date the user confirmed it, or pending.
 - A decision that only restates intent carries no marker.
+- A point intent states is never a design-level decision. A design that would change or narrow it reveals a gap in intent (`layers`).
 - There is no separate list or table of decisions. Section 5 of each module document is the only place.
 
 ### Figures

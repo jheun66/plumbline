@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # settings
 
-> Basis: intent 1.3 — §3, §5.2 (settings apart from the record), §7.
+> Basis: intent 1.4 — §3, §5.2 (settings apart from the record), §7.
 
 ## 1. Responsibilities
 

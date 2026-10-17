@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # authoring
 
-> Basis: intent 1.3 — §3 (the form of intent is not prescribed), §4 (principle 7), §7 (settings; what plumbline does not handle), §8.5, §11 (M0).
+> Basis: intent 1.4 — §3 (the form of intent is not prescribed), §4 (principle 7), §7 (settings; what plumbline does not handle), §8.5, §11 (M0).
 
 ## 1. Responsibilities
 

@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # roles
 
-> Basis: intent 1.3 — §4 (principles 2, 3), §8.1 and §8.2 (who opens changes, records gaps and diagnoses), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
+> Basis: intent 1.4 — §4 (principles 2, 3), §8.1 and §8.2 (who opens changes, records gaps and diagnoses), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
 
 ## 1. Responsibilities
 
@@ -22,11 +22,13 @@ basis: docs/intent.md 1.3
 
 | Role | Does | Reads | Writes |
 |---|---|---|---|
-| `lead` | talks with the user; writes intent and design with the user; opens, closes and archives changes; diagnoses; records gap items and the user's answers; edits the settings and reproduces the setup | intent, design, change records, setup files | intent, design, change records, the current change, settings, setup files |
+| `lead` | talks with the user; writes intent and design with the user; opens, closes and archives changes; diagnoses; records gap items and the user's answers; edits the settings and reproduces the setup | intent, design, change records, setup files | intent, design, change records, the current change, settings, setup files, the lines the rules call for in `.git/info/exclude` |
 | `implementer` | builds the design sections it is given into impl; answers questions about impl | design, impl, the rule carriers it receives | impl |
 
 - Setup files are what a reproduction writes and keeps: rule carriers, document templates, guards, checks, the setup record. They are not a layer.
 - The lead never reads impl. The implementer never reads intent, and never writes intent or design.
+- A project file that lies in no layer is written by no role, unless it is one of these: a file a reproduction writes, kept or removed again, the settings file, a change record, the current change, or the lines the rules call for in `.git/info/exclude`. A project file is one kept in the project's repository; files that tools create while they run, such as build outputs and caches, are not project files.
+- When the work needs such a file, the lead proposes to the user to add its path to a layer's locations, usually impl. This is not a gap item; the change record lists it among its tasks. Once the user agrees, the lead edits the settings and reproduces, and the role that writes that layer writes the file. An implementer that needs such a file stops that work and reports it to the lead; after the reproduction, a new implementer continues with the same design sections.
 
 ### Which role an agent plays
 
@@ -53,8 +55,8 @@ basis: docs/intent.md 1.3
 
 ### A gap found by the implementer
 
-1. The implementer stops work on that point and reports the gap to the lead, in terms of the design: which section, and what it does not say or says wrongly.
-2. The lead records it as a proposed gap item in the current change and proposes the change to the user.
+1. The implementer stops work on that point and reports the gap to the lead, in terms of the design: which section, and what it does not say or says wrongly. It leaves that point unbuilt and does not choose a way to build it. Work on other points goes on.
+2. The lead records it as a proposed gap item in the current change and proposes the change to the user. When it is a wording fix (`changes`), the lead makes the fix at once, records it in the change and tells the user instead.
 3. The lead records the user's answer. After the user confirms, the lead changes the design, or intent first when the gap is at intent's level.
 4. A new implementer continues the work.
 
@@ -84,7 +86,7 @@ sequenceDiagram
 - No role reads or writes outside its row in the table.
 - No hand-off and no question to an implementer carries intent content.
 - Work after a design change goes to a new implementer.
-- A gap goes from the implementer to the lead, and from the lead to the user. The implementer never settles it.
+- A gap goes from the implementer to the lead, and from the lead to the user. The implementer never settles it, and leaves its point unbuilt.
 - Every gap is recorded as a gap item before it is proposed to the user.
 - Only the lead writes change records and the current change.
 
@@ -96,9 +98,12 @@ sequenceDiagram
 - **The implementer never writes design.** intent §8.4. Otherwise a gap could be settled below.
 - **Setup files are not a layer; the lead writes them, and edits the settings.** Reproducing a setup and choosing settings happen in the conversation with the user. They read and write no layer content, so they do not break the read direction. (Design-level — confirmed 2026-10-17)
 - **One implementer per hand-off.** intent says a new implementer starts after a gap. Using a new one for every hand-off keeps the rule simple and keeps earlier work out of the next one's context. Rejected: reusing an implementer until a gap appears, which leaves the boundary to judgment. (Design-level — confirmed 2026-10-17)
+- **On a gap, the implementer leaves that point unbuilt and chooses no way to build it.** intent §4 principle 3 and §8.4 say the implementer stops. A point built one way before the user answers turns the proposal into "impl already does this", and the design then follows impl. Rejected: building the point provisionally and recording that in the gap item, which leans the user's answer toward what was built. (Design-level — confirmed 2026-10-18)
 - **A gap is reported in terms of the design.** The implementer has read only design and impl, so it can name only what the design does not say. The lead turns that into a proposal, adding intent when needed. (Design-level — confirmed 2026-10-17)
 - **The hand-off names a design document and its sections.** A name the implementer can open is enough, and it cannot carry intent content by accident. (Design-level — confirmed 2026-10-17)
 - **M0 has the lead and the implementer, without changes. The lead's work on changes comes in M1, and the verifier in M2.** intent §11 places change records, gap items and diagnosis in M1 and verify in M2. A rule that names them before then would tell agents to do what nothing defines. M0 still needs the hand-off and the gap flow, because M0 module documents are built into impl by implementers. (Design-level — confirmed 2026-10-17)
+- **A project file in no layer, such as a VCS ignore file, is written only after its path is added to a layer.** What such a file holds often depends on that layer's work, as build outputs depend on impl, so the role that writes the layer writes it. Every file a role writes then lies in a layer or is one of the files listed with this rule, so what each role may write can be judged for every path. Rejected: the lead writing such files, which writes content that depends on impl from reports alone and leaves paths no role owns; the user writing them by hand, which stops the work each time one is needed. (Design-level — confirmed 2026-10-18)
+- Known limit: the table does not yet say whether the lead's Writes cell covers files a reproduction writes for its checks and removes again, or whether an untracked file a role leaves in the working tree is a project file. The role guard settles both when it judges every cell (M2).
 - **An agent is an implementer when a hand-off names it so; every other agent is the lead.** The lead's rules must reach the lead at the start of every session without the user doing anything, so the lead is the default. An implementer always starts from a hand-off, so the hand-off is where it learns its role. Rejected: having the user name the role of every session, which makes the user act before the lead's rules can reach it. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
@@ -112,8 +117,9 @@ These are judgment checks, made during the M0 Done of intent §11:
 These are judgment checks, made during the M1 Done of intent §11:
 
 - the lead opens, closes and archives each change, and keeps the current change;
-- a gap reported by an implementer appears as a proposed gap item before the user is asked, and its answer is recorded with the date;
-- when a diagnosis needs impl, the lead asks an implementer and does not read impl itself.
+- a gap reported by an implementer appears as a proposed gap item before the user is asked, and its answer is recorded with the date; the implementer left that point unbuilt;
+- when a diagnosis needs impl, the lead asks an implementer and does not read impl itself;
+- when the work needs a file in no layer, no role writes it until the user agrees to add its path to a layer and the setup is reproduced.
 
 ## 7. Out of scope
 

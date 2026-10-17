@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.3
+basis: docs/intent.md 1.4
 ---
 
 # overview
 
-> Basis: intent 1.3 — §1, §3, §4, §5, §6, §7, §8, §11.
+> Basis: intent 1.4 — §1, §3, §4, §5, §6, §7, §8, §11.
 
 ## 1. Responsibilities
 
@@ -107,7 +107,7 @@ How to read it:
 | Model | `settings` | Project settings: layer locations and layers in git; excluding a layer; not copying an excluded layer's content | — | layers | M0 |
 | Model | `roles` | lead, implementer, verifier: what each does, reads and writes; hand-off; how a gap travels between them | — | layers | M0, M1, M2 |
 
-Where each part of intent 1.3 is owned:
+Where each part of intent 1.4 is owned:
 
 | intent | Module |
 |---|---|
@@ -264,7 +264,7 @@ These hold for every module.
 
 ## 6. Verification criteria
 
-- Every part of intent 1.3 that the first version needs is owned by exactly one module (the table in section 2).
+- Every part of intent 1.4 that the first version needs is owned by exactly one module (the table in section 2).
 - The dependencies have no cycle, and no module uses a module in its own tier or above.
 - Every Done criterion of M0, M1 and M2 in intent can be checked against modules of that milestone only.
 - Every mechanical part named in a module has conformance cases in that module's section 6.
