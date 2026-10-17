@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # carriers
 
-> Basis: intent 1.2 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §8.1 (status takes the place of "start here"), §8.2, §8.4, §8.5.
+> Basis: intent 1.3 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §8.1 (status takes the place of "start here"), §8.2, §8.4, §8.5.
 
 ## 1. Responsibilities
 
@@ -31,7 +31,7 @@ Added in M1:
 
 | Role | Must receive |
 |---|---|
-| `lead` | changes (`changes`): opening one (its name, `change.md` with its state and diagnosis, making it current, and listing `/.plumbline/current-change` in `.git/info/exclude` before writing it); the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl; the current, expected and unchanged behaviour of a bug; recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git; closing (no gap item proposed, how the result was confirmed, emptying the current change) and archiving; the section 5 line of a decision from a gap, with its link to the change; that a change record holds no content of a layer kept out of git. status (`status`): how to run it, as the setup record gives its runner and entry; to run it at the start of every session with empty standard input and tell the user the state in a few lines, in the project's words; when the user asks for the state or about the rules, to fetch the tags of the rules repository the setup record names when the network is available, and run it with them. The gap guard (`guards`): when it blocks a write, to tell the user which gap item must be answered; when it reports an environment error, to tell the user; never to write a blocked file another way |
+| `lead` | changes (`changes`): opening one (its name, `change.md` with its state and diagnosis, making it current, and listing `/.plumbline/current-change` in `.git/info/exclude` before writing it); each milestone's work, from the first reproduction on, as one change with diagnosis `design`, opened before that work starts and closed when the milestone's impl is done; the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl; the current, expected and unchanged behaviour of a bug; recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git; closing (no gap item proposed, how the result was confirmed, emptying the current change) and archiving; the section 5 line of a decision from a gap, with its link to the change; that a change record holds no content of a layer kept out of git. status (`status`): how to run it, as the setup record gives its runner and entry; to run it at the start of every session with empty standard input and tell the user the state in a few lines, in the project's words; when the user asks for the state or about the rules, to fetch the tags of the rules repository the setup record names when the network is available, and run it with them. The gap guard (`guards`): when it blocks a write, to tell the user which gap item must be answered; when it reports an environment error, to tell the user; never to write a blocked file another way |
 | `implementer` | when a write is blocked, to stop that work and report to the lead; never to write a blocked file another way |
 
 - Every location is stated as the settings give it.
@@ -71,8 +71,8 @@ For each mechanical part connected to an agent or to CI, a connector is written 
 From M1:
 
 - **The gap guard** is connected to the hook that an agent's file-writing actions pass through before they happen, for the lead and the implementer alike. The connector gives the guard the paths the action will create, change or remove (`guards`).
-- **status** is run by the lead with its runner and entry. When a means runs it by itself at the start of a session and gives its lines to the lead, that means is its connector.
-- **Checking the gap guard's connector** (`reproduction`, acting through each connector): the reproducing agent writes a temporary change with a proposed gap item at the design layer and makes it current. An action that writes a file in an impl location must be blocked, and an action that writes a file outside every layer must pass. Then it removes the temporary change and the file it wrote, and puts `.plumbline/current-change` back as it was. Nothing of the check reaches git.
+- **status** has no connector to an agent. The lead runs it with its runner and entry.
+- **Checking the gap guard's connector** (`reproduction`, acting through each connector): the reproducing agent writes a temporary change with a proposed gap item at the intent layer and makes it current. An action that creates a new file in the design location must be blocked, and an action that creates a new file outside every layer must pass. Each new file is at a path that does not exist yet. Then it removes the temporary change and every file the check created, and puts `.plumbline/current-change` back as it was. Nothing of the check reaches git.
 
 ## 3. Flow
 
@@ -132,10 +132,11 @@ sequenceDiagram
 
 ## 5. Decisions and reasons
 
-- **status takes the place of a "start here" note and of status lines in documents.** intent §8.1.
+- **status takes the place of a "start here" note and of status lines in documents: the lead runs it at the start of every session and tells the user the state.** intent §8.1.
 - **The lead runs status at the start of every session without the rules repository's tags, and fetches them only when the user asks for the state or about the rules.** Every session then starts from where things stand, at once and without the network. Newer rules matter only when someone asks. Rejected: fetching the tags at the start of every session, which adds a network call to every start; running status only when the user asks, which lets a new session start work without knowing the gap items waiting for an answer. (Design-level — confirmed 2026-10-17)
 - **No agent writes a blocked file another way, and the lead tells the user which gap item to answer.** A hook cannot see every write, such as one made by a shell command (intent §8.4), so the rule must also be an instruction. The gap item named in the block is what lets the work go on. (Design-level — confirmed 2026-10-17)
 - **The gap guard's connector is checked with a temporary change that is removed afterwards.** A guard can be seen to block only when a gap item is proposed in the current change. Writing a file outside every layer shows a pass without writing into a layer, which a reproduction never does. Rejected: checking only the pass, which leaves a connector that never blocks recorded as mechanical; leaving the temporary change in place, which would show a change nobody opened. (Design-level — confirmed 2026-10-17)
+- **The blocked action creates a new file in the design location, under a gap item at the intent layer.** The design location is always a folder (`settings`), so a path that does not exist yet can always be found there, and a connector that fails to block overwrites nothing of the project. An impl location may be a single file, where no new path exists. (Design-level — confirmed 2026-10-17)
 
 - **The reproducing agent chooses the carriers and records them.** intent §5.4.
 - **A file the project also writes keeps the project's part across reproductions.** intent §5.1.

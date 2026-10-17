@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # settings
 
-> Basis: intent 1.2 — §3, §5.2 (settings apart from the record), §7.
+> Basis: intent 1.3 — §3, §5.2 (settings apart from the record), §7.
 
 ## 1. Responsibilities
 
@@ -45,7 +45,7 @@ A JSON object with exactly two keys:
 
 Paths:
 
-- A path is relative to the project root and uses `/`.
+- A path is relative to the project root and uses `/`. It is one or more segments joined by single `/`, with no `/` at its start or end, and no segment that is empty, `.` or `..`.
 - A path names a file or a folder. A folder means everything under it.
 - `design` has exactly one path, and it is a folder. Its top-level `README.md` is the design's README (`design-docs`).
 - No path of one layer lies inside, or contains, a path of another layer.

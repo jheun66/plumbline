@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # guards
 
-> Basis: intent 1.2 — §2.2 (a hook that blocks without end), §5.3, §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1).
+> Basis: intent 1.3 — §2.2 (a hook that blocks without end), §5.3, §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1).
 
 ## 1. Responsibilities
 
@@ -21,7 +21,7 @@ basis: docs/intent.md 1.2
 ### Guards
 
 - A guard is a mechanical part (`conformance`). An agent's hook runs it, through a connector, before an action that writes files.
-- **Arguments**: the paths of the files the action will create, change or remove. A path is relative to the project root, with `/`, or absolute. `.` segments are ignored. A path that lies outside the project root is in no layer.
+- **Arguments**: the paths of the files the action will create, change or remove. A path is relative to the project root, with `/`, or absolute. Empty segments and `.` segments are ignored, and a `..` segment removes the segment before it. An absolute path is compared, segment by segment as text, with the working directory as the system reports it; symbolic links are not followed. A path that lies outside the project root is in no layer.
 - **Standard input**: empty.
 - **Verdict**: `block` when at least one path is blocked; `pass` when none is, and when there are no arguments; `error` when the guard cannot read what it needs.
 - **Output**: one line per blocked path, in the order of the arguments. Nothing when the verdict is `pass`.
@@ -34,11 +34,15 @@ basis: docs/intent.md 1.2
 - Its name is `gap-guard`. The rule it enforces is named `gap guard` in the setup record's `enforcement` (`setup-record`).
 - It reads the settings (`settings`), `.plumbline/current-change`, and the gap items of the current change (`changes`).
 
-How it decides:
+How it decides, in this order. It reads only what the step at hand needs:
 
-1. When there is no current change, every path passes.
-2. When no gap item of the current change is `proposed`, every path passes.
-3. Otherwise, take the highest layer among its `proposed` gap items: `intent` is above `design`. A path in a layer below it is blocked. A path in that layer or above, or in no layer, passes.
+1. When there are no arguments, it gives `pass`.
+2. When there is no current change (`changes`), every path passes.
+3. When the current change does not exist, its `change.md` does not have the form `changes` defines, or its state is not `open`, it gives `error`.
+4. When a gap item of the current change does not have the form `changes` defines, it gives `error`.
+5. When no gap item of the current change is `proposed`, every path passes.
+6. When the settings file is missing or not valid, it gives `error`.
+7. Otherwise, take the highest layer among its `proposed` gap items: `intent` is above `design`. A path in a layer below it is blocked. A path in that layer or above, or in no layer, passes.
 
 A path is in a layer when it equals one of that layer's paths in the settings or lies under one.
 
@@ -50,11 +54,7 @@ Output line for a blocked path:
 
 The gap item named is the lowest-numbered `proposed` one at the highest layer.
 
-The gap guard gives `error` when:
-
-- the settings file is not valid;
-- `.plumbline/current-change` names a change that does not exist or is not `open`;
-- a gap item of the current change does not have the form `changes` defines.
+It gives `error` only in steps 3, 4 and 6. A file it does not need for its verdict is not read, so a problem in it gives no `error`.
 
 ## 3. Flow
 
@@ -77,16 +77,24 @@ sequenceDiagram
   end
 ```
 
-How the gap guard decides for one path:
+How the gap guard decides:
 
 ```mermaid
 flowchart TD
-  A["a path the action writes"] --> B{"is there a<br/>current change?"}
-  B -->|"no"| P["pass"]
-  B -->|"yes"| C{"does it have a<br/>proposed gap item?"}
+  A["the paths an action writes"] --> N{"any<br/>arguments?"}
+  N -->|"no"| P["pass"]
+  N -->|"yes"| B{"is there a<br/>current change?"}
+  B -->|"no"| P
+  B -->|"yes"| R{"it exists, its change.md<br/>has the form, and it is open?"}
+  R -->|"no"| X["error"]
+  R -->|"yes"| G{"every gap item<br/>has the form?"}
+  G -->|"no"| X
+  G -->|"yes"| C{"does it have a<br/>proposed gap item?"}
   C -->|"no"| P
-  C -->|"yes"| D["take the highest layer<br/>among its proposed gap items"]
-  D --> E{"is the path in a<br/>layer below it?"}
+  C -->|"yes"| S{"settings file<br/>valid?"}
+  S -->|"no"| X
+  S -->|"yes"| D["take the highest layer<br/>among its proposed gap items"]
+  D --> E{"is any path in a<br/>layer below it?"}
   E -->|"no"| P
   E -->|"yes"| K["block"]
 ```
@@ -109,6 +117,7 @@ flowchart TD
 - **A guard that cannot read what it needs gives `error`, not `block`.** A broken record would otherwise hold back work its rule is not about, and the error is reported at every action, so it is seen. Rejected: blocking until the record is fixed, which turns one broken file into a stop on every edit. (Design-level — confirmed 2026-10-17)
 - **A blocked line names the gap item that causes it.** The agent can then tell the user which question to answer to go on. (Design-level — confirmed 2026-10-17)
 - **A current change that does not exist or is not open is an error.** `changes` keeps the current change pointing at an open change; when it does not, the guard cannot tell which gap items count. (Design-level — confirmed 2026-10-17)
+- Known limit: paths are compared as text, without following symbolic links, since a part reads nothing outside its working directory. A path that reaches the project through a symbolic link lies outside the project root and is in no layer.
 
 ## 6. Verification criteria
 
@@ -141,6 +150,15 @@ Conformance cases for `gap-guard`. Unless a case says otherwise, it uses these f
 | 18 | `change.md` has `state: closed` | `src/main.rs` | `error` | — |
 | 19 | `gap-1.md` has `state: proposed` and a `date` | `src/main.rs` | `error` | — |
 | 20 | the settings file has an unknown key | `src/main.rs` | `error` | — |
+| 21 | none | `docs/../src/main.rs` | `block` | `block src/main.rs impl 2026-11-02-a 1 design` |
+| 22 | none | `src/../docs/design/cli.md` | `pass` | none |
+| 23 | none | `/plumbline-elsewhere/src/main.rs` | `pass` | none |
+| 24 | `.plumbline/current-change` holds `2026-11-02-a` followed by CR LF | `src/main.rs` | `block` | as in case 1 |
+| 25 | `gap-1.md` is named `gap-01.md` | `src/main.rs` | `pass` | none |
+| 26 | `.plumbline/current-change` holds `2026-11-09-x`, which does not exist | none | `pass` | none |
+| 27 | no `.plumbline/current-change`, and the settings file has an unknown key | `src/main.rs` | `pass` | none |
+| 28 | `gap-1.md` has `state: confirmed`, `date: 2026-11-03`, and the settings file has an unknown key | `src/main.rs` | `pass` | none |
+| 29 | `change.md` has `diagnosis: code` | `src/main.rs` | `error` | — |
 
 Fields are separated by spaces in the table and by tabs in the cases. `…` stands for the same fields as in case 1.
 

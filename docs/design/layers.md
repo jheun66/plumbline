@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # layers
 
-> Basis: intent 1.2 — §4 (principles 1–4, 8), §6, §7 (intent version).
+> Basis: intent 1.3 — §4 (principles 1–4, 8), §6, §7 (intent version).
 
 ## 1. Responsibilities
 
@@ -57,7 +57,9 @@ An impl product that agents read (prompts, rules) states rules only. Reasons, hi
 ### Documents and front matter
 
 - Intent and design documents are Markdown files (`.md`).
-- A document's front matter is the block at its very top, between two lines that are exactly `---`. Every line inside is `key: value`. A key may appear more than once. Keys not defined here or in `design-docs` are ignored.
+- A document's front matter is the block at its very top, between two lines that are exactly `---`. Every CR LF is read as LF.
+- Every line inside is `key: value`: a key made of lowercase ASCII letters, digits, `_` and `-`; a colon and one space; then a value that is not empty. Spaces and tabs at the end of a line are not part of the value. A line of any other form, a blank line included, makes the front matter invalid. A document whose front matter is invalid, or missing, or has no closing `---` line, has no front matter values: an intent document then has no valid version, whatever lines it holds.
+- In an intent or design document, a key may appear more than once, and keys not defined here or in `design-docs` are ignored. The template and change records also use front matter; `design-docs` and `changes` define their keys.
 - Every Markdown file at the intent location (`settings`) is an intent document.
 - Every intent document has exactly one `version` line: `version: V`.
 - V is one or more non-negative integers joined by dots: `1`, `1.2`, `1.46`. Versions compare part by part as integers. A missing part counts as 0, so `1.2` equals `1.2.0`, and `1.10` is newer than `1.9`.

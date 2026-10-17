@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # design-docs
 
-> Basis: intent 1.2 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
+> Basis: intent 1.3 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
 
 ## 1. Responsibilities
 
@@ -46,7 +46,7 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 - Each project has one document template: `.plumbline/template.md`. It lies outside the design location, so it is not a design document.
 - It has a project part and a reproduced part. A reproduction writes only the reproduced part and never changes the project part.
 - The project part holds the project's own words:
-  - front matter (`layers`) with two lines, `confirmed: <text>` and `pending: <text>`. They are the two design-level markers. The `confirmed` text holds `YYYY-MM-DD` where the date goes;
+  - front matter (`layers`) with exactly two keys, each once: `confirmed: <text>` and `pending: <text>`. They are the two design-level markers. The `confirmed` text holds `YYYY-MM-DD` where the date goes;
   - the seven level-2 headings, in order. Their exact text is the project's section titles.
 - The lead writes the project part with the user before the module map is written (`authoring`). When a project later changes these words, every module document is changed to match.
 - The reproduced part says what each section is for, how basis lines are written and how markers are used. It holds no level-2 heading.

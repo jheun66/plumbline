@@ -1,15 +1,16 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 milestone: M1
 ---
 
 # plumbline design
 
-> Basis: intent 1.2 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
+> Basis: intent 1.3 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
 > Stage 1 — module map: confirmed by the user on 2026-10-16.
 > M0 module documents: bundles A (layers, design-docs, settings, roles), B (setup-record, conformance) and C (authoring, carriers, reproduction) confirmed by the user on 2026-10-17. The M0 design is complete.
 > Revised after gaps reported while building M0 impl: roles, carriers, reproduction, setup-record and overview. Confirmed by the user on 2026-10-17, except decisions still marked pending.
 > M1 module documents: bundles A (changes, roles), B (status, guards, and the `milestone` line in design-docs and authoring) and C (carriers, with M1 wording in reproduction, setup-record, conformance, settings, layers and design-docs) confirmed by the user on 2026-10-17. The M1 design is complete.
+> Revised after gaps reported while building M1 impl: changes (a milestone's work is a change), status, guards, carriers, layers, design-docs, settings, setup-record, authoring and overview; every basis raised to intent 1.3 (archive keeps a change in place). Confirmed by the user on 2026-10-17, except decisions still marked pending.
 
 ## Where this document sits
 
@@ -120,7 +121,7 @@ When text is easier to follow as a picture, the document has the picture too.
 | lead | the agent talking with the user; works on intent and design |
 | implementer | a fresh agent that builds impl from the design |
 | verifier | a fresh agent that checks impl against the design |
-| archive | where finished changes are moved |
+| archive | marking a finished change as archived; it stays where it is |
 | design-level decision | a decision the design makes because intent does not |
 | milestone | a development stage set by intent |
 | module map | a design's modules, their dependencies, flows and global contracts |

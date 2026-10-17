@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # setup-record
 
-> Basis: intent 1.2 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record).
+> Basis: intent 1.3 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record).
 
 ## 1. Responsibilities
 
@@ -64,6 +64,18 @@ A JSON object with exactly these keys:
       "checksum": "sha256:ea86728e0c9f2933951b83eea2a0b9a9e30b4aa03de63621d1e8c59f8618e15d",
       "begin": "<!-- plumbline:begin -->",
       "end": "<!-- plumbline:end -->"
+    },
+    {
+      "path": ".plumbline/parts/status",
+      "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+    },
+    {
+      "path": ".plumbline/parts/gap-guard",
+      "checksum": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+    },
+    {
+      "path": ".plumbline/hooks/gap-guard-connector",
+      "checksum": "sha256:e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
     }
   ],
   "carriers": [
@@ -71,12 +83,18 @@ A JSON object with exactly these keys:
     { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"] },
     { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"] }
   ],
-  "parts": [],
+  "parts": [
+    { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
+    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" }
+  ],
   "enforcement": [
-    { "rule": "role table", "by": "instruction" }
+    { "rule": "role table", "by": "instruction" },
+    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" }
   ]
 }
 ```
+
+The paths, runners and checksums in this example are illustrations; a reproduction chooses its own.
 
 | Key | Value |
 |---|---|
@@ -271,4 +289,4 @@ flowchart TB
 ## 7. Out of scope
 
 - Checking the record's format and the checksums (`validate`, M2).
-- Mechanical parts in `parts` and `enforcement` added in M2: the role guard and validate. In M1, `parts` holds `status` and `gap-guard`, and `enforcement` lists the role table, enforced by `instruction`, and the gap guard.
+- Mechanical parts in `parts` and `enforcement` added in M2: the role guard and validate.

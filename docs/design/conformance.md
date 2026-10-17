@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # conformance
 
-> Basis: intent 1.2 — §5.2 (CI needs no cases), §5.3, §5.5, §8.4 (a guard never blocks without end; environment errors).
+> Basis: intent 1.3 — §5.2 (CI needs no cases), §5.3, §5.5, §8.4 (a guard never blocks without end; environment errors).
 
 ## 1. Responsibilities
 

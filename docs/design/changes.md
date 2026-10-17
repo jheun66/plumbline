@@ -1,14 +1,14 @@
 ---
-basis: docs/intent.md 1.2
+basis: docs/intent.md 1.3
 ---
 
 # changes
 
-> Basis: intent 1.2 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.4 (the lead records gaps), §11 (M1).
+> Basis: intent 1.3 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.4 (the lead records gaps), §11 (M1).
 
 ## 1. Responsibilities
 
-**Does**: defines the change: one unit of work, from opening to archive. Defines the change record and its place, the gap item and its states, the diagnosis of which layer is wrong and what each diagnosis changes, the current change of a working tree, how a change is opened, closed and archived, and how a decision that came from a gap points back to its change.
+**Does**: defines the change: one unit of work, from opening to archive. Defines the change record and its place, the gap item and its states, the diagnosis of which layer is wrong and what each diagnosis changes, the current change of a working tree, how a change is opened, closed and archived, how a milestone's work is a change, and how a decision that came from a gap points back to its change.
 
 **Does not**:
 
@@ -23,13 +23,14 @@ basis: docs/intent.md 1.2
 
 - Each change has one folder, `.plumbline/changes/<name>/`, in git (`settings`: `.plumbline/` holds what plumbline keeps in a project).
 - `<name>` is `YYYY-MM-DD-<slug>`: the date the change was opened, then a slug of lowercase ASCII letters, digits and hyphens. No two changes have the same name.
-- The folder holds `change.md` and one file per gap item, `gap-<n>.md`, numbered 1, 2, 3 and so on in the order the gap items were recorded. It may hold other files the work needs.
+- Every folder directly under `.plumbline/changes/` is a change.
+- The folder holds `change.md` and one file per gap item, `gap-<n>.md`, numbered 1, 2, 3 and so on in the order the gap items were recorded. `<n>` is a positive integer written without leading zeros; a file whose name has any other form is not a gap item. The folder may hold other files the work needs.
 - A change folder is never removed and never moved. A finished change stays where it is, with the state `archived`.
 - A change record never holds content of a layer kept out of git. It may name only its location: a document path, a version, a section.
 
 ### `change.md`
 
-Front matter (`layers`) with exactly these keys:
+Front matter (`layers`) with exactly these keys, each once:
 
 | Key | Value |
 |---|---|
@@ -62,7 +63,7 @@ When a change is opened, the lead decides which layer is wrong.
 
 ### Gap items
 
-`gap-<n>.md` has front matter with these keys:
+`gap-<n>.md` has front matter (`layers`) with exactly these keys, each once:
 
 | Key | Value |
 |---|---|
@@ -78,7 +79,7 @@ When a change is opened, the lead decides which layer is wrong.
 
 ### The current change
 
-- `.plumbline/current-change` holds one line: the name of an open change. When the file is absent or empty, there is no current change.
+- `.plumbline/current-change` holds one line: the name of an open change. Its content, with every CR LF read as LF and one final LF removed, is the name. When the file is absent or that content is empty, there is no current change.
 - The file belongs to one working tree and is never in git. Before writing it, the lead makes sure `.git/info/exclude` lists `/.plumbline/current-change`.
 - The lead writes it when it opens a change or turns to another open change, and empties it when the current change is closed.
 - An edit made while a change is current belongs to that change.
@@ -89,7 +90,15 @@ When a change is opened, the lead decides which layer is wrong.
 1. **Open**: the lead chooses the name, writes `change.md` with `state: open` and the diagnosis, and makes the change current.
 2. **Work**: gap items are recorded and answered; the layers are changed top-down; implementers build impl (`roles`).
 3. **Close**: when no gap item is `proposed`, and the body says how the result was confirmed, the lead sets `state: closed` and empties the current change if it names this one.
-4. **Archive**: when the checks that run at closing are done, the lead sets `state: archived`.
+4. **Archive**: when the checks that run at closing are done, the lead sets `state: archived`. In M1 no check runs at closing, so a closed change may be archived at once.
+
+### A milestone's work
+
+- From the first reproduction on, the work of each milestone is one change: its module documents and its impl, and, for every milestone after the first, the change of the design README's `milestone` line to it (`design-docs`).
+- Its diagnosis is `design`: the design does not yet hold that milestone's module documents.
+- The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is closed.
+- A gap found while its documents are written or its impl is built is a gap item of this change.
+- It is closed when the milestone's impl is done, like any change: no gap item proposed, and the body says how the result was confirmed.
 
 ### A decision that came from a gap
 
@@ -176,6 +185,7 @@ flowchart TD
 - A section 5 line that links to a change belongs to a decision that settled a confirmed gap item of that change at the design layer.
 - A change record holds no content of a layer kept out of git.
 - Change folders are never removed or moved.
+- From the first reproduction on, a milestone's work happens within that milestone's change.
 
 ## 5. Decisions and reasons
 
@@ -194,6 +204,7 @@ flowchart TD
 - **The layers a change touches are derived from its diagnosis and its confirmed gap items, not written separately.** A separate list could disagree with them. (Design-level — confirmed 2026-10-17)
 - **For a layer kept out of git, a gap item names only the location and what the layer below needs; the proposed wording goes to the user, not into the record.** Change records are in git, and the proposed wording would be content of that layer. (Design-level — confirmed 2026-10-17)
 - **The body of a change record is free text with no template.** No check reads it; what it must hold is listed above, and its words are the project's. (Design-level — confirmed 2026-10-17)
+- **From the first reproduction on, each milestone's work is one change with diagnosis `design`.** A gap found while the milestone's documents are written or its impl is built then has a change to be recorded in, the gap guard holds back the layers below it, status shows the work in progress, and the checks at closing (M2) cover the milestone's impl. Rejected: opening a change only when a gap is found, which leaves the milestone's work out of status and leaves its impl unchecked when no gap came up. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
 
@@ -207,6 +218,7 @@ The formats here are read by `status` and `guards` (M1) and checked by `validate
 These are judgment checks, made during the M1 Done of intent §11, on the example project:
 
 - one change of each diagnosis is opened and closed, and each records its diagnosis, its tasks, how its result was confirmed, and its commits; the intent-level change raises the intent version;
+- after the reproduction, the milestone's work is done in a change of its own with diagnosis `design`, and a gap found during it is recorded in that change;
 - a gap item found while a change is open is recorded as proposed, answered with a date, and, when confirmed at the design layer, leads to a section 5 line with the confirmed marker and a link to the change;
 - no change record holds content of the intent when the intent is kept out of git.
 
