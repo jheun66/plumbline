@@ -22,7 +22,7 @@ basis: docs/intent.md 1.2
 
 | Role | Must receive |
 |---|---|
-| `lead` | the three layers, their locations and which are kept out of git (`settings`); the read direction, the change direction and gaps as proposals (`layers`); the whole role table, which role an agent plays, fresh agents, hand-off and the gap flow (`roles`); when a hand-off must name the implementer's carrier, which file that is; how design documents are written: template, basis lines, design-level markers, figures, never naming impl locations (`design-docs`); the authoring procedure (`authoring`); that the content of a layer kept out of git is never copied into a file in git; that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again |
+| `lead` | the three layers, their locations and which are kept out of git (`settings`); the read direction, the change direction and gaps as proposals (`layers`); the whole role table, which role an agent plays, fresh agents, hand-off and the gap flow (`roles`); when a hand-off must name the implementer's carrier, which file that is; when the means that reaches only the implementer needs the implementer to be started in a particular way, how to start it; how design documents are written: template, basis lines, design-level markers, figures, never naming impl locations (`design-docs`); the authoring procedure (`authoring`); that the content of a layer kept out of git is never copied into a file in git; that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again |
 | `implementer` | its row of the role table: it reads design and impl, writes impl only, and never reads intent; the design and impl locations, and the intent location as a place it never reads; how to read a design document: what each of the seven sections holds, what the design-level markers mean, and that a design never names impl locations; that it builds only the design sections it is handed; that on a gap it stops and reports to the lead in terms of the design |
 
 - Every location is stated as the settings give it.
@@ -31,8 +31,9 @@ basis: docs/intent.md 1.2
 ### How carriers reach agents
 
 - The reproducing agent chooses the carriers from the means it has: an instruction file, part of one, a file it refers to, a script a hook runs, a skill, and so on.
+- A means reaches a role by itself when, once an agent of that role has started, its rules reach the agent without anyone pointing the agent to them. Such a means may need the agent to be started in a particular way, for example as a given agent type; the implementer is then started that way (`roles`, hand-off). For the lead, and for a means that every agent reads by itself, only a means that needs no particular way of starting counts, since the lead's rules reach it without the user doing anything.
 - Each role's rules go in a carrier that only that role receives.
-- A carrier that every agent reads by itself holds no role's rules. It holds nothing but the names of the roles, which role an agent plays (`roles`), and, for each role whose rules no means can bring to that role alone, the carrier that holds them (see the flow below). The reproduction writes such a carrier only when it must name at least one role's carrier.
+- What the reproduction writes in a carrier that every agent reads by itself holds no role's rules. It holds nothing but the names of the roles, which role an agent plays (`roles`), and, for each role whose rules no means can bring to that role alone, the carrier that holds them (see the flow below). The reproduction writes such a carrier only when it must name at least one role's carrier.
 - The lead's carrier reaches the lead at the start of every session, without the user doing anything: through a means that reaches only the lead, or because the carrier every agent reads names it. When the agent has neither a means that reaches only the lead nor a means that every agent reads by itself, the reproduction stops with an environment error (`reproduction`).
 - An implementer receives its rules when it starts: through a means that reaches only the implementer, or because the carrier every agent reads names its carrier. When neither is possible, the lead's hand-off also names the carrier that holds them. The hand-off still names nothing else but the role and design sections (`roles`).
 - Every carrier file is in git, lies outside every layer location, and is listed in the setup record (`setup-record`).
@@ -83,7 +84,7 @@ flowchart TD
 ```
 
 - The figure covers the lead and the implementer alike. Only an implementer can be given the file by a hand-off. When nothing reaches the lead by itself, the reproduction stops with an environment error.
-- The carrier that every agent reads by itself is also chosen this way. It holds nothing but the names of the roles, which role an agent plays, and the files it names in the figure. It is written only when the figure names at least one file through it.
+- The carrier that every agent reads by itself is also chosen this way. What the reproduction writes in it holds nothing but the names of the roles, which role an agent plays, and the files it names in the figure. It is written only when the figure names at least one file through it.
 
 An implementer starting work:
 
@@ -99,6 +100,7 @@ sequenceDiagram
   I->>I: build the design sections
 ```
 
+- When the lead cannot start the implementer itself, the user starts it with the lead's hand-off (`roles`). The figure shows the lead starting it.
 - When there is no carrier that every agent reads, the step through it does not happen. When there is one and a means reaches only the implementer, that carrier tells the implementer which role it plays but does not name its carrier.
 
 ## 4. Invariants and contracts
@@ -106,7 +108,7 @@ sequenceDiagram
 - Every rule that the lead and the implementer must follow reaches them through a carrier.
 - Carried text holds rules only, with no reasons, no history, no pointer to plumbline's intent or design, and no content of a layer kept out of git.
 - An implementer's carrier tells it nothing about intent but its location.
-- A carrier that every agent reads by itself holds no role's rules: only the names of the roles, which role an agent plays, and, for each role whose rules no means can bring to that role alone, the carrier that holds them.
+- What the reproduction writes in a carrier that every agent reads by itself holds no role's rules: only the names of the roles, which role an agent plays, and, for each role whose rules no means can bring to that role alone, the carrier that holds them.
 - Each role's rules reach only that role.
 - Reproducing again never changes a project part.
 - Every carrier file is listed in the setup record.
@@ -128,7 +130,7 @@ These are judgment checks, made during the M0 Done of intent §11:
 - after a reproduction, the setup record lists every carrier and its files;
 - a new lead session with no earlier conversation, started without the user doing anything, can tell from the carriers alone: the layer locations, what it may read and write, how to write a design document, and how to go on with authoring;
 - an implementer started by a hand-off receives its row of the role table and how to read a design document, and learns nothing about intent but its location;
-- a carrier that every agent reads by itself, if there is one, holds nothing but the names of the roles, which role an agent plays, and, for each role whose rules no means can bring to that role alone, the carrier that holds them;
+- what the reproduction writes in a carrier that every agent reads by itself, if there is one, holds nothing but the names of the roles, which role an agent plays, and, for each role whose rules no means can bring to that role alone, the carrier that holds them;
 - reproducing again leaves every project part as it was;
 - no carried text points to plumbline's intent or design, or holds content of a layer kept out of git.
 

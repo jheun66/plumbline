@@ -41,6 +41,7 @@ basis: docs/intent.md 1.2
 ### Hand-off
 
 - The lead hands work to an implementer by naming its role and design sections: a design document and the sections in it.
+- The lead starts the implementer with the hand-off. When the lead cannot start an agent itself, or not in the way the implementer's carrier needs, it gives the hand-off to the user, who starts the implementer with it, and tells the user how to start it. That instruction is for the user and is not part of the hand-off.
 - The hand-off never carries intent content.
 - A question about impl from the user goes from the lead to an implementer in the same way. The answer comes back to the lead.
 
@@ -67,6 +68,8 @@ sequenceDiagram
   L->>I2: hand-off: implementer, design sections
   I2-->>L: done
 ```
+
+- When the lead cannot start an implementer itself, the user starts it with the lead's hand-off (section 2, hand-off). The figure shows the lead starting it.
 
 ## 4. Invariants and contracts
 
