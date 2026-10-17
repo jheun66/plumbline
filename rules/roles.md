@@ -30,6 +30,7 @@ Every agent plays exactly one role:
 
 - The lead hands work to an implementer by naming its role, `implementer`, and design sections: a design document and the sections in it.
 - The hand-off names nothing else, except the carrier that holds the implementer's rules when [carriers.md](carriers.md) requires it.
+- The lead starts the implementer with the hand-off. When the lead cannot start an agent itself, or cannot start it in the way the implementer's carrier needs ([carriers.md](carriers.md)), it gives the hand-off to the user, who starts the implementer with it, and tells the user how to start it. That instruction is for the user and is not part of the hand-off.
 - A hand-off never carries intent content.
 - A question about impl from the user goes from the lead to an implementer in the same way. The answer comes back to the lead.
 

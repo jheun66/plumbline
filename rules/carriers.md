@@ -10,6 +10,7 @@ The lead:
 - the read direction, the change direction, and gaps as proposals ([layers.md](layers.md));
 - the whole role table, which role an agent plays, fresh agents, hand-off, and the gap flow ([roles.md](roles.md));
 - when a hand-off must name the implementer's carrier (see "Choosing a role's carrier"), which file that is;
+- when the means that reaches only the implementer needs the implementer to be started in a particular way, how to start it;
 - how design documents are written: the template, basis lines, design-level markers, figures, and never naming impl locations ([design-docs.md](design-docs.md));
 - the authoring procedure ([authoring.md](authoring.md));
 - that the content of a layer kept out of git is never copied into a file in git ([settings.md](settings.md));
@@ -31,8 +32,9 @@ For both roles:
 ## How carriers reach agents
 
 - The reproducing agent chooses the carriers from the means it has: an instruction file, part of one, a file it refers to, a script a hook runs, a skill, and so on.
+- A means reaches a role by itself when, once an agent of that role has started, its rules reach the agent without anyone pointing the agent to them. Such a means may need the agent to be started in a particular way, for example as a given agent type. The implementer is then started that way ([roles.md](roles.md#hand-off)). For the lead, and for a means that every agent reads by itself, only a means that needs no particular way of starting counts.
 - Each role's rules go in a carrier that only that role receives. Each role's rules reach only that role.
-- A carrier that every agent reads by itself holds no role's rules. It holds nothing but the names of the roles, which role an agent plays ([roles.md](roles.md)), and, for each role whose rules no means can bring to that role alone, the carrier that holds them (see "Choosing a role's carrier"). A reproduction writes such a carrier only when it must name at least one role's carrier.
+- What a reproduction writes in a carrier that every agent reads by itself holds no role's rules. It holds nothing but the names of the roles, which role an agent plays ([roles.md](roles.md)), and, for each role whose rules no means can bring to that role alone, the carrier that holds them (see "Choosing a role's carrier"). A reproduction writes such a carrier only when it must name at least one role's carrier.
 - The lead's carrier reaches the lead at the start of every session, without the user doing anything: through a means that reaches only the lead, or because the carrier every agent reads names it. When the reproducing agent has neither a means that reaches only the lead nor a means that every agent reads by itself, the reproduction stops with an environment error ([reproduction.md](reproduction.md)).
 - An implementer receives its rules when it starts: through a means that reaches only the implementer, or because the carrier every agent reads names its carrier. When neither is possible, the lead's hand-off also names the carrier that holds them. The hand-off names nothing else but the role and design sections ([roles.md](roles.md)).
 - An implementer's carrier tells it nothing about intent but its location.
@@ -50,11 +52,11 @@ For the lead and the implementer alike:
    - when there is no such means and the role is the lead, the reproduction stops with an environment error ([reproduction.md](reproduction.md)). A hand-off never gives the lead its file.
 3. Every carrier file, the carrier every agent reads included, is written whole when the project does not also write it. When the project also writes it, it is written as a reproduced part (below). When it cannot hold the begin line and the end line, another file is chosen, and this step is applied to that file.
 
-The carrier every agent reads by itself is written only when step 2 has it name at least one role's file. It holds nothing but the names of the roles, which role an agent plays, and the files step 2 has it name.
+The carrier every agent reads by itself is written only when step 2 has it name at least one role's file. What a reproduction writes in it holds nothing but the names of the roles, which role an agent plays, and the files step 2 has it name.
 
 ### An implementer starting work
 
-1. The lead's hand-off names the role `implementer` and design sections, and also the implementer's carrier when the hand-off must name it (see "Choosing a role's carrier").
+1. The implementer is started with the lead's hand-off, by the lead or by the user ([roles.md](roles.md#hand-off)). The hand-off names the role `implementer` and design sections, and also the implementer's carrier when the hand-off must name it (see "Choosing a role's carrier"). When the means that reaches only the implementer needs the implementer to be started in a particular way, it is started that way.
 2. When there is a carrier that every agent reads by itself, the implementer learns there which role it plays. When no means reaches only the implementer, it also learns there which carrier holds its rules. When a means reaches only the implementer, that carrier does not name the implementer's carrier. When there is no carrier that every agent reads, this step does not happen.
 3. The implementer reads its rules from its carrier.
 4. It builds the design sections.
