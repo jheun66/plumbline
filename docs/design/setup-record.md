@@ -47,9 +47,17 @@ A JSON object with exactly these keys:
   "files": [
     {
       "path": "INSTRUCTIONS.md",
-      "checksum": "sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67",
+      "checksum": "sha256:0f8ffbd6cd643eb1b595ee683fc34eef9d208436d1ecbf35585077d17151e2d7",
       "begin": "<!-- plumbline:begin -->",
       "end": "<!-- plumbline:end -->"
+    },
+    {
+      "path": ".plumbline/lead.md",
+      "checksum": "sha256:bb5e6a13ff86dc4f333bbef04ca0657bfebcbc2b173a2a42aedd4d1e849e3d3e"
+    },
+    {
+      "path": ".plumbline/implementer.md",
+      "checksum": "sha256:d7643b3243eb56482b2b34a8dde980201d3787e34475476743fd182667eec2bd"
     },
     {
       "path": ".plumbline/template.md",
@@ -59,7 +67,9 @@ A JSON object with exactly these keys:
     }
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part", "files": ["INSTRUCTIONS.md"] }
+    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"] },
+    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"] },
+    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"] }
   ],
   "parts": [],
   "enforcement": [
@@ -78,6 +88,8 @@ A JSON object with exactly these keys:
 | `enforcement` | for each rule that the rules allow to be enforced mechanically, whether it is |
 
 Any other key, anywhere in the object, is an error.
+
+A record is valid when it follows everything this section says about its keys and values. Whether the files it lists still match their checksums has no bearing on whether the record is valid. Its copy of the settings is checked against the format of `settings` without looking at the file system: whether a path exists, or is a file or a folder, has no bearing either.
 
 #### `rules`
 

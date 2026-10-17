@@ -105,7 +105,7 @@ How to read it:
 | Model | `layers` | The three layers, derivation, read direction, change direction, gaps as proposals, intent version, what agent-read impl may contain | — | — | M0 |
 | Model | `design-docs` | The module document template, figures, basis citation, design-level decisions, which documents are module documents | — | layers | M0 |
 | Model | `settings` | Project settings: layer locations and layers in git; excluding a layer; not copying an excluded layer's content | — | layers | M0 |
-| Model | `roles` | lead, implementer, verifier: what each does, reads and writes; hand-off; how a gap travels between them | — | layers | M0 |
+| Model | `roles` | lead, implementer, verifier: what each does, reads and writes; hand-off; how a gap travels between them | — | layers | M0, M1, M2 |
 
 Where each part of intent 1.2 is owned:
 
@@ -221,7 +221,7 @@ These hold for every module.
 
 - A rule states what must hold. It holds no reasons and no history.
 - A rule never points to plumbline's intent or design.
-- A rule never mentions a specific coding agent, a natural language, or a comment policy.
+- A rule never names a specific coding agent or a natural language, and never sets a comment policy. Where a rule must touch natural language or comment policy, it says only that each project decides them in its own intent.
 - An agent finds the rules in plumbline's impl location: the folder `rules/` of the plumbline repository, which holds the rules and their conformance cases. It starts at that folder's top-level `README.md`.
 
 **Setups**
@@ -260,6 +260,7 @@ These hold for every module.
 - **`carriers` is apart from `reproduction`.** What the rules tell agents grows each milestone, and the means of carrying it vary by project. The reproduction procedure stays the same. (Design-level — confirmed 2026-10-16)
 - **`conformance` owns the case format and the run procedure. Each check module lists its own cases.** A check's cases change with the check; the way cases are written and run does not. (Design-level — confirmed 2026-10-16)
 - **plumbline's impl is the folder `rules/`, and an agent starts at its top-level `README.md`.** intent leaves the place of plumbline's impl to the design. Every agent that uses plumbline, to write a project's intent or to reproduce a setup, needs one fixed place to start. (Design-level — confirmed 2026-10-17)
+- **A rule may say that natural language and comment policy are each project's to decide, but never names a language or sets a policy.** intent §7, §8.5. The rules must tell the lead not to ask about them, and must tell the reproducing agent that such rules go in a project part.
 
 ## 6. Verification criteria
 

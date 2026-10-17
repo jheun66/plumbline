@@ -7,6 +7,7 @@ basis: docs/intent.md 1.2
 > Basis: intent 1.2 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
 > Stage 1 — module map: confirmed by the user on 2026-10-16.
 > M0 module documents: bundles A (layers, design-docs, settings, roles), B (setup-record, conformance) and C (authoring, carriers, reproduction) confirmed by the user on 2026-10-17. The M0 design is complete.
+> Revised after gaps reported while building M0 impl: roles, carriers, reproduction, setup-record and overview. Confirmed by the user on 2026-10-17, except decisions still marked pending.
 
 ## Where this document sits
 
@@ -40,8 +41,8 @@ The module map covers the first version: milestones M0 to M3. Module documents a
 | Milestone | Modules written in that milestone |
 |---|---|
 | M0 | layers, design-docs, settings, roles, setup-record, conformance, authoring, carriers, reproduction |
-| M1 | changes, status, guards (gap guard), carriers (change procedures) |
-| M2 | validate, verify, guards (role guard), carriers (verify procedure) |
+| M1 | changes, status, guards (gap guard), carriers (change procedures), roles (the lead's work on changes) |
+| M2 | validate, verify, guards (role guard), carriers (verify procedure), roles (verifier) |
 | M3 | none. validate runs on plumbline's own design documents |
 
 M0 documents are written in three bundles. Each bundle is confirmed by the user before the next is written.

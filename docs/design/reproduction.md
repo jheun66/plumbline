@@ -37,7 +37,13 @@ The agent stops and says why when:
 - the settings file is not valid (`settings`);
 - a layer location is `.plumbline/`, contains it, or lies inside it;
 - the template's project part does not exist yet (`authoring`);
+- the previous setup record exists and is not valid (`setup-record`, the format);
+- there is no setup record, but the git history of the checked-out commit holds one: it was removed by hand. The agent asks the user to restore it, from git;
+- a file that the previous setup record lists with a reproduced part exists, but the part cannot be found in it (`setup-record`, checksums). The agent names the file, and the begin or end line that is missing, appears more than once, or comes in the wrong order. A file that no longer exists is not this case; step 1 names it;
+- the agent has no means that reaches the lead at the start of every session by itself: neither one that reaches only the lead, nor one that every agent reads by itself (`carriers`). This is an environment error;
 - the rules at that commit cannot be read.
+
+The git history of the checked-out commit is that commit and every commit before it. In a git repository with no commit yet, that history holds no setup record, and every file that exists counts as differing from the checked-out commit.
 
 ### Reading the rules
 
@@ -47,7 +53,7 @@ The agent stops and says why when:
 
 ### Steps
 
-1. Name every file in the previous setup record whose checksum no longer matches: it was edited by hand. Replace such files only after the user agrees. If the user does not agree, stop before writing anything.
+1. Name every file in the previous setup record that no longer exists or whose checksum no longer matches: it was deleted or edited by hand. Write such files again, or remove them in step 8, only after the user agrees. If the user does not agree, stop before writing anything.
 2. Choose the carriers and write them (`carriers`): whole files, and reproduced parts with the project parts kept.
 3. Write the template's reproduced part (`carriers`), keeping its project part.
 4. Add to `.git/info/exclude` every path of each layer in `not_in_git` that is not there yet. Remove the paths of a layer that the previous record kept out of git and the settings no longer do.
@@ -56,7 +62,7 @@ The agent stops and says why when:
 7. Act once through each connector to an agent with an action that must be blocked, and once with an action that must pass. When a connector does not give the expected results and cannot be corrected, its rule is enforced by instruction only.
 8. Remove the files, and the reproduced parts, that the previous record listed and this reproduction no longer writes.
 9. Write the setup record (`setup-record`), replacing the old one.
-10. Tell the user which rules are enforced mechanically and which by instruction only, and which files were written, changed or removed.
+10. Tell the user which rules are enforced mechanically and which by instruction only, and which files were written, changed or removed. Tell the user to commit the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit, and name them. The reproduction commits nothing.
 
 In M0 a setup has no mechanical part, so steps 5 to 7 do nothing.
 
@@ -92,15 +98,15 @@ sequenceDiagram
     alt the rules have a gap
       L-->>U: stop and propose a rule change
     else
-      L-->>U: name reproduced files edited by hand
-      U-->>L: agree to replace them
+      L-->>U: name files deleted<br/>or edited by hand
+      U-->>L: agree to write again<br/>or remove them
       L->>P: write carriers and the template's reproduced part
       L->>P: update .git/info/exclude
       L->>P: write parts and connectors, choose runners
       L->>P: run every case, act through each connector
       L->>P: remove what is no longer produced
       L->>P: write the setup record
-      L-->>U: which rules are mechanical, files changed
+      L-->>U: which rules are mechanical,<br/>files changed, what to commit
     end
   end
 ```
@@ -127,7 +133,10 @@ flowchart TD
 - A gap in the rules is never filled by the reproducing agent.
 - Every file a reproduction writes lies outside every layer location.
 - The setup record is written last, and only after every case has passed.
-- A reproduced file edited by hand is never replaced without the user knowing.
+- A reproduced file deleted or edited by hand is never written again or removed without the user knowing.
+- A reproduced part whose begin or end line cannot be found is never written over.
+- A project whose checked-out commit has a setup record in its git history is never reproduced as if for the first time.
+- A reproduction commits nothing. The user commits the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit.
 
 ## 5. Decisions and reasons
 
@@ -143,6 +152,11 @@ flowchart TD
 - **The setup record is written last.** A reproduction that stops leaves the previous record, so the record still describes the last finished setup. (Design-level — confirmed 2026-10-17)
 - **Reproducing again keeps the previous choices unless something requires a change.** Then the same rules and settings give the same files in a new session (intent §11, M0), and a project's carriers do not move around. (Design-level — confirmed 2026-10-17)
 - **Reproduced files edited by hand are named first and replaced only after the user agrees; otherwise the reproduction stops before writing anything.** A hand edit that was never committed cannot be recovered once replaced. The user can first move it into a proposal for the rules, the settings or a project part. Rejected: replacing and reporting afterwards, which loses an uncommitted edit; refusing until the user reverts the edit by hand, which ends the same way with more work; keeping the edited file, which would make the setup record wrong. (Design-level — confirmed 2026-10-17)
+- **A reproduced file that no longer exists counts as edited by hand.** Deleting is an edit too, and the user may have meant it. Writing the file again without asking would undo that without the user knowing. (Design-level — confirmed 2026-10-17)
+- **When the previous setup record is not valid, or a reproduced part it lists cannot be found, the reproduction stops before writing anything.** Without a valid record the agent cannot tell what it wrote last time. Without both lines of a part it cannot tell where the project's part begins and ends, and a guess could write over the project's words or leave old rules behind as project text. The user restores the record or the lines, from git for example, and reproduces again. Rejected: writing the whole file again, which loses the project part; adding a new reproduced part next to the old text, which keeps old rules as project text. (Design-level — confirmed 2026-10-17)
+- **When no means reaches the lead by itself at the start of every session, the reproduction stops with an environment error.** The lead's rules must reach it without the user doing anything (`carriers`). A setup that relies on the user pointing the lead to its rules in every session would leave them to memory, as when agents keep rules by themselves. Like a missing runner, this is a lack in the environment, not in the rules. Rejected: telling the user to point the lead to its carrier at the start of every session, which breaks that contract without anything recording it. (Design-level — confirmed 2026-10-17)
+- **When there is no setup record but the git history of the checked-out commit holds one, the reproduction stops before writing anything and asks the user to restore it.** The record is in git, so a missing record that git once held was removed by hand. Reproducing as if for the first time would miss reproduced files edited by hand, and would leave the old reproduced parts behind as project text next to new ones. Rejected: asking the user at every reproduction without a record whether there was an earlier one, which asks on every true first reproduction and relies on memory; treating it as a first reproduction, which shows the damage only at the next reproduction. A record removed before it was ever committed, or one whose commits a shallow clone does not hold, is not caught. (Design-level — confirmed 2026-10-17)
+- **The reproduction commits nothing; its final report tells the user to commit the setup record and every file that either record lists and that differs from the checked-out commit, and names them.** When to commit is the user's call, and a commit made by the reproduction could mix with the user's own work. Naming the files at the end of every reproduction makes forgetting unlikely, and the record must be committed for a removed record to be caught later. Removed files and removed parts are named too, so that what git holds is exactly what the record lists. Rejected: the reproduction committing by itself, which makes commits the user did not ask for. (Design-level — confirmed 2026-10-17)
 - **What is no longer produced is removed, and exclusions of layers no longer kept out of git are removed.** The setup then is exactly what the record lists. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
@@ -154,8 +168,10 @@ These are checked in the M0 Done of intent §11, on an example project with the 
 - reproducing again in a new session with the same rules and settings gives the same list of files;
 - reproducing again leaves the project parts of carrier files and the template's project part as they were;
 - with a layer in `not_in_git`, its paths are in `.git/info/exclude`;
-- the agent stops before writing anything when the project is not a git repository, when the settings are invalid, when a layer location is at, around or inside `.plumbline/`, or when the template's project part is missing;
-- a reproduced file edited by hand is named before anything is replaced.
+- the agent stops before writing anything when the project is not a git repository, when the settings are invalid, when a layer location is at, around or inside `.plumbline/`, when the template's project part is missing, when the previous setup record is not valid, or when a reproduced part it lists cannot be found; in the last case it names the file and the line;
+- with no setup record and one in the git history of the checked-out commit, the agent stops before writing anything and asks the user to restore it;
+- the final report names, as files to commit, the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit, and the reproduction makes no commit;
+- a reproduced file edited by hand, and one that was deleted, are named before anything is written.
 
 ## 7. Out of scope
 
