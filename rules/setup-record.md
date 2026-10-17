@@ -48,6 +48,18 @@ A JSON object with exactly these keys:
       "checksum": "sha256:ea86728e0c9f2933951b83eea2a0b9a9e30b4aa03de63621d1e8c59f8618e15d",
       "begin": "<!-- plumbline:begin -->",
       "end": "<!-- plumbline:end -->"
+    },
+    {
+      "path": ".plumbline/parts/status",
+      "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+    },
+    {
+      "path": ".plumbline/parts/gap-guard",
+      "checksum": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+    },
+    {
+      "path": ".plumbline/hooks/gap-guard-connector",
+      "checksum": "sha256:e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
     }
   ],
   "carriers": [
@@ -55,12 +67,18 @@ A JSON object with exactly these keys:
     { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"] },
     { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"] }
   ],
-  "parts": [],
+  "parts": [
+    { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
+    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" }
+  ],
   "enforcement": [
-    { "rule": "role table", "by": "instruction" }
+    { "rule": "role table", "by": "instruction" },
+    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" }
   ]
 }
 ```
+
+The paths, runners and checksums in this example are illustrations. A reproduction chooses its own.
 
 | Key | Value |
 |---|---|
@@ -110,7 +128,7 @@ A list with one object per mechanical part: a guard or a deterministic check.
 
 | Key | Value |
 |---|---|
-| `name` | the part's name, as these rules name it |
+| `name` | the part's name, as these rules name it ([conformance.md](conformance.md#the-parts-of-a-setup)) |
 | `runner` | the command that runs the part, as a list: the program and any arguments it needs before the entry file |
 | `entry` | the path of the file the runner runs. It is listed in `files` |
 

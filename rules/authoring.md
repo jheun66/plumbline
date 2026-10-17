@@ -5,12 +5,14 @@ The lead and the user write a project's intent, then its design's module map, th
 ## Order
 
 1. Intent: draft it, resolve it, confirm it.
-2. The template's project part ([design-docs.md](design-docs.md)), then the module map and the design's README. The user confirms the map.
+2. The template's project part ([design-docs.md](design-docs.md)), then the module map and the design's README, whose `milestone` line names the first milestone. The user confirms the map.
 3. The settings are complete, and the setup is reproduced ([reproduction.md](reproduction.md)).
 4. The module documents of the first milestone. The user confirms them. Then implementers build that milestone's impl ([roles.md](roles.md)).
-5. Each later milestone: its module documents are written once the previous milestone's impl is done, then its impl is built.
+5. Each later milestone: once the previous milestone's impl is done, the lead changes the `milestone` line of the design's README to it. Then its module documents are written, then its impl is built.
 
 A milestone's module documents are all confirmed before its impl starts.
+
+From the first reproduction on, each milestone's work is one change, opened before that work starts ([changes.md](changes.md#a-milestones-work)). A gap found during it is a gap item of that change.
 
 ## Writing intent
 
@@ -48,7 +50,7 @@ An item's mark:
 ## The module map
 
 1. After intent is confirmed, the lead settles the template's project part with the user: the seven section titles and the two marker texts ([design-docs.md](design-docs.md)). The lead writes them into the template.
-2. The lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's README: scope, reading order, terms.
+2. The lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's README: scope, reading order, terms, and the `milestone` line ([design-docs.md](design-docs.md#design-documents-and-module-documents)).
 3. The map gives every module the milestone in which its document is written.
 4. The user confirms the map. Every design-level decision in it then carries the confirmed marker with the date.
 

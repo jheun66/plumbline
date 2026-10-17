@@ -107,7 +107,7 @@ Examples:
 ### Which parts have cases
 
 - Every mechanical part of a setup has cases. A part that can block has at least one must-block case and one must-pass case.
-- The rules for a part list all of its cases, each as an input and an expected result.
+- The cases of a part are in the folder `cases/` of these rules, in one file named after the part with `.json` added. The file holds a JSON array whose items are the part's cases, all of them.
 - Judgment checks have no cases.
 - Cases run a part through the contract above, not through its connector.
 
@@ -119,4 +119,11 @@ Examples:
 
 ## The parts of a setup
 
-A setup has exactly the mechanical parts these rules define. These rules define none. A setup therefore has no mechanical part, no connector and no case to run, and its setup record's `parts` is empty.
+A setup has exactly the mechanical parts these rules define:
+
+| Part | Defined in | Cases |
+|---|---|---|
+| `status` | [status.md](status.md) | [cases/status.json](cases/status.json) |
+| `gap-guard` | [guards.md](guards.md) | [cases/gap-guard.json](cases/gap-guard.json) |
+
+Its setup record's `parts` has one entry for each ([setup-record.md](setup-record.md#parts)).

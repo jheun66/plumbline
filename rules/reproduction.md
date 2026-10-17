@@ -45,12 +45,12 @@ The git history of the commit checked out in the project is that commit and ever
 4. Add to `.git/info/exclude` every path of each layer in `not_in_git` that is not there yet. Remove the paths of a layer that the previous record kept out of git and the settings no longer do.
 5. Write the mechanical parts and their connectors, and choose a runner for each. A runner must be present wherever its part runs: the developer's machine, and CI for a part that runs there. When there is none, report an environment error that names what is missing, and stop.
 6. Run every conformance case ([conformance.md](conformance.md)). When one fails, correct the part and run every case again.
-7. Act once through each connector to an agent with an action that must be blocked, and once with an action that must pass. When a connector does not give the expected results and cannot be corrected, its rule is enforced by instruction only.
+7. Act once through each connector to an agent with an action that must be blocked, and once with an action that must pass. For the gap guard's connector, this is done as [carriers.md](carriers.md#checking-the-gap-guards-connector) states. When a connector does not give the expected results and cannot be corrected, its rule is enforced by instruction only.
 8. Remove the files, and the reproduced parts, that the previous record listed and this reproduction no longer writes.
 9. Write the setup record ([setup-record.md](setup-record.md)), replacing the old one.
 10. Tell the user which rules are enforced mechanically and which by instruction only, and which files were written, changed or removed. Tell the user to commit the setup record and every file that the previous or the new setup record lists and that differs from the commit checked out in the project, and name each of them. The reproduction commits nothing.
 
-These rules define no mechanical part ([conformance.md](conformance.md)), so steps 5 to 7 have nothing to do.
+A setup has the two mechanical parts these rules define, `status` and `gap-guard` ([conformance.md](conformance.md#the-parts-of-a-setup)). Only the gap guard has a connector to an agent ([carriers.md](carriers.md#connectors)).
 
 ## Mechanical or instruction
 
@@ -59,6 +59,7 @@ The rules that may be enforced mechanically:
 | Rule | Stated in | Part that enforces it |
 |---|---|---|
 | `role table` | [roles.md](roles.md) | none |
+| `gap guard` | [changes.md](changes.md#gap-items) | `gap-guard` ([guards.md](guards.md#the-gap-guard)) |
 
 Such a rule is `mechanical` when all of these hold:
 

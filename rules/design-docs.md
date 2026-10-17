@@ -4,6 +4,7 @@
 
 - Every Markdown file at the design location ([settings.md](settings.md)) is a design document.
 - The design location's top-level `README.md` is the design's README. It is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- The design's README has exactly one `milestone` line in its front matter ([layers.md](layers.md#documents-and-front-matter)): `milestone: <name>`. It names the milestone the design is in now, as the project's intent names it.
 - Every other design document is a module document.
 - A project's section titles, its kinds of figures, and how its design documents are laid out and named are its own.
 
@@ -31,7 +32,7 @@ Every module document has seven sections, as level-2 headings, in this order:
 - Each project has one document template: `.plumbline/template.md`. It lies outside the design location and is not a design document.
 - It has a project part and a reproduced part.
 - The project part is:
-  - front matter ([layers.md](layers.md)) with two lines, `confirmed: <text>` and `pending: <text>`. These texts are the project's two design-level markers. The `confirmed` text holds `YYYY-MM-DD` where the date goes;
+  - front matter ([layers.md](layers.md#documents-and-front-matter)) with exactly two keys, each once: `confirmed: <text>` and `pending: <text>`. These texts are the project's two design-level markers. The `confirmed` text holds `YYYY-MM-DD` where the date goes;
   - the seven level-2 headings, in order. Their exact text is the project's section titles.
 - The lead writes the project part with the user before the module map is written ([authoring.md](authoring.md)). A reproduction never changes it.
 - When the project changes its section titles or marker texts, every module document is changed to match.
@@ -49,6 +50,7 @@ Every module document has seven sections, as level-2 headings, in this order:
 - It is written in section 5 of the module document it belongs to. There is no other list or table of decisions.
 - It carries a design-level marker: the template's `confirmed` text with the date the user confirmed it in place of `YYYY-MM-DD`, or the template's `pending` text.
 - A decision that only restates intent carries no marker.
+- A decision that settled a gap item also links to its change ([changes.md](changes.md#a-decision-that-came-from-a-gap)).
 
 Example: with `confirmed: (DL ok YYYY-MM-DD)` in the template, `(DL ok 2026-10-17)` is a confirmed marker and `(DL ok)` is a malformed one.
 

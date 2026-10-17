@@ -1,0 +1,562 @@
+[
+  {
+    "id": "gap-guard-blocks-impl-below-design-gap",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\timpl\t2026-11-02-a\t1\tdesign"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-passes-design-at-gap-layer",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "docs/design/cli.md"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-intent-above-gap-layer",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "docs/intent.md"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-path-in-no-layer",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        ".plumbline/changes/2026-11-02-a/gap-1.md"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-without-arguments",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      }
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-ignores-dot-segments",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "./src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\timpl\t2026-11-02-a\t1\tdesign"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-passes-path-outside-project",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "../elsewhere/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-blocks-each-path-in-order",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "docs/design/cli.md",
+        "src/a.rs",
+        "src/b.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/a.rs\timpl\t2026-11-02-a\t1\tdesign",
+        "block\tsrc/b.rs\timpl\t2026-11-02-a\t1\tdesign"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-passes-confirmed-gap",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: confirmed\ndate: 2026-11-03\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-rejected-gap",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: rejected\ndate: 2026-11-03\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-without-current-change-file",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-with-empty-current-change",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": ""
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-when-another-change-is-current",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-03-b\n",
+        ".plumbline/changes/2026-11-03-b/change.md": "---\nstate: open\ndiagnosis: impl\n---\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-blocks-design-below-intent-gap",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: intent\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "docs/design/cli.md"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tdocs/design/cli.md\tdesign\t2026-11-02-a\t1\tintent"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-blocks-impl-below-intent-gap",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: intent\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs",
+        "docs/intent.md"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\timpl\t2026-11-02-a\t1\tintent"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-names-gap-item-at-highest-layer",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n",
+        ".plumbline/changes/2026-11-02-a/gap-2.md": "---\nlayer: intent\nstate: proposed\n---\n"
+      },
+      "args": [
+        "docs/design/cli.md"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tdocs/design/cli.md\tdesign\t2026-11-02-a\t2\tintent"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-error-current-change-does-not-exist",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-09-x\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
+    }
+  },
+  {
+    "id": "gap-guard-error-current-change-not-open",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: closed\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
+    }
+  },
+  {
+    "id": "gap-guard-error-gap-item-not-valid",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\ndate: 2026-11-03\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
+    }
+  },
+  {
+    "id": "gap-guard-error-settings-not-valid",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": [], \"extra\": true}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
+    }
+  },
+  {
+    "id": "gap-guard-resolves-dot-dot-segment",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "docs/../src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\timpl\t2026-11-02-a\t1\tdesign"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-passes-dot-dot-into-gap-layer",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/../docs/design/cli.md"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-absolute-path-outside-project",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "/plumbline-elsewhere/src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-reads-current-change-with-crlf",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\r\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\timpl\t2026-11-02-a\t1\tdesign"
+      ]
+    }
+  },
+  {
+    "id": "gap-guard-ignores-gap-file-with-leading-zero",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n",
+        ".plumbline/changes/2026-11-02-a/gap-01.md": "---\nlayer: design\nstate: proposed\n---\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-without-arguments-whatever-current-change",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-09-x\n"
+      }
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-without-current-change-whatever-settings",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": [], \"extra\": true}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-passes-without-proposed-gap-whatever-settings",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": [], \"extra\": true}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: confirmed\ndate: 2026-11-03\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "gap-guard-error-change-record-not-valid",
+    "part": "gap-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: code\n---\n",
+        ".plumbline/changes/2026-11-02-a/gap-1.md": "---\nlayer: design\nstate: proposed\n---\n",
+        ".plumbline/current-change": "2026-11-02-a\n"
+      },
+      "args": [
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
+    }
+  }
+]

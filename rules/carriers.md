@@ -14,7 +14,24 @@ The lead:
 - how design documents are written: the template, basis lines, design-level markers, figures, and never naming impl locations ([design-docs.md](design-docs.md));
 - the authoring procedure ([authoring.md](authoring.md));
 - that the content of a layer kept out of git is never copied into a file in git ([settings.md](settings.md));
-- that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again.
+- that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again;
+- changes ([changes.md](changes.md)):
+  - opening one: its name, `change.md` with its state and diagnosis, making it current, and listing `/.plumbline/current-change` in `.git/info/exclude` before writing it;
+  - each milestone's work, from the first reproduction on, as one change with diagnosis `design`, opened before that work starts and closed when the milestone's impl is done ([changes.md](changes.md#a-milestones-work));
+  - the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl;
+  - for a bug, the current, the expected and the unchanged behaviour;
+  - recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git;
+  - closing: no gap item proposed, how the result was confirmed, emptying the current change; and archiving;
+  - the section 5 line of a decision from a gap, with its link to the change;
+  - that a change record holds no content of a layer kept out of git;
+- status ([status.md](status.md)):
+  - how to run it, as the setup record gives its runner and entry ([setup-record.md](setup-record.md#parts));
+  - to run it at the start of every session with empty standard input, and to tell the user the state in a few lines, in the project's own words;
+  - when the user asks for the state or about the rules, to fetch the tags of the rules repository the setup record names when the network is available, and to run it with them on standard input;
+- the gap guard ([guards.md](guards.md#the-gap-guard)):
+  - when it blocks a write, to tell the user which gap item must be answered;
+  - when it reports an environment error, to tell the user;
+  - never to write a blocked file another way.
 
 The implementer:
 
@@ -22,12 +39,14 @@ The implementer:
 - the design and impl locations, and the intent location as a place it never reads;
 - how to read a design document: what each of the seven sections holds, what the design-level markers mean, and that a design never names impl locations ([design-docs.md](design-docs.md));
 - that it builds only the design sections it is handed;
-- that on a gap it stops and reports to the lead in terms of the design ([roles.md](roles.md)).
+- that on a gap it stops and reports to the lead in terms of the design ([roles.md](roles.md));
+- when a write is blocked, to stop that work and report to the lead; never to write a blocked file another way.
 
 For both roles:
 
 - Every location is stated as the settings give it.
 - A rule enforced by instruction only (`enforcement` in [setup-record.md](setup-record.md)) is stated as an instruction. The `role table` is such a rule ([reproduction.md](reproduction.md)).
+- When the setup record gives the `gap guard` as `instruction`, the lead receives the rule itself: within the current change, while a gap item is proposed, no layer below it is edited ([changes.md](changes.md#gap-items)).
 
 ## How carriers reach agents
 
@@ -36,8 +55,8 @@ For both roles:
 - Each role's rules go in a carrier that only that role receives. Each role's rules reach only that role.
 - What a reproduction writes in a carrier that every agent reads by itself holds no role's rules. It holds nothing but the names of the roles, which role an agent plays ([roles.md](roles.md)), and, for each role whose rules no means can bring to that role alone, the carrier that holds them (see "Choosing a role's carrier"). A reproduction writes such a carrier only when it must name at least one role's carrier.
 - The lead's carrier reaches the lead at the start of every session, without the user doing anything: through a means that reaches only the lead, or because the carrier every agent reads names it. When the reproducing agent has neither a means that reaches only the lead nor a means that every agent reads by itself, the reproduction stops with an environment error ([reproduction.md](reproduction.md)).
-- An implementer receives its rules when it starts: through a means that reaches only the implementer, or because the carrier every agent reads names its carrier. When neither is possible, the lead's hand-off also names the carrier that holds them. The hand-off names nothing else but the role and design sections ([roles.md](roles.md)).
-- An implementer's carrier tells it nothing about intent but its location.
+- An implementer receives its rules when it starts: through a means that reaches only the implementer, or because the carrier every agent reads names its carrier. When neither is possible, the lead's hand-off also names the carrier that holds them. Beyond that, the hand-off names only what [roles.md](roles.md#hand-off) states.
+- An implementer's carrier tells it nothing about intent but its location, and nothing about changes.
 - Every carrier file is in git, lies outside every layer location, and is listed in the setup record ([setup-record.md](setup-record.md)).
 - Every rule the lead and the implementer must follow reaches them through a carrier. A project with its setup runs without these rules.
 
@@ -83,4 +102,22 @@ The carrier every agent reads by itself is written only when step 2 has it name 
 
 ## Connectors
 
-For each mechanical part connected to an agent or to CI, a connector is written under the contract in [conformance.md](conformance.md). A setup has no mechanical part ([conformance.md](conformance.md)), so it has no connector.
+For each mechanical part connected to an agent or to CI, a connector is written under the contract in [conformance.md](conformance.md#connectors).
+
+- **The gap guard** ([guards.md](guards.md)) is connected to the hook that an agent's file-writing actions pass through before they happen, for the lead and the implementer alike. The connector gives the guard the paths the action will create, change or remove.
+- **status** ([status.md](status.md)) has no connector to an agent. The lead runs it with its runner and entry ([setup-record.md](setup-record.md#parts)).
+
+No agent writes a file the gap guard blocked by another way.
+
+### Checking the gap guard's connector
+
+In step 7 of a reproduction ([reproduction.md](reproduction.md#steps)), the reproducing agent acts through the gap guard's connector:
+
+1. It writes a temporary change with a proposed gap item at the intent layer, and makes it current, as [changes.md](changes.md#the-current-change) states for writing `.plumbline/current-change`.
+2. An action that creates a new file in the design location must be blocked.
+3. An action that creates a new file outside every layer must pass.
+4. It removes the temporary change and every file the check created, and puts `.plumbline/current-change` back as it was.
+
+Each new file in steps 2 and 3 is at a path that does not exist yet.
+
+Nothing of the check reaches git, and the check leaves no change, file or marker behind.

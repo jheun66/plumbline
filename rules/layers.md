@@ -59,9 +59,22 @@ An impl product that agents read, such as prompts or rules, states rules only. R
 
 - Intent and design documents are Markdown files (`.md`).
 - Every Markdown file at the intent location ([settings.md](settings.md)) is an intent document.
-- A document's front matter is the block at its very top: the file's first line is exactly `---`, and the block ends at the next line that is exactly `---`.
-- Every line between those two is a `key: value` line. A key may appear more than once.
-- Keys these rules do not define are ignored. The keys these rules define are `version` (below), and `basis`, `confirmed` and `pending` ([design-docs.md](design-docs.md)).
+- A document's front matter is the block at its very top: the file's first line is exactly `---`, and the block ends at the next line that is exactly `---`. Every CR LF is read as LF.
+- Every line between those two is a `key: value` line:
+  - the key is made of lowercase ASCII letters, digits, `_` and `-`;
+  - then a colon and one space;
+  - then the value, which is not empty. Spaces and tabs at the end of the line are not part of the value.
+- A line of any other form, a blank line included, makes the front matter invalid.
+- A document whose front matter is invalid, or that has no front matter, or whose first line is `---` with no closing `---` line, has no front matter values. An intent document then has no valid version, whatever lines it holds.
+- In an intent or design document, a key may appear more than once, and keys these rules do not define are ignored. The keys these rules define there are `version` (below), and `basis` and `milestone` ([design-docs.md](design-docs.md)).
+- The template and change records have front matter of this form too. [design-docs.md](design-docs.md#the-template) and [changes.md](changes.md) define their keys.
+
+Examples:
+
+- `version: 1.2` is a valid line. `Version: 1.2`, `version:1.2`, `version:` followed only by spaces, and a blank line each make the front matter invalid.
+- `basis: docs/intent.md 2` followed by spaces has the value `docs/intent.md 2`.
+- An intent document whose front matter holds `version: 2` and a line `bad line` has no valid version.
+- An intent document whose first line is `---`, followed by `version: 2` and no closing `---` line, has no valid version.
 
 ## Intent versions
 

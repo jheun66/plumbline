@@ -18,10 +18,14 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | [layers.md](layers.md) | the three layers; read direction; change direction; gaps; front matter; intent versions |
 | [design-docs.md](design-docs.md) | design documents and module documents; the template; basis lines; design-level decisions; figures |
 | [settings.md](settings.md) | the project settings: where the layers are, and which are kept out of git |
-| [roles.md](roles.md) | lead and implementer: what each does, reads and writes; which role an agent plays; fresh agents; hand-off; gaps between roles |
+| [roles.md](roles.md) | lead and implementer: what each does, reads and writes; which role an agent plays; fresh agents; hand-off; the lead's part in changes; gaps between roles |
 | [setup-record.md](setup-record.md) | the setup record; checksums of reproduced files |
-| [conformance.md](conformance.md) | mechanical parts; connectors; conformance cases |
+| [conformance.md](conformance.md) | mechanical parts; connectors; conformance cases; the parts of a setup |
 | [authoring.md](authoring.md) | how the lead and the user write intent, the template's project part, the module map and the module documents |
+| [changes.md](changes.md) | changes: change records, diagnosis, gap items, the current change; opening, closing and archiving; a milestone's work as a change; decisions that came from a gap |
+| [status.md](status.md) | `status`: the mechanical part that reports the current state of a project |
+| [guards.md](guards.md) | guards; the gap guard |
+| [cases/](cases/) | the conformance cases of each mechanical part, one file per part |
 | [carriers.md](carriers.md) | what the rule carriers tell each role, how they reach agents, and what carried text may hold |
 | [reproduction.md](reproduction.md) | how a setup is built from these rules and the project settings, and built again |
 
@@ -35,7 +39,7 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | design-level decision | a decision the design makes because intent does not |
 | module document | a design document with the seven sections ([design-docs.md](design-docs.md)) |
 | module map | the module document that names a design's modules, their dependencies and milestones, the flows, and the contracts every module keeps |
-| milestone | a development stage set by a project's intent |
+| milestone | a development stage set by a project's intent. The design's README names the current one |
 | template | a project's document template, `.plumbline/template.md` ([design-docs.md](design-docs.md)) |
 | project settings | the values a reproduction needs that differ from project to project ([settings.md](settings.md)) |
 | role | lead or implementer ([roles.md](roles.md)) |
@@ -51,3 +55,11 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | conformance case | an input and its expected result that a mechanical part must meet |
 | must-block / must-pass | a conformance case the part must block / must let through |
 | connector | what connects a mechanical part to an agent's hooks or to CI; it only translates |
+| guard | a mechanical part that an agent's hook runs before an action that writes files, to let it through or block it ([guards.md](guards.md)) |
+| change | one unit of work, from opening to archive ([changes.md](changes.md)) |
+| change record | the folder of a change, with its `change.md` and its gap items |
+| diagnosis | which layer a change finds wrong: `impl`, `design` or `intent` |
+| gap item | a gap recorded in a change, with its layer and its state |
+| proposed / confirmed / rejected | the states of a gap item |
+| current change | the open change a working tree is working on; an edit belongs to it |
+| archive | marking a finished change as `archived`; it stays where it is |
