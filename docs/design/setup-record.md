@@ -14,7 +14,7 @@ basis: docs/intent.md 1.2
 
 - Decide what a reproduction writes, which rule carriers and runners it chooses, or which lines mark a reproduced part. `reproduction` and `carriers` do.
 - Hold the settings people edit. `settings` does. The record holds a copy of the settings a reproduction used.
-- Check the record, or the files against it. `validate` does (M2). Report from it. `status` does (M1).
+- Check the record, or the files against it. `validate` does (M2). Report from it. `status` does.
 - Hold the rules. The record points at them.
 
 ## 2. Public interface
@@ -221,11 +221,11 @@ flowchart TD
 Who writes and who reads the record:
 
 ```mermaid
-flowchart LR
+flowchart TB
   R["reproduction"] -->|"replaces whole"| S[(".plumbline/setup-record.json")]
-  S -->|"rules, settings"| T["status (M1)"]
+  S -->|"commit, files<br/>written last time"| R
+  S -->|"rules, settings"| T["status"]
   S -->|"files, checksums, format"| V["validate (M2)"]
-  S -->|"commit, files written last time"| R
 ```
 
 - A reproduction reads the record it is about to replace: the commit, when the user names none, and the files written last time.
@@ -271,5 +271,4 @@ flowchart LR
 ## 7. Out of scope
 
 - Checking the record's format and the checksums (`validate`, M2).
-- Reporting the setup's rules version, settings changed since the reproduction, and newer rules (`status`, M1).
-- Mechanical parts in `parts` and `enforcement`: the gap guard and status (M1), the role guard and validate (M2). In M0, `parts` is empty and every entry in `enforcement` is `instruction`.
+- Mechanical parts in `parts` and `enforcement` added in M2: the role guard and validate. In M1, `parts` holds `status` and `gap-guard`, and `enforcement` lists the role table, enforced by `instruction`, and the gap guard.

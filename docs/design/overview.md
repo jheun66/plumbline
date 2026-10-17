@@ -99,7 +99,7 @@ How to read it:
 | Checks | `validate` | Deterministic consistency check; when it only reports and when it blocks | setup-record, changes, conformance | layers, design-docs, settings | M2 |
 | Checks | `verify` | Judgment check by a fresh verifier; what it reads and what it leaves | changes | design-docs, roles | M2 |
 | Work | `authoring` | Writing a project's intent with the user, then its module map and module documents; the project settings that come out of it | — | layers, design-docs, settings, roles | M0 |
-| Work | `changes` | Change records, gap items and their states, diagnosis, archive; how a decision from a gap is recorded in a module document | — | layers, design-docs, roles | M1 |
+| Work | `changes` | Change records, gap items and their states, diagnosis, archive; how a decision from a gap is recorded in a module document | — | layers, design-docs, settings, roles | M1 |
 | Records | `setup-record` | What a setup record holds and its format | — | settings | M0 |
 | Records | `conformance` | What a conformance case is, how cases run, which parts must have them | — | — | M0 |
 | Model | `layers` | The three layers, derivation, read direction, change direction, gaps as proposals, intent version, what agent-read impl may contain | — | — | M0 |

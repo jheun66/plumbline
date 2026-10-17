@@ -4,7 +4,7 @@ basis: docs/intent.md 1.2
 
 # carriers
 
-> Basis: intent 1.2 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.4, §8.4, §8.5.
+> Basis: intent 1.2 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §8.1 (status takes the place of "start here"), §8.2, §8.4, §8.5.
 
 ## 1. Responsibilities
 
@@ -13,20 +13,29 @@ basis: docs/intent.md 1.2
 **Does not**:
 
 - Choose the means for a particular coding agent. The reproducing agent chooses them from the means it has, and the setup record lists them (`setup-record`).
-- Define the procedures that are carried. `layers`, `roles`, `design-docs` and `authoring` do; `changes` (M1) and `verify` (M2) add theirs.
+- Define the procedures that are carried. `layers`, `roles`, `design-docs` and `authoring` do; `changes`, `status` and `guards` add theirs in M1, and `verify` in M2.
 - Fix the wording of carried text. Only what it must say is fixed.
 
 ## 2. Public interface
 
-### What each role must receive (M0)
+### What each role must receive
+
+From M0:
 
 | Role | Must receive |
 |---|---|
 | `lead` | the three layers, their locations and which are kept out of git (`settings`); the read direction, the change direction and gaps as proposals (`layers`); the whole role table, which role an agent plays, fresh agents, hand-off and the gap flow (`roles`); when a hand-off must name the implementer's carrier, which file that is; when the means that reaches only the implementer needs the implementer to be started in a particular way, how to start it; how design documents are written: template, basis lines, design-level markers, figures, never naming impl locations (`design-docs`); the authoring procedure (`authoring`); that the content of a layer kept out of git is never copied into a file in git; that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again |
 | `implementer` | its row of the role table: it reads design and impl, writes impl only, and never reads intent; the design and impl locations, and the intent location as a place it never reads; how to read a design document: what each of the seven sections holds, what the design-level markers mean, and that a design never names impl locations; that it builds only the design sections it is handed; that on a gap it stops and reports to the lead in terms of the design |
 
+Added in M1:
+
+| Role | Must receive |
+|---|---|
+| `lead` | changes (`changes`): opening one (its name, `change.md` with its state and diagnosis, making it current, and listing `/.plumbline/current-change` in `.git/info/exclude` before writing it); the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl; the current, expected and unchanged behaviour of a bug; recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git; closing (no gap item proposed, how the result was confirmed, emptying the current change) and archiving; the section 5 line of a decision from a gap, with its link to the change; that a change record holds no content of a layer kept out of git. status (`status`): how to run it, as the setup record gives its runner and entry; to run it at the start of every session with empty standard input and tell the user the state in a few lines, in the project's words; when the user asks for the state or about the rules, to fetch the tags of the rules repository the setup record names when the network is available, and run it with them. The gap guard (`guards`): when it blocks a write, to tell the user which gap item must be answered; when it reports an environment error, to tell the user; never to write a blocked file another way |
+| `implementer` | when a write is blocked, to stop that work and report to the lead; never to write a blocked file another way |
+
 - Every location is stated as the settings give it.
-- When a rule is enforced only by instruction (`setup-record`, `enforcement`), the carrier states it as an instruction. In M0 the role table is such a rule.
+- When a rule is enforced only by instruction (`setup-record`, `enforcement`), the carrier states it as an instruction. In M0 the role table is such a rule. From M1 the gap guard is one too, when its connector cannot be made to work; the lead then receives the rule itself: within the current change, while a gap item is proposed, no layer below it is edited.
 
 ### How carriers reach agents
 
@@ -58,6 +67,12 @@ The template (`design-docs`) is a file with both parts. Its reproduced part says
 ### Connectors
 
 For each mechanical part connected to an agent or to CI, a connector is written under the contract in `conformance`. M0 has no mechanical part, so it has no connector.
+
+From M1:
+
+- **The gap guard** is connected to the hook that an agent's file-writing actions pass through before they happen, for the lead and the implementer alike. The connector gives the guard the paths the action will create, change or remove (`guards`).
+- **status** is run by the lead with its runner and entry. When a means runs it by itself at the start of a session and gives its lines to the lead, that means is its connector.
+- **Checking the gap guard's connector** (`reproduction`, acting through each connector): the reproducing agent writes a temporary change with a proposed gap item at the design layer and makes it current. An action that writes a file in an impl location must be blocked, and an action that writes a file outside every layer must pass. Then it removes the temporary change and the file it wrote, and puts `.plumbline/current-change` back as it was. Nothing of the check reaches git.
 
 ## 3. Flow
 
@@ -112,8 +127,15 @@ sequenceDiagram
 - Each role's rules reach only that role.
 - Reproducing again never changes a project part.
 - Every carrier file is listed in the setup record.
+- No agent writes a file the gap guard blocked by another way.
+- The connector check of the gap guard leaves nothing behind.
 
 ## 5. Decisions and reasons
+
+- **status takes the place of a "start here" note and of status lines in documents.** intent §8.1.
+- **The lead runs status at the start of every session without the rules repository's tags, and fetches them only when the user asks for the state or about the rules.** Every session then starts from where things stand, at once and without the network. Newer rules matter only when someone asks. Rejected: fetching the tags at the start of every session, which adds a network call to every start; running status only when the user asks, which lets a new session start work without knowing the gap items waiting for an answer. (Design-level — confirmed 2026-10-17)
+- **No agent writes a blocked file another way, and the lead tells the user which gap item to answer.** A hook cannot see every write, such as one made by a shell command (intent §8.4), so the rule must also be an instruction. The gap item named in the block is what lets the work go on. (Design-level — confirmed 2026-10-17)
+- **The gap guard's connector is checked with a temporary change that is removed afterwards.** A guard can be seen to block only when a gap item is proposed in the current change. Writing a file outside every layer shows a pass without writing into a layer, which a reproduction never does. Rejected: checking only the pass, which leaves a connector that never blocks recorded as mechanical; leaving the temporary change in place, which would show a change nobody opened. (Design-level — confirmed 2026-10-17)
 
 - **The reproducing agent chooses the carriers and records them.** intent §5.4.
 - **A file the project also writes keeps the project's part across reproductions.** intent §5.1.
@@ -134,7 +156,13 @@ These are judgment checks, made during the M0 Done of intent §11:
 - reproducing again leaves every project part as it was;
 - no carried text points to plumbline's intent or design, or holds content of a layer kept out of git.
 
+These are judgment checks, made during the M1 Done of intent §11:
+
+- the lead's carrier holds everything added in M1 for the lead, and the implementer's holds what was added for it and nothing about changes;
+- a new lead session runs status first and tells the user the state; asked about the rules, it fetches the tags and runs status again;
+- after a reproduction, the setup record lists `gap-guard` and `status` in `parts`, and the gap guard as `mechanical` when its connector check worked; the check left no change, file or marker behind;
+- a write blocked by the gap guard is not made another way, and the lead names the gap item to answer.
+
 ## 7. Out of scope
 
-- What the lead and the implementer must receive about changes, gap items, diagnosis and the small-change path, and the gap guard's connector (M1).
 - The verifier's carrier, its entry in the carrier that every agent reads, the verify procedure, and the role guard's connector (M2).

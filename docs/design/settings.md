@@ -21,7 +21,7 @@ basis: docs/intent.md 1.2
 ### The file
 
 - `.plumbline/settings.json` at the project root. People edit it. It is in git.
-- `.plumbline/` is the one folder for everything plumbline keeps in a project: these settings, the setup record (`setup-record`), and change records (`changes`, M1).
+- `.plumbline/` is the one folder for everything plumbline keeps in a project: these settings, the setup record (`setup-record`), and change records (`changes`).
 
 ### The format
 
@@ -107,7 +107,7 @@ flowchart TD
 
 ## 6. Verification criteria
 
-`reproduction` (M0) stops on invalid settings. `status` (M1), `guards` and `validate` (M2) read the settings and list conformance cases for the parts they use. Across them:
+`reproduction` (M0) stops on invalid settings. `status` and the gap guard (`guards`), and later `validate` and the role guard (M2), read the settings and list conformance cases for the parts they use. Across them:
 
 - the example in section 2 is valid;
 - a missing `layers` key, a missing layer, an empty path list, a second `design` path, or a `design` path that is a file is an error;

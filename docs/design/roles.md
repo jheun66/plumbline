@@ -4,16 +4,16 @@ basis: docs/intent.md 1.2
 
 # roles
 
-> Basis: intent 1.2 — §4 (principles 2, 3), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
+> Basis: intent 1.2 — §4 (principles 2, 3), §8.1 and §8.2 (who opens changes, records gaps and diagnoses), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
 
 ## 1. Responsibilities
 
-**Does**: defines the two roles that work in a project in M0, the lead and the implementer: what each does, which layers and files it may read and write, which role an agent plays, which role starts fresh, how work is handed from the lead to an implementer, and how a gap travels between them.
+**Does**: defines the two roles that work in a project up to M1, the lead and the implementer: what each does, which layers and files it may read and write, which role an agent plays, which role starts fresh, how work is handed from the lead to an implementer, how a gap travels between them, and the lead's part in changes.
 
 **Does not**:
 
 - Enforce any of this. `guards` does where an agent has the means (M2). Elsewhere the rules reach agents as instructions (`carriers`).
-- Define change records and gap items. `changes` does (M1).
+- Define change records, gap items and the current change. `changes` does.
 - Word the instructions agents receive. `carriers` does.
 
 ## 2. Public interface
@@ -22,7 +22,7 @@ basis: docs/intent.md 1.2
 
 | Role | Does | Reads | Writes |
 |---|---|---|---|
-| `lead` | talks with the user; writes intent and design with the user; edits the settings and reproduces the setup | intent, design, setup files | intent, design, settings, setup files |
+| `lead` | talks with the user; writes intent and design with the user; opens, closes and archives changes; diagnoses; records gap items and the user's answers; edits the settings and reproduces the setup | intent, design, change records, setup files | intent, design, change records, the current change, settings, setup files |
 | `implementer` | builds the design sections it is given into impl; answers questions about impl | design, impl, the rule carriers it receives | impl |
 
 - Setup files are what a reproduction writes and keeps: rule carriers, document templates, guards, checks, the setup record. They are not a layer.
@@ -45,11 +45,17 @@ basis: docs/intent.md 1.2
 - The hand-off never carries intent content.
 - A question about impl from the user goes from the lead to an implementer in the same way. The answer comes back to the lead.
 
+### Changes
+
+- The lead opens, closes and archives changes, and keeps the current change (`changes`).
+- The lead diagnoses which layer is wrong from what the user said and from intent and design. When telling requires impl, the lead asks an implementer: the hand-off names the design sections the question is about, and the question.
+- The lead records each gap as a gap item, and records the user's answer with its date.
+
 ### A gap found by the implementer
 
 1. The implementer stops work on that point and reports the gap to the lead, in terms of the design: which section, and what it does not say or says wrongly.
-2. The lead proposes the change to the user.
-3. After the user confirms, the lead changes the design, or intent first when the gap is at intent's level.
+2. The lead records it as a proposed gap item in the current change and proposes the change to the user.
+3. The lead records the user's answer. After the user confirms, the lead changes the design, or intent first when the gap is at intent's level.
 4. A new implementer continues the work.
 
 ## 3. Flow
@@ -62,9 +68,10 @@ sequenceDiagram
   participant I2 as new implementer
   L->>I1: hand-off: implementer, design sections
   I1-->>L: gap: section X does not say Y
+  L->>L: record a proposed gap item
   L-->>U: propose a change to the design
   U-->>L: confirm
-  L->>L: change the design
+  L->>L: record the answer, change the design
   L->>I2: hand-off: implementer, design sections
   I2-->>L: done
 ```
@@ -78,8 +85,12 @@ sequenceDiagram
 - No hand-off and no question to an implementer carries intent content.
 - Work after a design change goes to a new implementer.
 - A gap goes from the implementer to the lead, and from the lead to the user. The implementer never settles it.
+- Every gap is recorded as a gap item before it is proposed to the user.
+- Only the lead writes change records and the current change.
 
 ## 5. Decisions and reasons
+
+- **The lead opens and closes changes, records gap items and diagnoses; it asks an implementer when diagnosing needs impl.** intent §8.2, §8.4.
 
 - **The lead never reads impl; the implementer never reads intent; the implementer is fresh.** intent §8.4. A conversation that has read intent cannot test whether the design is enough.
 - **The implementer never writes design.** intent §8.4. Otherwise a gap could be settled below.
@@ -98,8 +109,13 @@ These are judgment checks, made during the M0 Done of intent §11:
 - a new session started without a hand-off acts as the lead;
 - an agent started by a hand-off that names it an implementer acts as the implementer, and reports a gap to the lead instead of settling it.
 
+These are judgment checks, made during the M1 Done of intent §11:
+
+- the lead opens, closes and archives each change, and keeps the current change;
+- a gap reported by an implementer appears as a proposed gap item before the user is asked, and its answer is recorded with the date;
+- when a diagnosis needs impl, the lead asks an implementer and does not read impl itself.
+
 ## 7. Out of scope
 
-- The lead's work on changes: opening and closing them, recording gaps as gap items, writing change records, and diagnosing which layer is wrong, asking an implementer when that needs impl (`changes`, M1).
 - The verifier: what it does, reads and writes, that it starts fresh, and that one verifier serves one check (M2).
 - Enforcing the table, with conformance cases for every cell of its Reads and Writes columns (`guards`, M2).

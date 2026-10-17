@@ -22,10 +22,10 @@ basis: docs/intent.md 1.2
 ### Order
 
 1. Intent: draft, resolve, confirm.
-2. The template's project part (`design-docs`), then the module map and the design's top-level README. The user confirms the map.
+2. The template's project part (`design-docs`), then the module map and the design's top-level README, whose `milestone` line names the first milestone. The user confirms the map.
 3. The settings are complete, and the setup is reproduced (`reproduction`).
 4. The module documents of the first milestone. The user confirms them. Then that milestone's impl is built by implementers (`roles`).
-5. Each later milestone: its module documents are written once the previous milestone's impl is done, then its impl.
+5. Each later milestone: once the previous milestone's impl is done, the lead changes the README's `milestone` line to it; then its module documents are written, then its impl.
 
 The lead does all of this. It reads intent and design only, never impl (`roles`).
 
@@ -55,7 +55,7 @@ The lead does all of this. It reads intent and design only, never impl (`roles`)
 ### The module map
 
 - After intent is confirmed, the lead settles the template's project part with the user: the seven section titles and the two marker texts (`design-docs`). It writes them into the template.
-- Then the lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's top-level README: scope, reading order, terms.
+- Then the lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's top-level README: scope, reading order, terms, and the `milestone` line.
 - The module map is a module document. Its name and place in the design are the project's choice.
 - The map gives every module the milestone in which its document is written.
 - The user confirms the map. Every design-level decision in it then carries the confirmed marker with the date.

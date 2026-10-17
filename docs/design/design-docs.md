@@ -13,7 +13,7 @@ basis: docs/intent.md 1.2
 **Does not**:
 
 - Choose the section titles' wording, the kinds of figures, or how design documents are laid out and named. Each project's template and its own design decide those.
-- Say how a decision that came from a gap refers to its change. `changes` does (M1).
+- Say how a decision that came from a gap refers to its change. `changes` does.
 - Check any of this. `validate` (M2) and `verify` (M2) do.
 
 ## 2. Public interface
@@ -22,6 +22,7 @@ basis: docs/intent.md 1.2
 
 - Every Markdown file at the design location (`settings`) is a design document.
 - The design location's top-level `README.md` is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- The top-level README's front matter (`layers`) has one line `milestone: <name>`: the milestone the design is in now, named as the project's intent names it.
 - Every other design document is a module document.
 
 ### The seven sections
@@ -114,6 +115,7 @@ flowchart TD
 - Every design-level decision carries a marker with a state. A confirmed marker carries a date.
 - No fact appears only in a figure.
 - No design document names a location of impl.
+- The top-level README has exactly one `milestone` line.
 
 ## 5. Decisions and reasons
 
@@ -124,6 +126,7 @@ flowchart TD
 - **The basis is machine-readable only for versions; the cited sections are free text.** validate compares versions. Section names differ in form from project to project and are for readers. (Design-level — confirmed 2026-10-17)
 - **The basis names the intent document by its path from the project root.** An intent made of several documents needs each one named. The path is already known from the settings. (Design-level — confirmed 2026-10-17)
 - **The top-level README carries a basis too.** Its scope, reading order and terms are derived from intent like everything else in the design. (Design-level — confirmed 2026-10-17)
+- **The top-level README names the current milestone in a `milestone` line of its front matter.** The milestone is a fact about what the design now covers, next to its scope and reading order; front matter lets a script read it (`status`). (Design-level — confirmed 2026-10-17)
 - **The template states the design-level marker, in two states.** The rules cannot name the words, and a fixed form lets validate find unmarked or undated decisions. (Design-level — confirmed 2026-10-17)
 - **The section titles and the marker texts are the template's project part. The lead writes them with the user before the module map, and a reproduction never changes them.** The rules can hold no words of a natural language and the settings hold two values only, so neither can give them. If a reproduction chose them, reproducing again could change them and fail every module document already written. The module map is written before the first reproduction, so the words must exist by then. Rejected: matching sections by number only, which lets titles drift from one document to another; fixed English titles in the rules, which would make the rules choose a language. (Design-level — confirmed 2026-10-17)
 - **The template is `.plumbline/template.md`, and its marker texts are the front matter values `confirmed` and `pending`.** The lead writes the template before the first reproduction, when no setup record exists to say where it is, so its place is fixed. `.plumbline/` already holds what plumbline keeps in a project. Front matter lets a script find the texts without reading prose. (Design-level — confirmed 2026-10-17)
@@ -142,5 +145,4 @@ These are checked by `validate` (M2), which lists them as conformance cases:
 
 ## 7. Out of scope
 
-- How a decision that came from a gap refers to its change (`changes`, M1).
 - The checks themselves (`validate`, `verify`, M2).

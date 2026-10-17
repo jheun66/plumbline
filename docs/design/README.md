@@ -1,5 +1,6 @@
 ---
 basis: docs/intent.md 1.2
+milestone: M1
 ---
 
 # plumbline design
@@ -8,6 +9,7 @@ basis: docs/intent.md 1.2
 > Stage 1 — module map: confirmed by the user on 2026-10-16.
 > M0 module documents: bundles A (layers, design-docs, settings, roles), B (setup-record, conformance) and C (authoring, carriers, reproduction) confirmed by the user on 2026-10-17. The M0 design is complete.
 > Revised after gaps reported while building M0 impl: roles, carriers, reproduction, setup-record and overview. Confirmed by the user on 2026-10-17, except decisions still marked pending.
+> M1 module documents: bundles A (changes, roles), B (status, guards, and the `milestone` line in design-docs and authoring) and C (carriers, with M1 wording in reproduction, setup-record, conformance, settings, layers and design-docs) confirmed by the user on 2026-10-17. The M1 design is complete.
 
 ## Where this document sits
 
@@ -41,7 +43,7 @@ The module map covers the first version: milestones M0 to M3. Module documents a
 | Milestone | Modules written in that milestone |
 |---|---|
 | M0 | layers, design-docs, settings, roles, setup-record, conformance, authoring, carriers, reproduction |
-| M1 | changes, status, guards (gap guard), carriers (change procedures), roles (the lead's work on changes) |
+| M1 | changes, status, guards (gap guard), carriers (change procedures), roles (the lead's work on changes), design-docs and authoring (the `milestone` line) |
 | M2 | validate, verify, guards (role guard), carriers (verify procedure), roles (verifier) |
 | M3 | none. validate runs on plumbline's own design documents |
 
@@ -113,6 +115,7 @@ When text is easier to follow as a picture, the document has the picture too.
 | gap | a missing piece or an error in an upper layer, found from a lower one |
 | proposed / confirmed / rejected | the states of a gap item |
 | change | one unit of work, from opening to archive |
+| current change | the open change a working tree is working on; an edit belongs to it |
 | diagnosis | which layer is wrong |
 | lead | the agent talking with the user; works on intent and design |
 | implementer | a fresh agent that builds impl from the design |

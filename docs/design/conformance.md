@@ -12,7 +12,7 @@ basis: docs/intent.md 1.2
 
 **Does not**:
 
-- List the cases of each part. The module that defines the part does, in its section 6: `guards` and `status` (M1), `validate` (M2).
+- List the cases of each part. The module that defines the part does, in its section 6: `guards` and `status`, and `validate` (M2).
 - Choose a part's runner. `reproduction` does, and `setup-record` records it.
 - Check judgment checks. They have no cases. What they read and what they leave is set by `verify` and `changes`.
 - Write a part's connector, or check it. `carriers` and `reproduction` do.
@@ -223,4 +223,4 @@ The cases of each part are listed and checked in the module that defines the par
 
 ## 7. Out of scope
 
-- The cases of the gap guard and status (M1), and of the role guard and validate (M2). In M0 a setup has no mechanical part, so a reproduction runs no case.
+- The cases of the role guard and validate (M2).

@@ -15,7 +15,7 @@ basis: docs/intent.md 1.2
 - Say which role reads and writes which layer. `roles` does.
 - Define the module document template. `design-docs` does.
 - Say where the layers are and which are in git. `settings` does.
-- Record gaps or decide which layer a change starts in. `changes` does (M1).
+- Record gaps or decide which layer a change starts in. `changes` does.
 
 ## 2. Public interface
 
@@ -118,5 +118,4 @@ flowchart TD
 
 ## 7. Out of scope
 
-- Recording gaps and deciding which layer a change starts in (`changes`, M1).
 - Enforcing the read direction (`guards`, M2).

@@ -12,9 +12,9 @@ basis: docs/intent.md 1.2
 
 **Does not**:
 
-- Define the setup record, the cases, the carriers, or the mechanical parts. `setup-record`, `conformance` and `carriers` do; `guards` and `status` (M1) and `validate` (M2) define the parts.
+- Define the setup record, the cases, the carriers, or the mechanical parts. `setup-record`, `conformance` and `carriers` do; `guards` and `status` define the parts, and `validate` (M2).
 - Decide the settings. The lead and the user do, while authoring (`authoring`).
-- Look for newer rules. `status` does (M1).
+- Look for newer rules. The lead and `status` do.
 
 ## 2. Public interface
 
@@ -64,7 +64,7 @@ The git history of the checked-out commit is that commit and every commit before
 9. Write the setup record (`setup-record`), replacing the old one.
 10. Tell the user which rules are enforced mechanically and which by instruction only, and which files were written, changed or removed. Tell the user to commit the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit, and name them. The reproduction commits nothing.
 
-In M0 a setup has no mechanical part, so steps 5 to 7 do nothing.
+In M1 a setup has two mechanical parts, `status` and the gap guard (`guards`); only the gap guard has a connector to an agent (`carriers`).
 
 ### Mechanical or instruction
 
@@ -173,7 +173,11 @@ These are checked in the M0 Done of intent §11, on an example project with the 
 - the final report names, as files to commit, the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit, and the reproduction makes no commit;
 - a reproduced file edited by hand, and one that was deleted, are named before anything is written.
 
+In the M1 Done of intent §11, on the same project:
+
+- every case of `status` and `gap-guard` passes in the project;
+- acting through the gap guard's connector blocks the write below the proposed gap item and lets the other through (`carriers`), and the setup record lists the gap guard as `mechanical`.
+
 ## 7. Out of scope
 
-- Mechanical parts, with their runners, cases and connectors: the gap guard and status (M1), the role guard and validate (M2).
-- Looking for newer rules (`status`, M1).
+- Mechanical parts, with their runners, cases and connectors, added in M2: the role guard and validate.
