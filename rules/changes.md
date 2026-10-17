@@ -84,6 +84,13 @@ Examples:
 - A gap item with `state: proposed` and a `date`, or with `state: confirmed` and no `date`, is not.
 - `gap-1.md`, `gap-2.md` and `gap-10.md` are gap items. `gap-01.md`, `gap-0.md` and `gap-a.md` are not.
 
+## Wording fixes
+
+- A wording fix changes no meaning: it makes a document say what a confirmed decision, or another part of the same layer, already says. It is not a gap item.
+- The lead makes it at once, writes in the change record which words were aligned to what, and tells the user in the same report. For a layer kept out of git, the record names only the locations ([Change records](#change-records)).
+- When the user objects, the point is recorded as a proposed gap item and handled like any other ([Gap items](#gap-items)).
+- A fix that adds or changes what a layer states, or that has to choose between two readings neither of which a confirmed decision settles, is not a wording fix.
+
 ## The current change
 
 - `.plumbline/current-change` holds one line: the name of an open change.

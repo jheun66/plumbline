@@ -50,6 +50,7 @@ Every module document has seven sections, as level-2 headings, in this order:
 - It is written in section 5 of the module document it belongs to. There is no other list or table of decisions.
 - It carries a design-level marker: the template's `confirmed` text with the date the user confirmed it in place of `YYYY-MM-DD`, or the template's `pending` text.
 - A decision that only restates intent carries no marker.
+- A point intent states is never a design-level decision. A design that would change or narrow it reveals a gap in intent ([layers.md](layers.md#gaps)).
 - A decision that settled a gap item also links to its change ([changes.md](changes.md#a-decision-that-came-from-a-gap)).
 
 Example: with `confirmed: (DL ok YYYY-MM-DD)` in the template, `(DL ok 2026-10-17)` is a confirmed marker and `(DL ok)` is a malformed one.

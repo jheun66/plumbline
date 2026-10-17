@@ -21,17 +21,20 @@ The lead:
   - the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl;
   - for a bug, the current, the expected and the unchanged behaviour;
   - recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git;
+  - making a wording fix at once without a gap item, recording what was aligned to what, telling the user, and turning it into a gap item when the user objects ([changes.md](changes.md#wording-fixes));
   - closing: no gap item proposed, how the result was confirmed, emptying the current change; and archiving;
   - the section 5 line of a decision from a gap, with its link to the change;
   - that a change record holds no content of a layer kept out of git;
 - status ([status.md](status.md)):
   - how to run it, as the setup record gives its runner and entry ([setup-record.md](setup-record.md#parts));
-  - to run it at the start of every session with empty standard input, and to tell the user the state in a few lines, in the project's own words;
+  - to run it at the start of every session, before anything else, with empty standard input, and to tell the user the state in a few lines, in the project's own words, before acting on the user's request;
+  - to use the rules only to reproduce, and the rules repository only to fetch its tags as below;
   - when the user asks for the state or about the rules, to fetch the tags of the rules repository the setup record names when the network is available, and to run it with them on standard input;
 - the gap guard ([guards.md](guards.md#the-gap-guard)):
   - when it blocks a write, to tell the user which gap item must be answered;
   - when it reports an environment error, to tell the user;
-  - never to write a blocked file another way.
+  - never to write a blocked file another way;
+- a project file in no layer that is not one of the files listed in [roles.md](roles.md#files-in-no-layer): that no role writes it; when the work needs one, to propose to the user adding its path to a layer, and after the user agrees, to edit the settings and reproduce.
 
 The implementer:
 
@@ -39,8 +42,9 @@ The implementer:
 - the design and impl locations, and the intent location as a place it never reads;
 - how to read a design document: what each of the seven sections holds, what the design-level markers mean, and that a design never names impl locations ([design-docs.md](design-docs.md));
 - that it builds only the design sections it is handed;
-- that on a gap it stops and reports to the lead in terms of the design ([roles.md](roles.md));
-- when a write is blocked, to stop that work and report to the lead; never to write a blocked file another way.
+- that on a gap it stops and reports to the lead in terms of the design, leaves that point unbuilt and chooses no way to build it ([roles.md](roles.md#a-gap-found-by-the-implementer));
+- when a write is blocked, to stop that work and report to the lead; never to write a blocked file another way;
+- when the work needs a file in no layer, to stop that work and report it to the lead ([roles.md](roles.md#files-in-no-layer)).
 
 For both roles:
 

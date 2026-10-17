@@ -18,11 +18,11 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | [layers.md](layers.md) | the three layers; read direction; change direction; gaps; front matter; intent versions |
 | [design-docs.md](design-docs.md) | design documents and module documents; the template; basis lines; design-level decisions; figures |
 | [settings.md](settings.md) | the project settings: where the layers are, and which are kept out of git |
-| [roles.md](roles.md) | lead and implementer: what each does, reads and writes; which role an agent plays; fresh agents; hand-off; the lead's part in changes; gaps between roles |
+| [roles.md](roles.md) | lead and implementer: what each does, reads and writes; files in no layer; which role an agent plays; fresh agents; hand-off; the lead's part in changes; gaps between roles |
 | [setup-record.md](setup-record.md) | the setup record; checksums of reproduced files |
 | [conformance.md](conformance.md) | mechanical parts; connectors; conformance cases; the parts of a setup |
 | [authoring.md](authoring.md) | how the lead and the user write intent, the template's project part, the module map and the module documents |
-| [changes.md](changes.md) | changes: change records, diagnosis, gap items, the current change; opening, closing and archiving; a milestone's work as a change; decisions that came from a gap |
+| [changes.md](changes.md) | changes: change records, diagnosis, gap items, wording fixes, the current change; opening, closing and archiving; a milestone's work as a change; decisions that came from a gap |
 | [status.md](status.md) | `status`: the mechanical part that reports the current state of a project |
 | [guards.md](guards.md) | guards; the gap guard |
 | [cases/](cases/) | the conformance cases of each mechanical part, one file per part |
@@ -47,6 +47,7 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | reproduction (reproduce) | an agent building a project's setup from these rules and the project settings |
 | setup | everything a reproduction writes and keeps in a project: rule carriers, document templates, guards, checks, the setup record |
 | setup record | what a reproduction used and produced ([setup-record.md](setup-record.md)) |
+| project file | a file kept in the project's repository; files that tools create while they run, such as build outputs and caches, are not project files ([roles.md](roles.md#files-in-no-layer)) |
 | instruction file | the file an agent reads at the start of every session |
 | rule carrier | where reproduced rules reach agents: an instruction file, a file it refers to, a script a hook runs, a skill, and so on |
 | reproduced part / project part | in a file that both a reproduction and the project write: the lines the reproduction writes / everything else |
@@ -60,6 +61,7 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | change record | the folder of a change, with its `change.md` and its gap items |
 | diagnosis | which layer a change finds wrong: `impl`, `design` or `intent` |
 | gap item | a gap recorded in a change, with its layer and its state |
+| wording fix | a fix that changes no meaning: it makes a document say what a confirmed decision, or another part of the same layer, already says ([changes.md](changes.md#wording-fixes)) |
 | proposed / confirmed / rejected | the states of a gap item |
 | current change | the open change a working tree is working on; an edit belongs to it |
 | archive | marking a finished change as `archived`; it stays where it is |
