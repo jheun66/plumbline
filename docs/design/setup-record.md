@@ -113,7 +113,7 @@ The paths, runners, commands and checksums in this example are illustrations; a 
 
 Any other key, anywhere in the object, is an error.
 
-A record is valid when it follows everything this section says about its keys and values. Whether the files it lists still match their checksums has no bearing on whether the record is valid. Its copy of the settings is checked against the format of `settings` without looking at the file system: whether a path exists, or is a file or a folder, has no bearing either.
+A record is valid when it follows everything this section says about its keys and values. It need not list every part or every rule the rules define. Whether the files it lists still match their checksums has no bearing on whether the record is valid. Its copy of the settings is checked against the format of `settings` without looking at the file system: whether a path exists, or is a file or a folder, has no bearing either.
 
 #### `rules`
 
@@ -163,7 +163,7 @@ A list with one object per kind of figure for which the reproduction found a ren
 
 | Key | Value |
 |---|---|
-| `figure` | a `figure` name from the template (`design-docs`). No name appears twice |
+| `figure` | a `figure` name from the template (`design-docs`). No name appears twice. Whether the template still names it has no bearing on whether the record is valid |
 | `command` | the command that renders one figure, as a list: the program and its arguments. A file it runs that the reproduction wrote is listed in `files` |
 
 A renderer is run with the project root as its working directory and the figure's text, the lines between its fences, on standard input. Exit status 0 means the figure renders; any other status means it does not. A renderer whose program cannot be started is not present.

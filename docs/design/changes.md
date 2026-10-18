@@ -44,6 +44,7 @@ The body is written in the project's own words. It holds:
 - for a bug: the current behaviour, the expected behaviour, and the behaviour that must not change;
 - the tasks;
 - how the result was confirmed;
+- the commit that was checked out when the change was opened, which a verifier's hand-off names as its start (`roles`);
 - the commits that belong to the change.
 
 ### Diagnosis

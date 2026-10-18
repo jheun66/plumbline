@@ -70,11 +70,11 @@ The row of a path, the first that applies:
 |---|---|---|
 | 1 | lies outside the project root | `not-project` |
 | 2 | is `.git/info/exclude` | `exclude` |
-| 3 | lies under `.git/` | `not-project` |
+| 3 | is `.git` or lies under it | `not-project` |
 | 4 | lies in the intent, design or impl layer (`roles`) | `intent`, `design`, `impl` |
 | 5 | is `.plumbline/current-change` | `current-change` |
 | 6 | is `verify.md` in a change folder | `verify-result` |
-| 7 | lies under `.plumbline/changes/` | `change-record` |
+| 7 | is `.plumbline/changes` or lies under it | `change-record` |
 | 8 | is `.plumbline/settings.json` | `settings` |
 | 9 | is a file of a carrier in the setup record | `carrier` |
 | 10 | is the setup record or another file it lists | `setup-file` |
@@ -86,9 +86,9 @@ How it decides for one path:
 1. Take the path's row, and the role's cell in it (`roles`). A carrier's cell is the one for a carrier meant for that role, or for every agent, when the setup record lists the role among the carrier's `roles`; otherwise it is the cell for other setup files.
 2. When the cell does not allow the action, the path is blocked.
 3. For the verifier, `verify-result` allows a write and a read only when the change exists and its state is `closed`.
-4. For a read of a folder, the path is also blocked when it contains a layer path, a carrier's file, a file the setup record lists, `.plumbline/current-change`, or a change folder, whose cell does not allow the role to read it. The project root is a folder like any other.
+4. For a read of a folder, the path is also blocked when it contains a layer path, a carrier's file, the setup record or a file it lists, `.plumbline/current-change`, `.git/info/exclude`, or a change folder, whose cell does not allow the role to read it. Containment is by path, whether or not the path exists; change folders are found by listing `.plumbline/changes/`. The project root is a folder like any other.
 
-When the project root is not a git repository, no path is ignored.
+Only the project's own ignore rules count: the ignore files in the repository and `.git/info/exclude`, not a user's global ignore file. When the project root is not a git repository, no path is ignored.
 
 Output line for a blocked path:
 

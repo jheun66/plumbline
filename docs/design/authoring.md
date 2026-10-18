@@ -55,7 +55,7 @@ The lead does all of this. It reads intent and design only, never impl (`roles`)
 
 ### The module map
 
-- After intent is confirmed, the lead settles the template's project part with the user: the seven section titles and the two marker texts (`design-docs`). It writes them into the template.
+- After intent is confirmed, the lead settles the template's project part with the user: the seven section titles, the two marker texts and the kinds of figures the project uses (`design-docs`). It writes them into the template.
 - Then the lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's top-level README: scope, reading order, terms, and the `milestone` line.
 - The module map is a module document. Its name and place in the design are the project's choice.
 - The map gives every module the milestone in which its document is written.
@@ -93,7 +93,7 @@ flowchart TD
   B --> C{"open questions or<br/>proposals left?"}
   C -->|"yes"| D["resolve one item"] --> C
   C -->|"no"| E["intent confirmed:<br/>version raised"]
-  E --> F["template's project part:<br/>section titles, marker texts"]
+  E --> F["template's project part:<br/>section titles, marker texts,<br/>kinds of figures"]
   F --> G["design location decided"]
   G --> H["module map and design README"]
   H --> I{"user confirms<br/>the map?"}

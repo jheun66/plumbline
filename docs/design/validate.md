@@ -67,17 +67,18 @@ Each line is a code and its fields, separated by tabs (`conformance`). Line numb
 
 | Code | Fields | When |
 |---|---|---|
-| `skip` | `stale`, layer | the intent layer is in `not_in_git` and not present: `basis-target` and `stale` are not checked |
-| `skip` | `figures`, `report` | in `report` mode, when the template names at least one kind of figure: figures are not rendered |
-| `skip` | `figures`, figure name | in `gate` mode, for a kind of figure the template names: there is no renderer for it, or its program cannot be started |
+| `skip` | `layer`, layer | a layer in `not_in_git` is not present: the checks that need it are left out. For intent: `basis-target` and `stale`. For design: `milestone`, `basis`, `sections`, `marker`, `impl-path`, `figure` and `decision-link`. For impl: none |
+| `skip` | `figures`, `report` | in `report` mode, when a design document uses a kind of figure the template names: figures are not rendered |
+| `skip` | `figures`, figure name | in `gate` mode, for a kind of figure the template names and a design document uses: there is no renderer for it, or its program cannot be started |
 | `skip` | `tracked`, `not-git` | the project root is not a git repository |
 
 ### What depends on what
 
 - When the settings file is missing or not valid, every check that needs the layers is left out: `missing-layer`, `milestone`, `basis`, `basis-target`, `stale`, `sections`, `marker`, `impl-path`, `figure`, `decision-link`, `tracked`, and the `skip` lines.
-- When the setup record is missing or not valid, `checksum`, `part-not-found` and `figure` are left out, and every figure name with no renderer gives its `skip` line.
+- When the setup record is missing or not valid, `checksum`, `part-not-found` and `figure` are left out; in `gate` mode, each figure name a design document uses gives its `skip figures` line.
 - When the template is missing or not valid, `sections`, `marker` and `figure` are left out.
 - A design document that gives `basis` is not checked for `basis-target` or `stale`.
+- A layer that is not present leaves out the checks that need it, whether it gives `skip layer` or `missing-layer`.
 
 ### Markers
 
@@ -95,8 +96,8 @@ Each line is a code and its fields, separated by tabs (`conformance`). Line numb
 
 ### Figures
 
-- A figure is a fenced code block whose info string begins with a `figure` name of the template (`design-docs`).
-- In `gate` mode, each figure is handed to the renderer the setup record gives for its name (`setup-record`). A status other than 0 gives `figure`.
+- A figure is a fenced code block whose info string's first word is a `figure` name of the template (`design-docs`). How blocks, headings, section 5 and links are found is in `design-docs`.
+- In `gate` mode, each figure is handed to the renderer the setup record gives for its name (`setup-record`). A status other than 0 gives `figure`. A renderer that has not exited after 60 seconds is stopped and gives `figure`.
 - In `report` mode, figures are not rendered.
 
 ### Decision links
@@ -111,9 +112,9 @@ Each line is a code and its fields, separated by tabs (`conformance`). Line numb
 4. `basis`, `basis-target`, `stale`, `sections`, `marker`, `impl-path`, `figure`, `decision-link`, in this order, each by document, then line.
 5. `change`, by path.
 6. `tracked`, by path.
-7. `skip`, in the order of the table above, then by its second field.
+7. `skip`, in the order of the table above, then by its second field; layers in the order intent, design, impl.
 
-Within a code, lines sort by their fields in turn: line numbers as integers, all other fields by the bytes of the text.
+Within a code, lines sort by their fields in turn: line numbers as integers, all other fields by the bytes of the text. A line that would be given twice is given once.
 
 ## 3. Flow
 
@@ -191,7 +192,7 @@ Conformance cases. Each case gives the files listed and the argument, and expect
 | 11 | `cli.md` has `basis: docs/intent.md 1` | `block` | `stale docs/design/cli.md docs/intent.md 1 2` |
 | 12 | `cli.md` has no front matter | `block` | `basis docs/design/cli.md` |
 | 13 | `cli.md` has `basis: docs/notes.md 2`, and `docs/notes.md` exists | `block` | `basis-target docs/design/cli.md docs/notes.md` |
-| 14 | `intent` in `not_in_git` in the settings and the record's copy, no `docs/intent.md`, and `cli.md` has `basis: docs/intent.md 1` | `pass` | `skip stale intent` |
+| 14 | `intent` in `not_in_git` in the settings and the record's copy, no `docs/intent.md`, and `cli.md` has `basis: docs/intent.md 1` | `pass` | `skip layer intent` |
 | 15 | no `docs/intent.md`, `not_in_git` empty | `block` | `missing-layer intent` |
 | 16 | `cli.md` names `src/main.rs` in a sentence | `block` | `impl-path docs/design/cli.md`, that line, `src/main.rs` |
 | 17 | `cli.md` names `` `Cargo.toml` `` | `block` | `impl-path docs/design/cli.md`, that line, `Cargo.toml` |
@@ -227,6 +228,11 @@ Conformance cases. Each case gives the files listed and the argument, and expect
 | 47 | as 44, argument `report` | `pass` | `skip figures report` |
 | 48 | as 44, but the block's info string is `text` | `pass` | none |
 | 49 | no argument | `error` | — |
+| 50 | a checksum in the record without `sha256:` | `block` | `record .plumbline/setup-record.json` |
+| 51 | the record has two renderers for `mermaid` | `block` | `record .plumbline/setup-record.json` |
+| 52 | a `verify.md` with `result: clean` | `pass` | none |
+| 53 | a `verify.md` with `result: clean` and a second key | `block` | `change .plumbline/changes/2026-11-02-a/verify.md` |
+| 54 | `design` in `not_in_git` in the settings and the record's copy, and no `docs/design` | `pass` | `skip layer design` |
 
 In the table, fields are separated by spaces for reading; in the cases they are tabs. Where a line number is not given, the case states it from its own file.
 

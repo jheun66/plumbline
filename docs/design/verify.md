@@ -29,7 +29,7 @@ The hand-off (`roles`) names:
 - the commit the change's work started from;
 - the design sections the change touched: design documents and their sections.
 
-The verifier reads those design sections and whatever else of the design it needs to understand them, impl, and the history git keeps of the design and impl locations since the start commit. It reads nothing else.
+The verifier reads those design sections and whatever else of the design it needs to understand them, impl, and the history git keeps of the design and impl locations since the start commit. For the check, it reads nothing else.
 
 ### What it looks for
 

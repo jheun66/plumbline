@@ -46,7 +46,7 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 - Each project has one document template: `.plumbline/template.md`. It lies outside the design location, so it is not a design document.
 - It has a project part and a reproduced part. A reproduction writes only the reproduced part and never changes the project part.
 - The project part holds the project's own words:
-  - front matter (`layers`) with the keys `confirmed` and `pending`, each once, and `figure`, any number of times. `confirmed: <text>` and `pending: <text>` are the two design-level markers; the `confirmed` text holds `YYYY-MM-DD` where the date goes. Each `figure: <name>` names a kind of figure the project uses, by the info string of its fenced code blocks;
+  - front matter (`layers`) with the keys `confirmed` and `pending`, each once, and `figure`, any number of times. `confirmed: <text>` and `pending: <text>` are the two design-level markers; the `confirmed` text holds `YYYY-MM-DD` where the date goes. Each `figure: <name>` names a kind of figure the project uses, by the info string of its fenced code blocks. No other key is allowed, and `YYYY-MM-DD` appears in the `confirmed` text exactly once;
   - the seven level-2 headings, in order. Their exact text is the project's section titles.
 - The lead writes the project part with the user before the module map is written (`authoring`). When a project later changes these words, every module document is changed to match.
 - The reproduced part says what each section is for, how basis lines are written and how markers are used. It holds no level-2 heading.
@@ -67,10 +67,19 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 
 ### Figures
 
-- A figure is a fenced code block in a design document whose info string begins with one of the template's `figure` names. The kinds of figures are the project's choice.
+- A figure is a fenced code block in a design document whose info string's first word is one of the template's `figure` names. The kinds of figures are the project's choice.
 - A figure says the same as the text. No fact appears only in a figure. Changing one changes the other.
 - A figure shows only the current milestone's scope.
 - A figure is rendered and checked for overlapping or cut-off text. Whether it renders is checked by `validate` where a renderer is present; whether its text overlaps is judged by whoever writes it.
+
+### Reading a Markdown document
+
+What a check reads in a design document or in the template. Every CR LF is read as LF.
+
+- A fenced code block opens with a line that begins with three or more backticks or three or more tildes, and closes with a line that begins with the same character at least as many times. A block that is never closed runs to the end of the file. Its info string is the rest of the opening line; its first word is the first run of characters that are neither spaces nor tabs.
+- A level-2 heading is a line that begins with `## `, outside fenced code blocks. Its text is the rest of the line, without spaces at its end.
+- Section 5 of a module document is the lines between its fifth and sixth level-2 headings, or to the end of the file when there is no sixth.
+- A link is the text `](target)`; its target is the text between the parentheses, without a `#` fragment.
 
 ### What a design document never names
 
