@@ -69,6 +69,7 @@ What each role may read (R) and write (W):
 - The lead starts the implementer with the hand-off. When the lead cannot start an agent itself, or not in the way the implementer's carrier needs, it gives the hand-off to the user, who starts the implementer with it, and tells the user how to start it. That instruction is for the user and is not part of the hand-off.
 - The hand-off never carries intent content.
 - A question about impl from the user goes from the lead to an implementer in the same way. The answer comes back to the lead.
+- During a reproduction, a hand-off may ask an implementer or a verifier for a check of the role guard (`carriers`). Such a hand-off names the role, says it is a check, and lists the reads to try, with the carrier when one must be named; nothing else.
 - The lead hands a check to a verifier by naming its role, the change, the change's diagnosis, the layers the change touched (`changes`), the commit the change's work started from, and the design sections the change touched (`verify`). The verifier writes its result into that change and tells the lead it is done.
 
 ### Changes

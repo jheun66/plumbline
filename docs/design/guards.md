@@ -24,7 +24,7 @@ basis: docs/intent.md 1.4
 - A guard is a mechanical part (`conformance`). An agent's hook runs it, through a connector, before an action that reads or writes files.
 - **Arguments**: first the guard's own leading arguments, when its section names any; then the paths of the files the action touches. A path is relative to the project root, with `/`, or absolute. Empty segments and `.` segments are ignored, and a `..` segment removes the segment before it. An absolute path is compared, segment by segment as text, with the working directory as the system reports it; symbolic links are not followed. A path that lies outside the project root is in no layer.
 - **Standard input**: empty.
-- **Verdict**: `block` when at least one path is blocked; `pass` when none is, and when there are no paths; `error` when the guard cannot read what it needs, or when its leading arguments are not what its section names.
+- **Verdict**: `block` when at least one path is blocked; `pass` when none is, and when there are no paths, whatever the leading arguments; `error` when the guard cannot read what it needs, or when its leading arguments are not what its section names.
 - **Output**: one line per blocked path, in the order of the arguments. Nothing when the verdict is `pass`.
 - A guard blocks only the actions its own rule forbids. A block never keeps an agent from stopping, or from the actions its rule allows. The gap guard blocks only while a gap item is proposed, and that state can always be ended by edits it does not block.
 - A guard that cannot read what it needs gives `error`, never `block`. The connector reports it as an environment error and lets the agent go on (`conformance`).
@@ -62,7 +62,7 @@ It gives `error` only in steps 3, 4 and 6. A file it does not need for its verdi
 - Its name is `role-guard`. The rule it enforces is named `role table` in the setup record's `enforcement`.
 - Leading arguments: the role of the agent that acts, `lead`, `implementer` or `verifier`; then the action, `read` or `write`.
 - A read is an action that opens the content of a file or searches the content of files. Its paths are the files it opens, or the files and folders it searches. An action that only lists the names of files is not guarded. A write is an action that creates, changes or removes a file; its paths are those files.
-- It reads the settings (`settings`), the setup record (`setup-record`), the state of changes (`changes`), and which paths git ignores, when the project root is a git repository.
+- It reads the settings (`settings`), the setup record (`setup-record`) when a path needs it, the state of changes (`changes`), and which paths git ignores, when the project root is a git repository.
 
 The row of a path, the first that applies:
 
@@ -98,13 +98,12 @@ Output line for a blocked path:
 
 For a folder blocked by step 4, the row is that of the first forbidden path it contains, in the order of the rows above.
 
-It gives `error`, before deciding any path, when:
+It reads only what deciding a path needs. When there are no paths, it gives `pass` without reading anything. Otherwise it gives `error`:
 
-- the role or the action is not one of those above;
-- the settings file is missing or not valid;
-- the setup record is missing or not valid.
+- before deciding any path, when the role or the action is not one of those above, or when the settings file is missing or not valid;
+- when a path reaches row 9 and the setup record is missing or not valid.
 
-When there are no paths, it gives `pass` without reading anything.
+A path in a layer, or in rows 1 to 8, is decided without the setup record; a folder read in those rows then looks only for what it can find without it.
 
 ## 3. Flow
 
@@ -193,6 +192,7 @@ flowchart TD
 - **The role guard finds a path's row by a fixed order, layers before what git ignores.** A layer kept out of git is ignored by git, yet must still be guarded as a layer. Every path then has exactly one row. (Design-level — confirmed 2026-10-18)
 - **The verifier may write a verify result only in a change that is closed.** The guard cannot know which change the hand-off named, but the change being checked is the one that is closed and not yet archived. Rejected: letting the verifier write any change's result, which lets a mistaken verifier write into a finished change. (Design-level — confirmed 2026-10-18)
 - **The role guard gives `error` when the role, the action, the settings or the setup record cannot be read.** It cannot tell a row or a cell without them. (Design-level — confirmed 2026-10-18)
+- **The role guard reads the setup record only when a path needs it.** Like the gap guard, it reads only what the step at hand needs. Layer paths are decided without the record, so a reproduction can check the connector before it writes the new record, and a project whose record is broken still keeps its layers guarded.
 - Known limit: when two changes are closed and not yet archived, the verifier may write the result of either.
 - Known limit: paths are compared as text, without following symbolic links, since a part reads nothing outside its working directory. A path that reaches the project through a symbolic link lies outside the project root and is in no layer.
 
@@ -287,8 +287,11 @@ More cases:
 | 11 | none | `admin read src/main.rs` | `error` | — |
 | 12 | none | `lead delete src/main.rs` | `error` | — |
 | 13 | the settings file has an unknown key | `implementer read src/main.rs` | `error` | — |
-| 14 | no setup record | `implementer read src/main.rs` | `error` | — |
+| 14 | no setup record | `implementer read .plumbline/lead.md` | `error` | — |
 | 15 | no setup record | `implementer read` | `pass` | none |
+| 16 | no setup record | `lead read src/main.rs` | `block` | `block src/main.rs lead read impl` |
+| 17 | no setup record | `implementer read docs/intent.md/x` | `block` | `block docs/intent.md/x implementer read intent` |
+| 18 | no setup record | `implementer read README.md` | `error` | — |
 
 Fields are separated by spaces in the tables and by tabs in the cases.
 
