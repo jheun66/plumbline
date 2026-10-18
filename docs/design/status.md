@@ -195,6 +195,8 @@ Conformance cases. Each case gives the files listed and the standard input, and 
 | 23 | a folder `.plumbline/changes/2026-11-05-d/` holding only a `gap-1.md` with `layer: design`, `state: proposed` | `invalid .plumbline/changes/2026-11-05-d/change.md` first |
 | 24 | `gap-1.md` has `state: proposed` and `date: 2026-11-03` | `invalid .plumbline/changes/2026-11-02-a/gap-1.md` first, and no `gap` line |
 | 25 | a second change `2026-11-03-b` with `state: closed`, `diagnosis: impl`; `.plumbline/current-change` holds `2026-11-03-b` | `invalid .plumbline/current-change` first; `change 2026-11-02-a open design -`, then `change 2026-11-03-b closed impl -` |
+| 26 | the settings file has `impl` `["src", "tests"]` and the record's copy `["tests", "src"]` | as 1 |
+| 27 | the settings file has `not_in_git` `["intent"]`, the record's copy `[]`, and `docs/intent.md` exists | as 1, with `settings-changed not_in_git added intent` after `newer-rules-not-checked` |
 
 In the table, fields are separated by spaces for reading; in the cases they are tabs. `c1` to `c9` and `t1` stand for distinct 40-digit hashes.
 

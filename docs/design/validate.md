@@ -238,6 +238,9 @@ Conformance cases. Each case gives the files listed and the argument, and expect
 | 57 | the record lists `.plumbline/run` and a part `validate` whose runner is `["/usr/bin/python3"]` and whose entry is `.plumbline/run` | `block` | `record .plumbline/setup-record.json` |
 | 58 | as 57, but the runner is `["python3"]` | `pass` | none |
 | 59 | the record has a renderer for `mermaid` whose command is `["tools/mmdc"]` | `block` | `record .plumbline/setup-record.json` |
+| 60 | `.plumbline/lead.md` has CR LF line ends, and the record's checksum is that of the same lines with LF | `pass` | none |
+| 61 | a line between the begin and end lines of `INSTRUCTIONS.md` is changed | `block` | `checksum INSTRUCTIONS.md` |
+| 62 | `INSTRUCTIONS.md` has no end line | `block` | `part-not-found INSTRUCTIONS.md` |
 
 In the table, fields are separated by spaces for reading; in the cases they are tabs. Where a line number is not given, the case states it from its own file.
 

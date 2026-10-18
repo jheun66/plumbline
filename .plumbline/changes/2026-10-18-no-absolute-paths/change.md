@@ -1,5 +1,5 @@
 ---
-state: open
+state: archived
 diagnosis: design
 ---
 
@@ -34,4 +34,20 @@ The setup record of this repository records the Mermaid renderer by an absolute 
 
 ## How the result was confirmed
 
+- A reproduction at rules 6c363f8 stopped before writing anything, on the previous record's absolute renderer path; that became gap-1.
+- The setup was reproduced at rules fc69d21: the previous renderer was not kept, the renderer is recorded as `mmdc` by its name on the PATH, and all 221 conformance cases passed, the new validate cases 55 to 59 among them. Every connector check gave the expected result, and all four rules are enforced mechanically.
+- No file git tracks or would track holds the developer's home path. `validate gate` passed on the user's machine with every figure rendered, and in CI for bc577a1.
+
 ## Commits
+
+- ffc950e: design, setup-record, reproduction and validate
+- 6c363f8: rules and cases
+- 7e5bdcc: design, reproduction (gap-1)
+- fc69d21: rules, reproduction (gap-1)
+- bc577a1: the setup reproduced from rules fc69d21
+
+## Verify result
+
+`verify.md`: four findings, all in setup-record §6 and older than this change; the diagnosis held.
+
+- Findings 1 to 4: taken up by the follow-up change [2026-10-18-setup-record-cases](../2026-10-18-setup-record-cases/), as the user decided on 2026-10-18.

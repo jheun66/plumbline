@@ -318,7 +318,8 @@ flowchart TB
   - a whole file holding `a` CR LF `b` CR LF and one holding `a` LF `b` LF both have `sha256:911169ddaaf146aff539f58c26c489af3b892dff0fe283c1c264c65ae5aa59a2`;
   - a reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one`, `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it; with `rule two` in place of `rule one` it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`;
   - a reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
-- The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not.
+  - `validate` lists conformance cases for each of these: a whole file with CR LF line ends, a changed line inside a reproduced part, a `begin` line twice and a missing `end` line.
+- The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not. `status` lists conformance cases for both.
 - `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, two renderers for one figure name, and a runner or a renderer command with an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`, are errors.
 
 ## 7. Out of scope
