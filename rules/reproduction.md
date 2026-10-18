@@ -22,7 +22,7 @@ The agent stops and tells the user why when:
 - the settings file is not valid ([settings.md](settings.md));
 - a layer location is `.plumbline/`, contains it, or lies inside it;
 - the template's project part does not exist yet ([authoring.md](authoring.md));
-- the previous setup record exists, and what the reproduction reads from it does not have the form [setup-record.md](setup-record.md#the-format) states: the record must be a JSON object, and its `rules`, `settings`, `files`, `carriers`, `parts`, `renderers` and `enforcement` must have their form, as far as the reproduction reads them. A record written under older rules, which lacks a key these rules have added since, is read as it is;
+- the previous setup record exists, and what the reproduction reads from it does not have the form [setup-record.md](setup-record.md#the-format) states: the record must be a JSON object, and its `rules`, `settings`, `files`, `carriers`, `parts`, `renderers` and `enforcement` must have their form, as far as the reproduction reads them. A record written under older rules, which lacks a key these rules have added since, is read as it is. A runner or a renderer command that these rules do not allow ([setup-record.md](setup-record.md#commands)) is read as it is too, whoever wrote it: that runner or renderer is not kept, and step 5 chooses it again;
 - there is no setup record ([setup-record.md](setup-record.md#the-file)), but the git history of the commit checked out in the project holds one: it was removed by hand. The agent asks the user to restore it from git;
 - a file that the previous setup record lists with `begin` and `end` exists, and its reproduced part cannot be found in it ([setup-record.md](setup-record.md#checksums)). The agent names the file, and the `begin` or `end` line that is missing, occurs more than once, or comes in the wrong order. A file that no longer exists is not this case: step 1 names it;
 - the agent has no means that reaches the lead at the start of every session by itself: neither one that reaches only the lead, nor one that every agent reads by itself ([carriers.md](carriers.md)). This is an environment error;
@@ -78,7 +78,7 @@ Every rule in the table above has one entry in the setup record's `enforcement` 
 ## Reproducing again
 
 - The steps are the same. Reproduced files and reproduced parts are replaced; project parts are kept.
-- The agent keeps the previous record's choices (carriers, begin and end lines, runners, renderers, the CI) unless the rules, the settings or the means it has require otherwise.
+- The agent keeps the previous record's choices (carriers, begin and end lines, runners, renderers, the CI) unless the rules, the settings or the means it has require otherwise. A runner or a renderer command that these rules do not allow ([setup-record.md](setup-record.md#commands)) is never kept.
 
 ## What always holds
 
