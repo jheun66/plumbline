@@ -1,5 +1,5 @@
 ---
-state: open
+state: archived
 diagnosis: design
 ---
 
@@ -35,4 +35,16 @@ Reported by the implementer.
 
 ## How the result was confirmed
 
+- The setup was reproduced at rules 315019a: four of the new validate cases failed at first, the record check in this repository's parts was corrected, and then all 231 conformance cases passed. No carrier changed, so the final report rightly asked for no new session. Every connector check gave the expected result; all four rules are enforced mechanically.
+- The example project's record already names the rules repository by its address, since its reproduction at v1.1.
+- `validate gate` passed on the user's machine with every figure rendered, and in CI for dd40fa4.
+
 ## Commits
+
+- e9fd0bb: design, setup-record, reproduction and validate
+- 315019a: rules and cases
+- dd40fa4: the setup reproduced from rules 315019a
+
+## Verify result
+
+`verify.md`: clean, no findings to take up. The diagnosis held.
