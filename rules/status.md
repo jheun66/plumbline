@@ -50,7 +50,7 @@ Each line is a code and its fields, separated by tabs ([conformance.md](conforma
 - Paths are relative to the project root, with `/`.
 - When the settings file is missing or not valid, the lines that need it, `settings-changed`, `stale`, `skip`, `missing-layer` and the `invalid` lines for design documents, are left out, and `milestone-unknown` takes the place of `milestone`.
 - When the setup record is not valid or absent, `rules-unknown` takes the place of `rules`, and `newer-rules`, `rules-up-to-date`, `newer-rules-not-checked` and `settings-changed` are left out.
-- When the intent layer is present, a design document, the design's README included, gives `invalid` with its own path when it has no front matter, or its front matter does not have the form [layers.md](layers.md#documents-and-front-matter) defines, or when one of its `basis` lines is not the path of an intent document, a space and a version ([layers.md](layers.md#intent-versions)), or names an intent document that does not exist or has no valid version. An intent document is a Markdown file at the intent location. A path elsewhere is not one.
+- When the intent layer is present, a design document, the design README included, gives `invalid` with its own path when it has no front matter, or its front matter does not have the form [layers.md](layers.md#documents-and-front-matter) defines, or when one of its `basis` lines is not the path of an intent document, a space and a version ([layers.md](layers.md#intent-versions)), or names an intent document that does not exist or has no valid version. An intent document is a Markdown file at the intent location. A path elsewhere is not one.
 - When the intent layer is not present, `basis` lines are not checked.
 
 ## What `invalid` covers
@@ -61,7 +61,7 @@ status checks the form only of the parts it reads:
 |---|---|---|
 | the settings file | all of it ([settings.md](settings.md#the-format)) | `invalid` with its path |
 | the setup record | that it is a JSON object, and its `rules` and `settings` ([setup-record.md](setup-record.md#the-format)) | no `invalid` line; `rules-unknown` says it |
-| the design's README | its front matter ([layers.md](layers.md#documents-and-front-matter)); a README without front matter does not have the form. When the intent layer is present, also its `basis` lines, as for every design document ([Output lines](#output-lines)) | no `invalid` line; `milestone-unknown` says it |
+| the design README | its front matter ([layers.md](layers.md#documents-and-front-matter)); a README without front matter does not have the form. When the intent layer is present, also its `basis` lines, as for every design document ([Output lines](#output-lines)) | no `invalid` line; `milestone-unknown` says it |
 | `change.md`, in every folder directly under `.plumbline/changes/` | all of its front matter ([changes.md](changes.md#changemd)) | `invalid` with the path the `change.md` should have |
 | gap items | all of their front matter ([changes.md](changes.md#gap-items)), only in changes whose `change.md` has the form and whose state is `open` or `closed` | — |
 | `.plumbline/current-change` | that it names an existing change whose `change.md` has the form and whose state is `open`, when it is not empty ([changes.md](changes.md#the-current-change)) | — |
@@ -77,7 +77,7 @@ Examples, with fields separated by spaces here for reading:
 - A folder `.plumbline/changes/2026-11-05-d/` without `change.md` gives `invalid .plumbline/changes/2026-11-05-d/change.md`, and no `change` line for it.
 - With no settings file, status gives `invalid .plumbline/settings.json` and `milestone-unknown`.
 - With the intent layer present, a design document with a blank line inside its front matter gives `invalid` with its path, and no `stale` line.
-- With `docs/intent.md` holding `version: 2` and a line `bad line` inside its front matter, every design document whose `basis` line names `docs/intent.md` gives `invalid` with its path. When the design's README is one of them, status gives `invalid docs/design/README.md` and `milestone-unknown`.
+- With `docs/intent.md` holding `version: 2` and a line `bad line` inside its front matter, every design document whose `basis` line names `docs/intent.md` gives `invalid` with its path. When the design README is one of them, status gives `invalid docs/design/README.md` and `milestone-unknown`.
 - A `change.md` with `state: done` and `diagnosis: code` gives one `invalid` line with its path. When `.plumbline/current-change` names that change, it gives `invalid .plumbline/current-change` too. Neither the change nor its gap items are listed.
 - A `.plumbline/current-change` that names a closed change gives `invalid .plumbline/current-change`, and every `change` line ends with `-`.
 

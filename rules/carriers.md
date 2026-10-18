@@ -78,7 +78,7 @@ For every role:
 - A rule enforced by instruction only (`enforcement` in [setup-record.md](setup-record.md)) is stated as an instruction.
 - When the setup record gives the `role table` as `instruction`, each role receives its row of the role table as an instruction ([roles.md](roles.md#the-role-table)).
 - When the setup record gives the `gap guard` as `instruction`, the lead receives the rule itself: within the current change, while a gap item is proposed, no layer below it is edited ([changes.md](changes.md#gap-items)).
-- When the setup record gives `validate at the end of a turn` as `instruction`, the lead receives the instruction to run `validate` in `report` mode at the end of every turn that edited files, and to tell the user what it reports.
+- When the setup record gives `validate at the end of a turn` as `instruction`, the lead receives the instruction to run `validate` in `report` mode at the end of every turn that edited files, and to tell the user the problems it reports.
 
 ## How carriers reach agents
 
@@ -139,7 +139,7 @@ For each mechanical part connected to an agent or to CI, a connector is written 
 
 - **The gap guard** ([guards.md](guards.md#the-gap-guard)) is connected to the hook that an agent's file-writing actions pass through before they happen, for the lead and the implementer alike. The connector gives the guard the paths the action will create, change or remove.
 - **The role guard** ([guards.md](guards.md#the-role-guard)) is connected to the hook that an agent's file-reading and file-writing actions pass through before they happen, for every role. The connector gives the guard the role the agent plays, the action, `read` or `write`, and the paths: for a search, the files and folders it searches. When the connector cannot tell which role an agent plays, the `role table` is enforced by instruction only.
-- **validate at the end of a turn** ([validate.md](validate.md)) is connected to the hook that runs when the lead ends a turn. It runs `validate` in `report` mode and gives its lines to the lead. It may let the lead go on once, so that the lead can tell the user what `validate` reports. It never holds the lead back more than once in a turn, and never blocks.
+- **validate at the end of a turn** ([validate.md](validate.md)) is connected to the hook that runs when the lead ends a turn. It runs `validate` in `report` mode. When that gives at least one problem line ([validate.md](validate.md#problem-lines)), the connector gives its lines to the lead. When it gives only `skip` lines, or no line, the lead is given nothing. The connector may let the lead go on once, so that the lead can tell the user the problems `validate` reports. It never holds the lead back more than once in a turn, and never blocks.
 - **validate before closing** has no connector. The lead runs `validate` in `gate` mode before it closes a change, and never closes the change while it blocks.
 - **validate in CI** is a step of the CI the project uses ([reproduction.md](reproduction.md#steps)). The step runs `validate` in `gate` mode with its runner and entry, and fails when the verdict is `block` or `error`, saying which. When the project uses no CI, there is no such step, and `validate in CI` is enforced by instruction only.
 - **status** ([status.md](status.md)) has no connector. The lead runs it with its runner and entry ([setup-record.md](setup-record.md#parts)).

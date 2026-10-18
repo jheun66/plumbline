@@ -33,7 +33,7 @@ The git history of the commit checked out in the project is that commit and ever
 ## Reading the rules
 
 - The agent reads the rules from a copy of the plumbline repository at that commit, kept outside the project.
-- In that copy, it reads only this folder, whatever else the copy holds.
+- In that copy, it reads only this folder, which holds the rules and their conformance cases, whatever else the copy holds.
 - No file of the rules is copied into the project. What agents must do reaches them through the carriers ([carriers.md](carriers.md)).
 - When the rules do not say what to produce, the agent does not fill the gap. It stops, says what the rules do not say, and proposes a change to the rules.
 

@@ -39,9 +39,10 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | read direction | which layers may be read when writing a layer |
 | gap | a missing piece or an error in an upper layer, found while working on a lower one |
 | design-level decision | a decision the design makes because intent does not |
+| design README | the file `README.md` directly in a project's design location: the design's scope, reading order, terms and current milestone ([design-docs.md](design-docs.md#design-documents-and-module-documents)) |
 | module document | a design document with the seven sections ([design-docs.md](design-docs.md)) |
 | module map | the module document that names a design's modules, their dependencies and milestones, the flows, and the contracts every module keeps |
-| milestone | a development stage set by a project's intent. The design's README names the current one |
+| milestone | a development stage set by a project's intent. The design README names the current one |
 | template | a project's document template, `.plumbline/template.md` ([design-docs.md](design-docs.md)) |
 | project settings | the values a reproduction needs that differ from project to project ([settings.md](settings.md)) |
 | role | lead, implementer or verifier ([roles.md](roles.md)) |

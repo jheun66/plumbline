@@ -31,7 +31,7 @@ Paths:
 
 - A path is relative to the project root and uses `/`. It is one or more segments joined by single `/`, with no `/` at its start or end, and no segment that is empty, `.` or `..`.
 - A path names a file or a folder. A folder means everything under it.
-- `design` has exactly one path, and it is a folder. `<design location>/README.md` is the design's README ([design-docs.md](design-docs.md)).
+- `design` has exactly one path, and it is a folder. `<design location>/README.md` is the design README ([design-docs.md](design-docs.md)).
 - No path of one layer lies inside, or contains, a path of another layer.
 
 Any other key, anywhere in the object, is an error.

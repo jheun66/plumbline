@@ -47,7 +47,7 @@ Each line is a code and its fields, separated by tabs ([conformance.md](conforma
 | `checksum` | path | a file the record lists is missing, or its checksum differs |
 | `part-not-found` | path | a file the record lists with `begin` and `end` exists, but its reproduced part cannot be found |
 | `template` | path | the template is missing, or its project part does not have its form |
-| `milestone` | path | the design's README is missing, or its front matter does not have exactly one `milestone` line |
+| `milestone` | path | the design README is missing, or its front matter does not have exactly one `milestone` line |
 | `basis` | document | a design document's front matter or `basis` lines do not have their form |
 | `basis-target` | document, intent document | a `basis` line names a path that is not an intent document, or an intent document without a valid version |
 | `stale` | document, intent document, basis version, intent version | a `basis` line names an intent document whose version is newer |
@@ -99,9 +99,9 @@ The sections below say exactly when each line is given.
 
 The template's figure names are the values of its `figure` lines. A template that gives `template` has no section titles, marker texts or figure names.
 
-## The design's README
+## The design README
 
-The design's README is the file `README.md` directly in the design location. When the design layer is present, `milestone` is given with its path when the README is missing, or when its front matter is missing, does not have the form [layers.md](layers.md#documents-and-front-matter) defines, or does not have exactly one `milestone` line.
+The design README is the file `README.md` directly in the design location. When the design layer is present, `milestone` is given with its path when the README is missing, or when its front matter is missing, does not have the form [layers.md](layers.md#documents-and-front-matter) defines, or does not have exactly one `milestone` line.
 
 ## Basis lines
 

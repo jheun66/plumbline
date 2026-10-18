@@ -3,8 +3,8 @@
 ## Design documents and module documents
 
 - Every Markdown file at the design location ([settings.md](settings.md)) is a design document.
-- `<design location>/README.md`, the file `README.md` directly in the design location, is the design's README. A `README.md` in a folder below it is a module document. The design's README is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
-- The design's README has exactly one `milestone` line in its front matter ([layers.md](layers.md#documents-and-front-matter)): `milestone: <name>`. It names the milestone the design is in now, as the project's intent names it.
+- `<design location>/README.md`, the file `README.md` directly in the design location, is the design README. A `README.md` in a folder below it is a module document. The design README is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- The design README has exactly one `milestone` line in its front matter ([layers.md](layers.md#documents-and-front-matter)): `milestone: <name>`. It names the milestone the design is in now, as the project's intent names it.
 - Every other design document is a module document.
 - A project's section titles, its kinds of figures, and how its design documents are laid out and named are its own.
 
@@ -42,7 +42,7 @@ Every module document has seven sections, as level-2 headings, in this order:
 
 ## Basis lines
 
-- Every design document, the design's README included, has front matter with one or more lines `basis: <intent document> <version>`.
+- Every design document, the design README included, has front matter with one or more lines `basis: <intent document> <version>`.
 - `<intent document>` is the path of an intent document from the project root. `<version>` is that document's version when the design document was written or last checked against it.
 - Every design document also names, in its text, the intent sections it is based on. That line has no fixed form.
 
