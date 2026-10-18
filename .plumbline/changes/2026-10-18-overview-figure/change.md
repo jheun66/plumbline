@@ -1,5 +1,5 @@
 ---
-state: closed
+state: archived
 diagnosis: design
 ---
 
@@ -30,3 +30,9 @@ The verifier of [the M3 change](../2026-10-18-m3/) noted, outside its findings, 
 The figure was rendered and checked: no overlapping or cut-off text, and its steps follow reproduction §2. `validate gate` passed.
 
 ## Commits
+
+- 9a4c0b4: the figure in overview §3
+
+## Verify result
+
+`verify.md`: clean, no findings to take up. The diagnosis held.
