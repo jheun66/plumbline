@@ -427,6 +427,18 @@ def open_change(name):
 
 SHA = re.compile(r"sha256:[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"([0-9a-f]{40}|[0-9a-f]{64})\Z")
+SCHEME_ADDRESS = re.compile(r"([A-Za-z][A-Za-z0-9+.-]*)://.", re.S)
+SCP_ADDRESS = re.compile(r"[^/:@]+@[^/:@]+:.", re.S)
+
+
+def is_address(value):
+    """True when value is an address other machines can reach:
+    <scheme>://<rest> with a scheme other than file and a rest that is not
+    empty, or <user>@<host>:<path>."""
+    match = SCHEME_ADDRESS.match(value)
+    if match:
+        return match.group(1).lower() != "file"
+    return bool(SCP_ADDRESS.match(value))
 
 
 def check_rules_key(rules):
@@ -435,7 +447,7 @@ def check_rules_key(rules):
     keys = set(rules)
     if not {"repository", "commit"} <= keys <= {"repository", "commit", "tag"}:
         return False
-    if not isinstance(rules["repository"], str) or rules["repository"] == "":
+    if not isinstance(rules["repository"], str) or not is_address(rules["repository"]):
         return False
     if not isinstance(rules["commit"], str) or not COMMIT.match(rules["commit"]):
         return False
