@@ -19,7 +19,7 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | [design-docs.md](design-docs.md) | design documents and module documents; the template; basis lines; design-level decisions; figures; how a check reads a Markdown document |
 | [settings.md](settings.md) | the project settings: where the layers are, and which are kept out of git |
 | [roles.md](roles.md) | lead, implementer and verifier: what each does, reads and writes; files in no layer; which role an agent plays; fresh agents; hand-off; the lead's part in changes; gaps between roles; a closed change checked by a verifier |
-| [setup-record.md](setup-record.md) | the setup record; the roles of each carrier; renderers; checksums of reproduced files |
+| [setup-record.md](setup-record.md) | the setup record; the roles of each carrier; renderers; the form of runner and renderer commands; checksums of reproduced files |
 | [conformance.md](conformance.md) | mechanical parts; connectors; conformance cases; the parts of a setup |
 | [authoring.md](authoring.md) | how the lead and the user write intent, the template's project part, the module map and the module documents |
 | [changes.md](changes.md) | changes: change records, diagnosis, gap items, wording fixes, the verify result, taking up findings, the current change; opening, closing, verifying and archiving; a milestone's work as a change; decisions that came from a gap |

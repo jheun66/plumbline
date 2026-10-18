@@ -168,7 +168,7 @@ A list with one object per mechanical part: a guard or a deterministic check.
 | Key | Value |
 |---|---|
 | `name` | the part's name, as these rules name it ([conformance.md](conformance.md#the-parts-of-a-setup)) |
-| `runner` | the command that runs the part, as a list: the program and any arguments it needs before the entry file |
+| `runner` | the command that runs the part, as a list: the program and any arguments it needs before the entry file. It has the form [Commands](#commands) states |
 | `entry` | the path of the file the runner runs. It is listed in `files` |
 
 A part is run as its `runner`, then its `entry`, then the part's own arguments ([conformance.md](conformance.md)).
@@ -180,7 +180,7 @@ A list with one object per kind of figure for which the reproduction found a ren
 | Key | Value |
 |---|---|
 | `figure` | a figure name from the template's `figure` lines ([design-docs.md](design-docs.md#the-template)). No name appears twice in the list. Whether the template still names it does not bear on whether the record is valid |
-| `command` | the command that renders one figure, as a non-empty list: the program and its arguments. A file it runs that the reproduction wrote is listed in `files` |
+| `command` | the command that renders one figure, as a non-empty list: the program and its arguments. It has the form [Commands](#commands) states. A file it runs that the reproduction wrote is listed in `files` |
 
 How a renderer is run:
 
@@ -188,6 +188,17 @@ How a renderer is run:
 - Its standard input is the figure's text: the lines between the figure's opening and closing lines, each followed by LF ([design-docs.md](design-docs.md#reading-a-markdown-document)).
 - Exit status 0 means the figure renders. Any other status means it does not.
 - A renderer whose program cannot be started is not present.
+
+### Commands
+
+A part's `runner` and a renderer's `command` hold no absolute path:
+
+- The first element, the program, is a name the system finds on the PATH, such as `python3`. It holds no `/` and no `\`.
+- No element begins with `/` or `\`, or with a letter, a `:`, and then `/` or `\`.
+
+A record with a runner or a renderer command that breaks either is not valid ([Valid records](#valid-records)).
+
+Examples, as JSON: `["python3"]`, `["python3", ".plumbline/render"]` and `["git", "--version"]` have this form. `["/usr/bin/python3"]`, `["/usr/local/bin/mmdc"]` and `["C:\\tools\\mmdc.exe"]` do not: each is an absolute path. `["tools/mmdc"]` does not either: its program holds `/`.
 
 ### `enforcement`
 
@@ -203,11 +214,11 @@ Every other rule reaches agents as an instruction and is not listed.
 
 ### Valid records
 
-A record is valid when its keys and values follow everything stated under [The format](#the-format). It need not list every part or every rule these rules define: whether `parts` and `enforcement` hold an entry for each does not bear on whether the record is valid. Nor does whether the files it lists still match their checksums, or whether the template still names each figure name in `renderers`.
+A record is valid when its keys and values follow everything stated under [The format](#the-format). It need not list every part or every rule these rules define: whether `parts` and `enforcement` hold an entry for each does not bear on whether the record is valid. Nor does whether the files it lists still match their checksums, whether the template still names each figure name in `renderers`, or whether the program of a runner or a renderer can be started on the machine where the record is read.
 
 Its copy of the settings is checked against the format in [settings.md](settings.md#the-format) without looking at the file system. Whether a path exists, or is a file or a folder, does not bear on whether the record is valid either.
 
-Among the errors: an unknown key; a missing key; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name.
+Among the errors: an unknown key; a missing key; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name; a runner or a renderer command with an element that is an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`; a runner or a renderer command whose program holds `/` or `\`, such as `tools/mmdc`.
 
 ## Checksums
 
@@ -242,5 +253,6 @@ Examples: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same. Add
 - No path is listed twice in `files`. Every path in `carriers`, and every `entry` in `parts`, is listed in `files`.
 - Every `mechanical` entry in `enforcement` names a part in `parts`.
 - Every carrier names at least one role.
+- No runner and no renderer command holds an absolute path. The program of each is a name found on the PATH.
 - The record holds nothing from a layer kept out of git. Its copy of the settings holds only paths and layer names.
 - The record holds no copy of the rules.

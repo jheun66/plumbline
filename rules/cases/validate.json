@@ -2074,5 +2074,202 @@
         "skip\tlayer\tdesign"
       ]
     }
+  },
+  {
+    "id": "validate-record-renderer-with-absolute-path-blocks",
+    "part": "validate",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}\n",
+        ".plumbline/setup-record.json": "{\"rules\": {\"repository\": \"https://example.com/plumbline.git\", \"commit\": \"0123456789abcdef0123456789abcdef01234567\", \"tag\": \"v1.0\"}, \"settings\": {\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}, \"files\": [{\"path\": \".plumbline/lead.md\", \"checksum\": \"sha256:5f1dde0f9352e53d5a472b3f76a5ff912cf01266b895329eb752aea807ede31c\"}, {\"path\": \"INSTRUCTIONS.md\", \"checksum\": \"sha256:36cd2ebb0f43d92d57558220241216f148499862819164ead064439ac6bf1dbd\", \"begin\": \"<!-- plumbline:begin -->\", \"end\": \"<!-- plumbline:end -->\"}], \"carriers\": [{\"kind\": \"instruction file, reproduced part\", \"files\": [\"INSTRUCTIONS.md\"], \"roles\": [\"lead\", \"implementer\", \"verifier\"]}, {\"kind\": \"file the instruction file names for the lead\", \"files\": [\".plumbline/lead.md\"], \"roles\": [\"lead\"]}], \"parts\": [], \"renderers\": [{\"figure\": \"mermaid\", \"command\": [\"/usr/local/bin/mmdc\"]}], \"enforcement\": [{\"rule\": \"role table\", \"by\": \"instruction\"}, {\"rule\": \"gap guard\", \"by\": \"instruction\"}, {\"rule\": \"validate at the end of a turn\", \"by\": \"instruction\"}, {\"rule\": \"validate in CI\", \"by\": \"instruction\"}]}\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        "INSTRUCTIONS.md": "# Instructions\n\n<!-- plumbline:begin -->\nRoles: lead, implementer, verifier.\n<!-- plumbline:end -->\n\nProject notes.\n",
+        ".plumbline/template.md": "---\nconfirmed: (DL ok YYYY-MM-DD)\npending: (DL pending)\n---\n\n# Template\n\n## S1\n\n## S2\n\n## S3\n\n## S4\n\n## S5\n\n## S6\n\n## S7\n\n",
+        "docs/intent.md": "---\nversion: 2\n---\n\n# Intent\n",
+        "docs/design/README.md": "---\nbasis: docs/intent.md 2\nmilestone: M1\n---\n\n# Design\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 2\n---\n\n# cli\n\n## S1\n\nThe command line.\n\n## S2\n\nNone.\n\n## S3\n\nNone.\n\n## S4\n\nNone.\n\n## S5\n\n- **One command.** It keeps the interface small. (DL ok 2026-10-17)\n\n## S6\n\nNone.\n\n## S7\n\nNone.\n\n",
+        "src/main.rs": "fn main() {}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n\nThe request.\n"
+      },
+      "git": [
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/lead.md",
+        ".plumbline/settings.json",
+        ".plumbline/setup-record.json",
+        ".plumbline/template.md",
+        "INSTRUCTIONS.md",
+        "docs/design/README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "gate"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "record\t.plumbline/setup-record.json"
+      ]
+    }
+  },
+  {
+    "id": "validate-record-renderer-with-drive-path-blocks",
+    "part": "validate",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}\n",
+        ".plumbline/setup-record.json": "{\"rules\": {\"repository\": \"https://example.com/plumbline.git\", \"commit\": \"0123456789abcdef0123456789abcdef01234567\", \"tag\": \"v1.0\"}, \"settings\": {\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}, \"files\": [{\"path\": \".plumbline/lead.md\", \"checksum\": \"sha256:5f1dde0f9352e53d5a472b3f76a5ff912cf01266b895329eb752aea807ede31c\"}, {\"path\": \"INSTRUCTIONS.md\", \"checksum\": \"sha256:36cd2ebb0f43d92d57558220241216f148499862819164ead064439ac6bf1dbd\", \"begin\": \"<!-- plumbline:begin -->\", \"end\": \"<!-- plumbline:end -->\"}], \"carriers\": [{\"kind\": \"instruction file, reproduced part\", \"files\": [\"INSTRUCTIONS.md\"], \"roles\": [\"lead\", \"implementer\", \"verifier\"]}, {\"kind\": \"file the instruction file names for the lead\", \"files\": [\".plumbline/lead.md\"], \"roles\": [\"lead\"]}], \"parts\": [], \"renderers\": [{\"figure\": \"mermaid\", \"command\": [\"C:\\\\tools\\\\mmdc.exe\"]}], \"enforcement\": [{\"rule\": \"role table\", \"by\": \"instruction\"}, {\"rule\": \"gap guard\", \"by\": \"instruction\"}, {\"rule\": \"validate at the end of a turn\", \"by\": \"instruction\"}, {\"rule\": \"validate in CI\", \"by\": \"instruction\"}]}\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        "INSTRUCTIONS.md": "# Instructions\n\n<!-- plumbline:begin -->\nRoles: lead, implementer, verifier.\n<!-- plumbline:end -->\n\nProject notes.\n",
+        ".plumbline/template.md": "---\nconfirmed: (DL ok YYYY-MM-DD)\npending: (DL pending)\n---\n\n# Template\n\n## S1\n\n## S2\n\n## S3\n\n## S4\n\n## S5\n\n## S6\n\n## S7\n\n",
+        "docs/intent.md": "---\nversion: 2\n---\n\n# Intent\n",
+        "docs/design/README.md": "---\nbasis: docs/intent.md 2\nmilestone: M1\n---\n\n# Design\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 2\n---\n\n# cli\n\n## S1\n\nThe command line.\n\n## S2\n\nNone.\n\n## S3\n\nNone.\n\n## S4\n\nNone.\n\n## S5\n\n- **One command.** It keeps the interface small. (DL ok 2026-10-17)\n\n## S6\n\nNone.\n\n## S7\n\nNone.\n\n",
+        "src/main.rs": "fn main() {}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n\nThe request.\n"
+      },
+      "git": [
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/lead.md",
+        ".plumbline/settings.json",
+        ".plumbline/setup-record.json",
+        ".plumbline/template.md",
+        "INSTRUCTIONS.md",
+        "docs/design/README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "gate"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "record\t.plumbline/setup-record.json"
+      ]
+    }
+  },
+  {
+    "id": "validate-record-runner-with-absolute-path-blocks",
+    "part": "validate",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}\n",
+        ".plumbline/setup-record.json": "{\"rules\": {\"repository\": \"https://example.com/plumbline.git\", \"commit\": \"0123456789abcdef0123456789abcdef01234567\", \"tag\": \"v1.0\"}, \"settings\": {\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}, \"files\": [{\"path\": \".plumbline/lead.md\", \"checksum\": \"sha256:5f1dde0f9352e53d5a472b3f76a5ff912cf01266b895329eb752aea807ede31c\"}, {\"path\": \"INSTRUCTIONS.md\", \"checksum\": \"sha256:36cd2ebb0f43d92d57558220241216f148499862819164ead064439ac6bf1dbd\", \"begin\": \"<!-- plumbline:begin -->\", \"end\": \"<!-- plumbline:end -->\"}, {\"path\": \".plumbline/run\", \"checksum\": \"sha256:f607475c3f589e0808d95eba41ee6e8d1bf59cfb134130e9c8fea35ad72eea65\"}], \"carriers\": [{\"kind\": \"instruction file, reproduced part\", \"files\": [\"INSTRUCTIONS.md\"], \"roles\": [\"lead\", \"implementer\", \"verifier\"]}, {\"kind\": \"file the instruction file names for the lead\", \"files\": [\".plumbline/lead.md\"], \"roles\": [\"lead\"]}], \"parts\": [{\"name\": \"validate\", \"runner\": [\"/usr/bin/python3\"], \"entry\": \".plumbline/run\"}], \"renderers\": [], \"enforcement\": [{\"rule\": \"role table\", \"by\": \"instruction\"}, {\"rule\": \"gap guard\", \"by\": \"instruction\"}, {\"rule\": \"validate at the end of a turn\", \"by\": \"instruction\"}, {\"rule\": \"validate in CI\", \"by\": \"instruction\"}]}\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        "INSTRUCTIONS.md": "# Instructions\n\n<!-- plumbline:begin -->\nRoles: lead, implementer, verifier.\n<!-- plumbline:end -->\n\nProject notes.\n",
+        ".plumbline/run": "validate\n",
+        ".plumbline/template.md": "---\nconfirmed: (DL ok YYYY-MM-DD)\npending: (DL pending)\n---\n\n# Template\n\n## S1\n\n## S2\n\n## S3\n\n## S4\n\n## S5\n\n## S6\n\n## S7\n\n",
+        "docs/intent.md": "---\nversion: 2\n---\n\n# Intent\n",
+        "docs/design/README.md": "---\nbasis: docs/intent.md 2\nmilestone: M1\n---\n\n# Design\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 2\n---\n\n# cli\n\n## S1\n\nThe command line.\n\n## S2\n\nNone.\n\n## S3\n\nNone.\n\n## S4\n\nNone.\n\n## S5\n\n- **One command.** It keeps the interface small. (DL ok 2026-10-17)\n\n## S6\n\nNone.\n\n## S7\n\nNone.\n\n",
+        "src/main.rs": "fn main() {}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n\nThe request.\n"
+      },
+      "git": [
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/lead.md",
+        ".plumbline/run",
+        ".plumbline/settings.json",
+        ".plumbline/setup-record.json",
+        ".plumbline/template.md",
+        "INSTRUCTIONS.md",
+        "docs/design/README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "gate"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "record\t.plumbline/setup-record.json"
+      ]
+    }
+  },
+  {
+    "id": "validate-record-runner-by-name-passes",
+    "part": "validate",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}\n",
+        ".plumbline/setup-record.json": "{\"rules\": {\"repository\": \"https://example.com/plumbline.git\", \"commit\": \"0123456789abcdef0123456789abcdef01234567\", \"tag\": \"v1.0\"}, \"settings\": {\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}, \"files\": [{\"path\": \".plumbline/lead.md\", \"checksum\": \"sha256:5f1dde0f9352e53d5a472b3f76a5ff912cf01266b895329eb752aea807ede31c\"}, {\"path\": \"INSTRUCTIONS.md\", \"checksum\": \"sha256:36cd2ebb0f43d92d57558220241216f148499862819164ead064439ac6bf1dbd\", \"begin\": \"<!-- plumbline:begin -->\", \"end\": \"<!-- plumbline:end -->\"}, {\"path\": \".plumbline/run\", \"checksum\": \"sha256:f607475c3f589e0808d95eba41ee6e8d1bf59cfb134130e9c8fea35ad72eea65\"}], \"carriers\": [{\"kind\": \"instruction file, reproduced part\", \"files\": [\"INSTRUCTIONS.md\"], \"roles\": [\"lead\", \"implementer\", \"verifier\"]}, {\"kind\": \"file the instruction file names for the lead\", \"files\": [\".plumbline/lead.md\"], \"roles\": [\"lead\"]}], \"parts\": [{\"name\": \"validate\", \"runner\": [\"python3\"], \"entry\": \".plumbline/run\"}], \"renderers\": [], \"enforcement\": [{\"rule\": \"role table\", \"by\": \"instruction\"}, {\"rule\": \"gap guard\", \"by\": \"instruction\"}, {\"rule\": \"validate at the end of a turn\", \"by\": \"instruction\"}, {\"rule\": \"validate in CI\", \"by\": \"instruction\"}]}\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        "INSTRUCTIONS.md": "# Instructions\n\n<!-- plumbline:begin -->\nRoles: lead, implementer, verifier.\n<!-- plumbline:end -->\n\nProject notes.\n",
+        ".plumbline/run": "validate\n",
+        ".plumbline/template.md": "---\nconfirmed: (DL ok YYYY-MM-DD)\npending: (DL pending)\n---\n\n# Template\n\n## S1\n\n## S2\n\n## S3\n\n## S4\n\n## S5\n\n## S6\n\n## S7\n\n",
+        "docs/intent.md": "---\nversion: 2\n---\n\n# Intent\n",
+        "docs/design/README.md": "---\nbasis: docs/intent.md 2\nmilestone: M1\n---\n\n# Design\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 2\n---\n\n# cli\n\n## S1\n\nThe command line.\n\n## S2\n\nNone.\n\n## S3\n\nNone.\n\n## S4\n\nNone.\n\n## S5\n\n- **One command.** It keeps the interface small. (DL ok 2026-10-17)\n\n## S6\n\nNone.\n\n## S7\n\nNone.\n\n",
+        "src/main.rs": "fn main() {}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n\nThe request.\n"
+      },
+      "git": [
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/lead.md",
+        ".plumbline/run",
+        ".plumbline/settings.json",
+        ".plumbline/setup-record.json",
+        ".plumbline/template.md",
+        "INSTRUCTIONS.md",
+        "docs/design/README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "gate"
+      ]
+    },
+    "expect": {
+      "verdict": "pass",
+      "output": []
+    }
+  },
+  {
+    "id": "validate-record-renderer-whose-program-holds-a-slash-blocks",
+    "part": "validate",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}\n",
+        ".plumbline/setup-record.json": "{\"rules\": {\"repository\": \"https://example.com/plumbline.git\", \"commit\": \"0123456789abcdef0123456789abcdef01234567\", \"tag\": \"v1.0\"}, \"settings\": {\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\", \"Cargo.toml\"]}, \"not_in_git\": []}, \"files\": [{\"path\": \".plumbline/lead.md\", \"checksum\": \"sha256:5f1dde0f9352e53d5a472b3f76a5ff912cf01266b895329eb752aea807ede31c\"}, {\"path\": \"INSTRUCTIONS.md\", \"checksum\": \"sha256:36cd2ebb0f43d92d57558220241216f148499862819164ead064439ac6bf1dbd\", \"begin\": \"<!-- plumbline:begin -->\", \"end\": \"<!-- plumbline:end -->\"}], \"carriers\": [{\"kind\": \"instruction file, reproduced part\", \"files\": [\"INSTRUCTIONS.md\"], \"roles\": [\"lead\", \"implementer\", \"verifier\"]}, {\"kind\": \"file the instruction file names for the lead\", \"files\": [\".plumbline/lead.md\"], \"roles\": [\"lead\"]}], \"parts\": [], \"renderers\": [{\"figure\": \"mermaid\", \"command\": [\"tools/mmdc\"]}], \"enforcement\": [{\"rule\": \"role table\", \"by\": \"instruction\"}, {\"rule\": \"gap guard\", \"by\": \"instruction\"}, {\"rule\": \"validate at the end of a turn\", \"by\": \"instruction\"}, {\"rule\": \"validate in CI\", \"by\": \"instruction\"}]}\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        "INSTRUCTIONS.md": "# Instructions\n\n<!-- plumbline:begin -->\nRoles: lead, implementer, verifier.\n<!-- plumbline:end -->\n\nProject notes.\n",
+        ".plumbline/template.md": "---\nconfirmed: (DL ok YYYY-MM-DD)\npending: (DL pending)\n---\n\n# Template\n\n## S1\n\n## S2\n\n## S3\n\n## S4\n\n## S5\n\n## S6\n\n## S7\n\n",
+        "docs/intent.md": "---\nversion: 2\n---\n\n# Intent\n",
+        "docs/design/README.md": "---\nbasis: docs/intent.md 2\nmilestone: M1\n---\n\n# Design\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 2\n---\n\n# cli\n\n## S1\n\nThe command line.\n\n## S2\n\nNone.\n\n## S3\n\nNone.\n\n## S4\n\nNone.\n\n## S5\n\n- **One command.** It keeps the interface small. (DL ok 2026-10-17)\n\n## S6\n\nNone.\n\n## S7\n\nNone.\n\n",
+        "src/main.rs": "fn main() {}\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: open\ndiagnosis: design\n---\n\nThe request.\n"
+      },
+      "git": [
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/lead.md",
+        ".plumbline/settings.json",
+        ".plumbline/setup-record.json",
+        ".plumbline/template.md",
+        "INSTRUCTIONS.md",
+        "docs/design/README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "gate"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "record\t.plumbline/setup-record.json"
+      ]
+    }
   }
 ]
