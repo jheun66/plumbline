@@ -177,8 +177,9 @@ sequenceDiagram
     A-->>U: stop and propose a rule change
   else
     A->>P: write rule carriers (keep any project part)
-    A->>P: write document templates, guards, checks
+    A->>P: write document templates
     A->>P: add layers not in git to .git/info/exclude
+    A->>P: write guards and checks
     A->>P: run every conformance case
     A->>P: check each connector
     A->>P: write the setup record

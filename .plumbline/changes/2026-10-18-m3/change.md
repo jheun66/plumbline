@@ -1,5 +1,5 @@
 ---
-state: open
+state: archived
 diagnosis: design
 ---
 
@@ -42,4 +42,19 @@ Also recorded: carriers §5, a known limit of the CI connector check, reported b
 
 ## How the result was confirmed
 
+- Implementers built the README, the license and the rule changes from the design; the role guard blocked none of their reads or writes.
+- The setup was reproduced again at the rules commit 913743b, in a new session: all 216 conformance cases passed, and the role table, the gap guard, validate at the end of a turn and validate in CI are enforced mechanically; the role guard's connector was checked as the lead, the implementer and the verifier.
+- `validate gate` passed on the user's machine with intent present, figures rendered.
+- `validate gate` passed in a fresh clone of the GitHub repository, without intent (`skip layer intent`), and in CI on GitHub for 913743b and 9601a9b (`skip layer intent`, `skip figures mermaid`).
+
 ## Commits
+
+Before the change was opened: 06eb6c8 (design) and d3a6a54 (rules), wording that validate took for impl paths; 353646a, plumbline's own setup from rules d3a6a54.
+
+- 35c96b4: design, settings and this change record
+- 913743b: impl: the README, the license and the rules
+- 9601a9b: the setup reproduced from rules 913743b
+
+## Verify result
+
+`verify.md`: clean, no findings to take up. The diagnosis held.
