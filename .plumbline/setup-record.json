@@ -1,7 +1,7 @@
 {
   "rules": {
     "repository": "https://github.com/jheun66/plumbline",
-    "commit": "913743bc3a1b1fab5db7e8abd0bb22add27fd209"
+    "commit": "fc69d21dc5287bc70323d877ff3a9923a506294b"
   },
   "settings": {
     "layers": {
@@ -26,7 +26,7 @@
       "begin": "<!-- plumbline:begin -->",
       "end": "<!-- plumbline:end -->"
     },
-    { "path": ".plumbline/parts/plumbline_lib.py", "checksum": "sha256:15cd0109e39ec5d2e607287643070f8efb9d10c2e178947de9f6428915696c52" },
+    { "path": ".plumbline/parts/plumbline_lib.py", "checksum": "sha256:848d15acd8b710ae0c85221b665d690dc70f2242e60fdfb0da1442679e0c7dd2" },
     { "path": ".plumbline/parts/status.py", "checksum": "sha256:8fc3a674ab6981c8cbc0341f92d9d503bd98d6b6e30799e20e06c577c932a861" },
     { "path": ".plumbline/parts/gap_guard.py", "checksum": "sha256:fc4c9494dbf60327166637c86f83079814333b09b53a7a55d2612795870bb11f" },
     { "path": ".plumbline/parts/role_guard.py", "checksum": "sha256:61cbccf5c1f009202d92ffa4f010b08d6bb3a4d93204d38918f3f34423aabd0b" },
@@ -71,7 +71,7 @@
   "renderers": [
     {
       "figure": "mermaid",
-      "command": ["/Users/asperitas/.npm/_npx/668c188756b835f3/node_modules/.bin/mmdc", "-i", "-", "-o", "-", "-e", "svg", "-q"]
+      "command": ["mmdc", "-i", "-", "-o", "-", "-e", "svg", "-q"]
     }
   ],
   "enforcement": [

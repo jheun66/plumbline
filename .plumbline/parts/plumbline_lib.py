@@ -448,6 +448,24 @@ def is_line_text(value):
     return isinstance(value, str) and value != "" and "\n" not in value and "\r" not in value
 
 
+def is_absolute_element(element):
+    if element.startswith("/") or element.startswith("\\"):
+        return True
+    return len(element) >= 3 and element[0].isalpha() and element[1] == ":" and element[2] in "/\\"
+
+
+def is_command(value):
+    """True when value has the form of a runner or a renderer command: a
+    non-empty list of strings whose program is a name with no / and no \\,
+    and no element of which is an absolute path."""
+    if not is_str_list(value, non_empty=True):
+        return False
+    program = value[0]
+    if program == "" or "/" in program or "\\" in program:
+        return False
+    return not any(is_absolute_element(element) for element in value)
+
+
 def check_record(obj):
     """True when obj is a valid setup record."""
     keys = {"rules", "settings", "files", "carriers", "parts", "renderers", "enforcement"}
@@ -500,7 +518,7 @@ def check_record(obj):
             return False
         if part["name"] not in PART_NAMES:
             return False
-        if not is_str_list(part["runner"]):
+        if not is_command(part["runner"]):
             return False
         if not isinstance(part["entry"], str) or part["entry"] not in listed:
             return False
@@ -517,7 +535,7 @@ def check_record(obj):
         if not isinstance(figure, str) or figure == "" or figure in figures:
             return False
         figures.add(figure)
-        if not is_str_list(renderer["command"], non_empty=True):
+        if not is_command(renderer["command"]):
             return False
 
     enforcement = obj["enforcement"]
