@@ -8,7 +8,7 @@ The lead and the user write a project's intent, then its design's module map, th
 2. The template's project part ([design-docs.md](design-docs.md)), then the module map and the design's README, whose `milestone` line names the first milestone. The user confirms the map.
 3. The settings are complete, and the setup is reproduced ([reproduction.md](reproduction.md)).
 4. The module documents of the first milestone. The user confirms them. Then implementers build that milestone's impl ([roles.md](roles.md)).
-5. Each later milestone: once the previous milestone's impl is done, the lead changes the `milestone` line of the design's README to it. Then its module documents are written, then its impl is built.
+5. Each later milestone: once the previous milestone is finished, the lead changes the `milestone` line of the design's README to it. Then its module documents are written, then its impl is built. A milestone is finished when its impl is done. From the first reproduction on, it is finished when its change is archived ([changes.md](changes.md#a-milestones-work)).
 
 A milestone's module documents are all confirmed before its impl starts.
 

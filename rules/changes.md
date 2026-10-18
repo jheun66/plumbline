@@ -145,7 +145,7 @@ Examples:
 2. **Work**: the lead records gap items and the user's answers; the layers are changed top-down; implementers build impl ([roles.md](roles.md)).
 3. **Close**: when no gap item of the change is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass, the lead sets `state: closed`. It empties `.plumbline/current-change` if that names this change. The check that runs before closing is `validate` in `gate` mode ([validate.md](validate.md)). The lead never closes a change while it blocks ([carriers.md](carriers.md)).
 4. **Verify**: the lead hands the closed change's check to a fresh verifier ([roles.md](roles.md#hand-off)). The verifier writes `verify.md` ([The verify result](#the-verify-result)).
-5. **Archive**: when `verify.md` is there, and the body of `change.md` names, for every finding, a follow-up change or the user's dated decision not to act on it ([Taking up findings](#taking-up-findings)), the lead sets `state: archived`.
+5. **Archive**: when `verify.md` is there, the body of `change.md` names, for every finding, a follow-up change or the user's dated decision not to act on it ([Taking up findings](#taking-up-findings)), and the change's work is committed with its commits listed in `change.md`, the lead sets `state: archived`. The change's work is what the change changed in the layers kept in git. A layer kept out of git is not committed ([settings.md](settings.md)). Edits to the change record itself may go into a later commit. When the change's work is not committed yet, the lead asks the user to commit it first.
 
 A change's state moves only from `open` to `closed` to `archived`.
 
@@ -153,7 +153,7 @@ A change's state moves only from `open` to `closed` to `archived`.
 
 - From the first reproduction on, the work of each milestone is one change: its module documents and its impl ([authoring.md](authoring.md)), and, for every milestone after the first, the change of the design README's `milestone` line to it ([design-docs.md](design-docs.md#design-documents-and-module-documents)).
 - Its diagnosis is `design`: the design does not yet hold that milestone's module documents.
-- The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is closed.
+- The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is archived.
 - A gap found while its module documents are written or its impl is built is a gap item of this change.
 - It is closed when the milestone's impl is done, like any change: no gap item is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass. Then it is verified and archived like any change.
 
@@ -176,5 +176,5 @@ Example: with the design at `docs/design`, a decision in `docs/design/cli.md` th
 - A change record holds no content of a layer kept out of git.
 - Change folders are never removed or moved.
 - From the first reproduction on, a milestone's work happens within that milestone's change.
-- A change is archived only when its `verify.md` is there and its body names, for every finding, a follow-up change or the user's dated decision not to act on it.
+- A change is archived only when its `verify.md` is there, its body names, for every finding, a follow-up change or the user's dated decision not to act on it, and its work is committed and its commits are listed in `change.md`.
 - Only the verifier writes `verify.md`.

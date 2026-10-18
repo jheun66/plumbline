@@ -17,12 +17,12 @@ The lead:
 - that reproduced files and reproduced parts are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again;
 - changes ([changes.md](changes.md)):
   - opening one: its name, `change.md` with its state and diagnosis and the commit checked out when it was opened ([changes.md](changes.md#changemd)), making it current, and listing `/.plumbline/current-change` in `.git/info/exclude` before writing it;
-  - each milestone's work, from the first reproduction on, as one change with diagnosis `design`, opened before that work starts and closed when the milestone's impl is done ([changes.md](changes.md#a-milestones-work));
+  - each milestone's work, from the first reproduction on, as one change with diagnosis `design`, opened before that work starts, and for a later milestone only once the previous milestone's change is archived, and closed when the milestone's impl is done ([changes.md](changes.md#a-milestones-work));
   - the three diagnoses, what each changes, when the intent version is raised, how to tell the design level from the intent level, and asking an implementer when a diagnosis needs impl;
   - for a bug, the current, the expected and the unchanged behaviour;
   - recording a gap item before proposing it, and the user's answer with its date; what a gap item may hold for a layer kept out of git;
   - making a wording fix at once without a gap item, recording what was aligned to what, telling the user, and turning it into a gap item when the user objects ([changes.md](changes.md#wording-fixes));
-  - closing: no gap item proposed, how the result was confirmed, `validate` in `gate` mode not blocking, emptying the current change; and archiving, once the verify result is there and each of its findings is taken up;
+  - closing: no gap item proposed, how the result was confirmed, `validate` in `gate` mode not blocking, emptying the current change; and archiving, once the verify result is there, each of its findings is taken up, and the change's work is committed with its commits listed in `change.md` ([changes.md](changes.md#opening-closing-archiving));
   - the section 5 line of a decision from a gap, with its link to the change;
   - that a change record holds no content of a layer kept out of git;
 - status ([status.md](status.md)):
@@ -44,7 +44,7 @@ The lead:
   - once a change is closed, to hand its check to a fresh verifier with the hand-off [roles.md](roles.md#hand-off) states, and how to start the verifier when its means needs that;
   - to read `verify.md` and tell the user the findings;
   - for each finding, to open a follow-up change or to record the user's decision not to act on it with its date, linking the changes both ways ([changes.md](changes.md#taking-up-findings));
-  - to archive the change only then;
+  - to archive the change only then, and only once the change's work is committed and its commits are listed in `change.md`; when the work is not committed yet, to ask the user to commit it first;
 - the role guard ([guards.md](guards.md#the-role-guard)):
   - when it blocks a read or a write, never to do it another way;
   - when the work needed that read or write, to tell the user.
