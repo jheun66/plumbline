@@ -233,6 +233,11 @@ Conformance cases. Each case gives the files listed and the argument, and expect
 | 52 | a `verify.md` with `result: clean` | `pass` | none |
 | 53 | a `verify.md` with `result: clean` and a second key | `block` | `change .plumbline/changes/2026-11-02-a/verify.md` |
 | 54 | `design` in `not_in_git` in the settings and the record's copy, and no `docs/design` | `pass` | `skip layer design` |
+| 55 | the record has a renderer for `mermaid` whose command is `["/usr/local/bin/mmdc"]` | `block` | `record .plumbline/setup-record.json` |
+| 56 | the record has a renderer for `mermaid` whose command is `["C:\\tools\\mmdc.exe"]` | `block` | `record .plumbline/setup-record.json` |
+| 57 | the record lists `.plumbline/run` and a part `validate` whose runner is `["/usr/bin/python3"]` and whose entry is `.plumbline/run` | `block` | `record .plumbline/setup-record.json` |
+| 58 | as 57, but the runner is `["python3"]` | `pass` | none |
+| 59 | the record has a renderer for `mermaid` whose command is `["tools/mmdc"]` | `block` | `record .plumbline/setup-record.json` |
 
 In the table, fields are separated by spaces for reading; in the cases they are tabs. Where a line number is not given, the case states it from its own file.
 

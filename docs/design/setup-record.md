@@ -168,6 +168,10 @@ A list with one object per kind of figure for which the reproduction found a ren
 
 A renderer is run with the project root as its working directory and the figure's text, the lines between its fences, on standard input. Exit status 0 means the figure renders; any other status means it does not. A renderer whose program cannot be started is not present.
 
+#### Commands
+
+A part's `runner` and a renderer's `command` hold no absolute path. Their first element, the program, is a name the system finds on the PATH, such as `python3`: it holds no `/` and no `\`. No element begins with `/` or `\`, or with a letter, a `:` and then `/` or `\`. A record that breaks either is not valid. Whether the program is found on a given machine has no bearing on whether the record is valid.
+
 #### `enforcement`
 
 A list with one object per rule that the rules allow to be enforced mechanically.
@@ -285,6 +289,7 @@ flowchart TB
 - No path is listed twice in `files`. Every path in `carriers` and `parts` is listed in `files`.
 - Every `mechanical` entry in `enforcement` names a part in `parts`.
 - Every carrier names at least one role.
+- No runner and no renderer command holds an absolute path.
 - The record holds nothing from a layer not in git. Its copy of the settings holds only paths and layer names.
 - The record holds no copy of the rules.
 
@@ -302,6 +307,7 @@ flowchart TB
 - **Each part records a runner, as a command list, and an entry file.** Every caller, the conformance cases included, needs only these two to run a part. The runner can differ from part to part, because each must be present only where its part runs. (Design-level — confirmed 2026-10-17)
 - **Each carrier names the roles it is meant for.** The role guard must tell which carrier a role may read (`roles`), and the kind of a carrier is free text no check reads. (Design-level — confirmed 2026-10-18)
 - **A renderer is a command that gets one figure on standard input and answers by its exit status; the reproduction records one per kind of figure it can render.** Like a runner, a renderer differs from machine to machine, so it is chosen at reproduction and recorded. The same interface as a part needs no knowledge of the kind of figure. Rejected: passing the figure as a file path, which needs a temporary file in the project or outside the working directory. (Design-level — confirmed 2026-10-18)
+- **A runner or a renderer command holds no absolute path, and its program is a name found on the PATH.** The record is in git and shared by everyone who works on the project, and an absolute path is true on one machine only; under a home folder it also puts that machine's user name into the repository. Rejected: recording the path the reproducing agent found, which works on that machine alone and shows its user name; leaving the form to each reproduction, which lets the same happen in any project. (Design-level — confirmed 2026-10-18)
 - **The record holds no time.** Reproducing again with the same rules and settings then leaves the record as it was, and git shows no change. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
@@ -313,7 +319,7 @@ flowchart TB
   - a reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one`, `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it; with `rule two` in place of `rule one` it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`;
   - a reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
 - The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not.
-- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, and two renderers for one figure name are errors.
+- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, two renderers for one figure name, and a runner or a renderer command with an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`, are errors.
 
 ## 7. Out of scope
 

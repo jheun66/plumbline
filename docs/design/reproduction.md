@@ -57,9 +57,9 @@ The git history of the checked-out commit is that commit and every commit before
 2. Choose the carriers and write them (`carriers`): whole files, and reproduced parts with the project parts kept.
 3. Write the template's reproduced part (`carriers`), keeping its project part.
 4. Add to `.git/info/exclude` every path of each layer in `not_in_git` that is not there yet. Remove the paths of a layer that the previous record kept out of git and the settings no longer do.
-5. Write the mechanical parts and their connectors, and choose a runner for each. A runner must be present wherever its part runs: the developer's machine, and CI for a part that runs there. When there is none, report an environment error that names what is missing, and stop.
+5. Write the mechanical parts and their connectors, and choose a runner for each. A runner must be present wherever its part runs: the developer's machine, and CI for a part that runs there. A runner is present only when it can be recorded as `setup-record` allows: by a name found on the PATH. When there is none, report an environment error that names what is missing, and stop.
    - For CI, use the CI the project already uses. When the agent finds none, it asks the user which one; when the project uses none, there is no CI step.
-   - For each `figure` name in the template (`design-docs`), choose a renderer present on the developer's machine and record it (`setup-record`). When none is present, record none for that name. A renderer need not be present in CI; where it is not, validate skips that kind of figure.
+   - For each `figure` name in the template (`design-docs`), choose a renderer present on the developer's machine and record it (`setup-record`). A renderer is present only when it can be recorded as `setup-record` allows. When none is present, record none for that name; when one is installed but can be reached only by an absolute path, record none and tell the user, in the final report, what to put on the PATH. A renderer need not be present in CI; where it is not, validate skips that kind of figure.
 6. Run every conformance case (`conformance`). When one fails, correct the part and run every case again.
 7. Check each connector as `carriers` says: a connector to an agent by acting through it once with an action that must be blocked and once with an action that must pass, or, for the end of a turn, by running it as the hook would; the CI connector by running its command locally on a copy. When a connector does not give the expected results and cannot be corrected, or cannot be checked in this session (`carriers`), its rule is enforced by instruction only. The connector stays in place and is listed in the setup record.
 8. Remove the files, and the reproduced parts, that the previous record listed and this reproduction no longer writes.
@@ -143,6 +143,7 @@ flowchart TD
 - The reproducing agent never reads plumbline's design, and no file of the rules is copied into the project.
 - A gap in the rules is never filled by the reproducing agent.
 - Every file a reproduction writes lies outside every layer location.
+- No file a reproduction writes, the setup record included, holds a path particular to the developer's machine, such as one under the developer's home folder.
 - The setup record is written last, and only after every case has passed.
 - A reproduced file deleted or edited by hand is never written again or removed without the user knowing.
 - A reproduced part whose begin or end line cannot be found is never written over.
@@ -169,6 +170,7 @@ flowchart TD
 - **When there is no setup record but the git history of the checked-out commit holds one, the reproduction stops before writing anything and asks the user to restore it.** The record is in git, so a missing record that git once held was removed by hand. Reproducing as if for the first time would miss reproduced files edited by hand, and would leave the old reproduced parts behind as project text next to new ones. Rejected: asking the user at every reproduction without a record whether there was an earlier one, which asks on every true first reproduction and relies on memory; treating it as a first reproduction, which shows the damage only at the next reproduction. A record removed before it was ever committed, or one whose commits a shallow clone does not hold, is not caught. (Design-level — confirmed 2026-10-17)
 - **The reproduction commits nothing; its final report tells the user to commit the setup record and every file that either record lists and that differs from the checked-out commit, and names them.** When to commit is the user's call, and a commit made by the reproduction could mix with the user's own work. Naming the files at the end of every reproduction makes forgetting unlikely, and the record must be committed for a removed record to be caught later. Removed files and removed parts are named too, so that what git holds is exactly what the record lists. Rejected: the reproduction committing by itself, which makes commits the user did not ask for. (Design-level — confirmed 2026-10-17)
 - **A renderer is chosen per kind of figure at reproduction, on the developer's machine; where none is present, the figure check is skipped.** intent §8.3 runs the render check only where a renderer is. Renderers differ from machine to machine like runners, so they are chosen and recorded at reproduction. Rejected: requiring a renderer in CI, which makes every project's CI install one. (Design-level — confirmed 2026-10-18)
+- **A runner or a renderer reachable only by an absolute path counts as not present, and no file the reproduction writes holds a path particular to the developer's machine.** The setup is in git and is used on other machines and in CI; a path true on one machine fails elsewhere and, under a home folder, shows that machine's user name. A renderer that is not recorded only leaves its figures unchecked, and telling the user what to put on the PATH lets the next reproduction record it. Rejected: writing a script into the project that calls the absolute path, which moves the same path into a file in git. (Design-level — confirmed 2026-10-18)
 - **The CI step goes into the CI the project already uses; when none is found, the agent asks; with none, there is no CI step.** (Design-level — confirmed 2026-10-18)
 - **What is no longer produced is removed, and exclusions of layers no longer kept out of git are removed.** The setup then is exactly what the record lists. (Design-level — confirmed 2026-10-17)
 
@@ -196,7 +198,8 @@ In the M2 Done of intent §11, on the same project:
 - every case of `role-guard` and `validate` passes in the project;
 - the role guard's connector check blocks the reads it must block, as the lead and as each role started by hand-off, and the setup record lists the role table as `mechanical`;
 - the end-of-turn and CI connector checks give the expected results, and leave nothing behind;
-- a renderer is recorded for each kind of figure the template names and the developer's machine can render.
+- a renderer is recorded for each kind of figure the template names and the developer's machine can render, by a name found on the PATH;
+- after a reproduction, no file the reproduction wrote holds a path under the developer's home folder.
 
 ## 7. Out of scope
 
