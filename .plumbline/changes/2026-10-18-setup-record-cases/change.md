@@ -1,5 +1,5 @@
 ---
-state: open
+state: archived
 diagnosis: design
 ---
 
@@ -30,4 +30,17 @@ bc577a1aba2ba3f83188ac8a95e5302c3e389cfb
 
 ## How the result was confirmed
 
+- The setup was reproduced at rules 29f20a5: all 226 conformance cases passed, the five new ones among them, with no part to correct; every connector check gave the expected result, and all four rules are enforced mechanically.
+- `validate gate` passed on the user's machine with every figure rendered, and in CI for 2afa2b4.
+
 ## Commits
+
+- 79d2e9c: design, validate, status and setup-record §6
+- 29f20a5: the cases in the rules
+- 2afa2b4: the setup reproduced from rules 29f20a5
+
+## Verify result
+
+`verify.md`: one finding, older than this change; the diagnosis held.
+
+- Finding 1, no case shows the checksum of an empty whole file: the user decided not to act on it, on 2026-10-18. The SHA-256 of empty input is the same in every library, and a reproduced file is rarely empty.
