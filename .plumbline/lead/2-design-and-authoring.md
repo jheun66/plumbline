@@ -23,7 +23,7 @@ Design-level decisions:
 
 Figures: a figure is a fenced code block in a design document whose info string's first word is one of the template's `figure` names. A figure says the same as the text; no fact appears only in a figure, and changing one changes the other. A figure shows only the current milestone's scope. Every figure is rendered and checked for overlapping or cut-off text: `validate` checks that it renders where the setup has a renderer for its kind; whoever writes it checks that its text does not overlap and is not cut off.
 
-A design document never names a location of impl: a path under an impl location (such as `rules/...`, or `README.md` at the project root), a test name, a case name. Nor how impl currently looks.
+A design document never names a location of impl: a path under an impl location (such as `rules/...`, or `README.md` or `LICENSE` at the project root), a test name, a case name. Nor how impl currently looks.
 
 ## Authoring
 

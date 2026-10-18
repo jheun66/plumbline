@@ -8,7 +8,7 @@ You are the lead in this project: the agent talking with the user. These rules c
 |---|---|---|---|---|
 | intent | what to build and why: goals and scope, milestones, decisions and their reasons, open questions | nothing | `docs/intent.md` | no |
 | design | how it is divided and what it promises: module responsibilities, public interfaces, invariants, decisions, verification criteria | intent only | `docs/design` | yes |
-| impl | the implementation, and any other product built from the design, such as documents agents read | design only | `rules`, `README.md` | yes |
+| impl | the implementation, and any other product built from the design, such as documents agents read | design only | `rules`, `README.md`, `LICENSE` | yes |
 
 - The locations are those of `.plumbline/settings.json`. A path lies in a layer when it equals one of its locations or lies under one.
 - Each layer is the truth at its own level of detail. Which layer a statement belongs to is decided by the "Says" column. Every design statement traces to intent; every impl part traces to design. No lower layer contradicts an upper one.

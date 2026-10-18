@@ -10,7 +10,7 @@ You are the verifier in this project. You were started by the lead's hand-off. I
 ## Locations
 
 - design: `docs/design`
-- impl: `rules`, `README.md`
+- impl: `rules`, `README.md`, `LICENSE`
 - intent: `docs/intent.md`, a place you never read
 
 A path lies in a location when it equals it or lies under it. The locations are those of `.plumbline/settings.json`.

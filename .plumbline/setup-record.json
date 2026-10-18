@@ -1,25 +1,25 @@
 {
   "rules": {
     "repository": "https://github.com/jheun66/plumbline",
-    "commit": "d3a6a54e75e8a4ddcf805ff5ccc95b07fbb321c1"
+    "commit": "913743bc3a1b1fab5db7e8abd0bb22add27fd209"
   },
   "settings": {
     "layers": {
       "intent": ["docs/intent.md"],
       "design": ["docs/design"],
-      "impl": ["rules", "README.md"]
+      "impl": ["rules", "README.md", "LICENSE"]
     },
     "not_in_git": ["intent"]
   },
   "files": [
     { "path": ".claude/settings.json", "checksum": "sha256:9fa57dd677fe7a7e8808b7dd09c10ce6c9f7b24d4671b9e7630bb6cd0501d500" },
     { "path": ".plumbline/lead/session_start.py", "checksum": "sha256:7ecd43f6132a3eed511e3df8e31f74e4c6113d3fb61837806a8f5ac71a294bf3" },
-    { "path": ".plumbline/lead/1-layers-and-roles.md", "checksum": "sha256:ad15f9584197646b5abcdad9f7f7f18c7cf55e195e1a6e338b8b8aaa9de21633" },
-    { "path": ".plumbline/lead/2-design-and-authoring.md", "checksum": "sha256:bf0db58e7522a56a2cfa0bd9e93444afb533ef2ad553e7d384615336be0eb129" },
+    { "path": ".plumbline/lead/1-layers-and-roles.md", "checksum": "sha256:7f0156b6cfc5ec920cc128be83269904a56b0bb66d5f777df966212f0d9e128f" },
+    { "path": ".plumbline/lead/2-design-and-authoring.md", "checksum": "sha256:e716c4317f9f4d54371e7125bee07d8a0157bd180722bc2f95eebc48360e1f0d" },
     { "path": ".plumbline/lead/3-changes.md", "checksum": "sha256:7c050b6431a8a3f85f21ee0c983cf717bfdf04fcde4139d20c92dd3a573d1736" },
-    { "path": ".plumbline/lead/4-setup-and-checks.md", "checksum": "sha256:052a1da86dffe620956a5631af3c744ae447677bd1d5968af60fe385184d9e53" },
-    { "path": ".claude/agents/implementer.md", "checksum": "sha256:bddacd7fe763b2d963c38139b8a474c4f354385acdad280ce7de8b5b59edb4a2" },
-    { "path": ".claude/agents/verifier.md", "checksum": "sha256:0ece1136b765775336ac41d4651d48f4d92fc580438d6ed86dcb4f74a8ea5ace" },
+    { "path": ".plumbline/lead/4-setup-and-checks.md", "checksum": "sha256:57c0e2b1fa0d42d7ccd5fb3d1af421cbe85834abbb14f6a674f53646c45d55e8" },
+    { "path": ".claude/agents/implementer.md", "checksum": "sha256:71d44075500ab2579a00f32e854bb556883e305e3b11308492b4d3a9e35fe5b3" },
+    { "path": ".claude/agents/verifier.md", "checksum": "sha256:849ba6e1dc4e1bb6f0a7b5ead0e02a25335f4f6865621b6e9a634ec7ff97976f" },
     {
       "path": ".plumbline/template.md",
       "checksum": "sha256:74f3af00ddac5e101ce4c3c8ca7c292a73454ee0c4ba5231fad06e9faa5d0405",
@@ -75,7 +75,7 @@
     }
   ],
   "enforcement": [
-    { "rule": "role table", "by": "instruction" },
+    { "rule": "role table", "by": "mechanical", "part": "role-guard" },
     { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" },
     { "rule": "validate at the end of a turn", "by": "mechanical", "part": "validate" },
     { "rule": "validate in CI", "by": "mechanical", "part": "validate" }

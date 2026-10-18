@@ -32,6 +32,6 @@
 Hooks run two guards before your file tools act: before Write, Edit and NotebookEdit, and, for the role guard, before Read and Grep too.
 
 - The gap guard enforces: within the current change, while a gap item is `proposed`, no layer below its layer is edited. When it blocks a write, tell the user which gap item must be answered. Never write a blocked file another way.
-- The role table is enforced by instruction only: keep to your row of the role table yourself, and each implementer and verifier keeps to its own. The role guard still runs: it blocks a read or a write outside your row, and a read or search of a folder that contains a path you may not read, such as the project root, which contains impl. Search with a path that contains no impl location. When it blocks a read or a write, never do it another way. When the work needed that read or write, tell the user.
+- The role guard enforces the role table, for you and for each implementer and verifier: it blocks a read or a write outside your row, and a read or search of a folder that contains a path you may not read, such as the project root, which contains impl. Search with a path that contains no impl location. When it blocks a read or a write, never do it another way. When the work needed that read or write, tell the user.
 - When a guard reports an environment error, tell the user. The action went ahead.
 - Changes a hook cannot see, such as files a shell command reads or writes, are not guarded. The rules hold for them all the same.
