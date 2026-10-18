@@ -1,0 +1,17 @@
+{
+  "layers": {
+    "intent": [
+      "docs/intent.md"
+    ],
+    "design": [
+      "docs/design"
+    ],
+    "impl": [
+      "rules",
+      "README.md"
+    ]
+  },
+  "not_in_git": [
+    "intent"
+  ]
+}

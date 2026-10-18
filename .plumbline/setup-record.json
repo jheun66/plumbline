@@ -1,0 +1,83 @@
+{
+  "rules": {
+    "repository": "https://github.com/jheun66/plumbline",
+    "commit": "d3a6a54e75e8a4ddcf805ff5ccc95b07fbb321c1"
+  },
+  "settings": {
+    "layers": {
+      "intent": ["docs/intent.md"],
+      "design": ["docs/design"],
+      "impl": ["rules", "README.md"]
+    },
+    "not_in_git": ["intent"]
+  },
+  "files": [
+    { "path": ".claude/settings.json", "checksum": "sha256:9fa57dd677fe7a7e8808b7dd09c10ce6c9f7b24d4671b9e7630bb6cd0501d500" },
+    { "path": ".plumbline/lead/session_start.py", "checksum": "sha256:7ecd43f6132a3eed511e3df8e31f74e4c6113d3fb61837806a8f5ac71a294bf3" },
+    { "path": ".plumbline/lead/1-layers-and-roles.md", "checksum": "sha256:ad15f9584197646b5abcdad9f7f7f18c7cf55e195e1a6e338b8b8aaa9de21633" },
+    { "path": ".plumbline/lead/2-design-and-authoring.md", "checksum": "sha256:bf0db58e7522a56a2cfa0bd9e93444afb533ef2ad553e7d384615336be0eb129" },
+    { "path": ".plumbline/lead/3-changes.md", "checksum": "sha256:7c050b6431a8a3f85f21ee0c983cf717bfdf04fcde4139d20c92dd3a573d1736" },
+    { "path": ".plumbline/lead/4-setup-and-checks.md", "checksum": "sha256:052a1da86dffe620956a5631af3c744ae447677bd1d5968af60fe385184d9e53" },
+    { "path": ".claude/agents/implementer.md", "checksum": "sha256:bddacd7fe763b2d963c38139b8a474c4f354385acdad280ce7de8b5b59edb4a2" },
+    { "path": ".claude/agents/verifier.md", "checksum": "sha256:0ece1136b765775336ac41d4651d48f4d92fc580438d6ed86dcb4f74a8ea5ace" },
+    {
+      "path": ".plumbline/template.md",
+      "checksum": "sha256:74f3af00ddac5e101ce4c3c8ca7c292a73454ee0c4ba5231fad06e9faa5d0405",
+      "begin": "<!-- plumbline:begin -->",
+      "end": "<!-- plumbline:end -->"
+    },
+    { "path": ".plumbline/parts/plumbline_lib.py", "checksum": "sha256:15cd0109e39ec5d2e607287643070f8efb9d10c2e178947de9f6428915696c52" },
+    { "path": ".plumbline/parts/status.py", "checksum": "sha256:8fc3a674ab6981c8cbc0341f92d9d503bd98d6b6e30799e20e06c577c932a861" },
+    { "path": ".plumbline/parts/gap_guard.py", "checksum": "sha256:fc4c9494dbf60327166637c86f83079814333b09b53a7a55d2612795870bb11f" },
+    { "path": ".plumbline/parts/role_guard.py", "checksum": "sha256:61cbccf5c1f009202d92ffa4f010b08d6bb3a4d93204d38918f3f34423aabd0b" },
+    { "path": ".plumbline/parts/validate.py", "checksum": "sha256:16a274694141af1706f02a436baf7df1089c6090921805fab6007e1e7cf08d1a" },
+    { "path": ".plumbline/connectors/connector_lib.py", "checksum": "sha256:71d6f1cb731ef56b6dfa19d4c4b2812d11bee2e9c6ebca5be5083182574f29bf" },
+    { "path": ".plumbline/connectors/gap_guard_hook.py", "checksum": "sha256:a0c9b583ab86cc599c45196a7609add02a6ddaaa544b96c6b9acdc281990843a" },
+    { "path": ".plumbline/connectors/role_guard_hook.py", "checksum": "sha256:3fa77c4b34f797e4d6df01e84ef89c312a6aa95f0008f123746bf7c3ff0d2346" },
+    { "path": ".plumbline/connectors/end_of_turn_hook.py", "checksum": "sha256:79cd5cae605eb6c277d1b14ce30faeee7834fb5c2228bfac9f8fbdf147814e44" },
+    { "path": ".plumbline/connectors/ci_validate.py", "checksum": "sha256:1b63e9ae60a74dfd58e53a6a5b958f8310f627cb7c81392004390f5e8aa0f4a6" },
+    { "path": ".github/workflows/plumbline-validate.yml", "checksum": "sha256:317d8395f4988d9d59974d167db932474f9c0c6f78aee13ea5d19c6287ad3176" }
+  ],
+  "carriers": [
+    {
+      "kind": "SessionStart hooks in the project's Claude Code settings that run a script printing the lead's rules, in four files, into the lead's context at the start of every session; the script prints nothing for an agent started as the implementer or the verifier",
+      "files": [
+        ".claude/settings.json",
+        ".plumbline/lead/session_start.py",
+        ".plumbline/lead/1-layers-and-roles.md",
+        ".plumbline/lead/2-design-and-authoring.md",
+        ".plumbline/lead/3-changes.md",
+        ".plumbline/lead/4-setup-and-checks.md"
+      ],
+      "roles": ["lead"]
+    },
+    {
+      "kind": "Claude Code custom subagent definition whose body is the whole system prompt of an agent started as subagent type implementer",
+      "files": [".claude/agents/implementer.md"],
+      "roles": ["implementer"]
+    },
+    {
+      "kind": "Claude Code custom subagent definition whose body is the whole system prompt of an agent started as subagent type verifier",
+      "files": [".claude/agents/verifier.md"],
+      "roles": ["verifier"]
+    }
+  ],
+  "parts": [
+    { "name": "status", "runner": ["python3", "-B"], "entry": ".plumbline/parts/status.py" },
+    { "name": "gap-guard", "runner": ["python3", "-B"], "entry": ".plumbline/parts/gap_guard.py" },
+    { "name": "role-guard", "runner": ["python3", "-B"], "entry": ".plumbline/parts/role_guard.py" },
+    { "name": "validate", "runner": ["python3", "-B"], "entry": ".plumbline/parts/validate.py" }
+  ],
+  "renderers": [
+    {
+      "figure": "mermaid",
+      "command": ["/Users/asperitas/.npm/_npx/668c188756b835f3/node_modules/.bin/mmdc", "-i", "-", "-o", "-", "-e", "svg", "-q"]
+    }
+  ],
+  "enforcement": [
+    { "rule": "role table", "by": "instruction" },
+    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" },
+    { "rule": "validate at the end of a turn", "by": "mechanical", "part": "validate" },
+    { "rule": "validate in CI", "by": "mechanical", "part": "validate" }
+  ]
+}
