@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # reproduction
 
-> Basis: intent 1.5 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners; validate also runs in CI), §7 (layers kept out of git), §8.3 (figures render where a renderer is present), §11 (M0, M2).
+> Basis: intent 1.6 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners; validate also runs in CI), §7 (layers kept out of git), §8.3 (figures render where a renderer is present), §11 (M0, M2).
 
 ## 1. Responsibilities
 
@@ -47,7 +47,7 @@ The git history of the checked-out commit is that commit and every commit before
 
 ### Reading the rules
 
-- The agent reads only plumbline's impl at that commit, from a copy kept outside the project. It never reads plumbline's design, even when the copy holds it.
+- The agent reads only plumbline's rules and their conformance cases at that commit (`overview`), from a copy kept outside the project. It never reads plumbline's design, even when the copy holds it.
 - No file of the rules is copied into the project. What agents must do reaches them through the carriers.
 - When the rules do not say what to produce, the agent does not fill the gap. It stops, says what the rules do not say, and proposes a change to the rules.
 
@@ -105,7 +105,7 @@ sequenceDiagram
   alt a check before writing fails
     L-->>U: stop and say why
   else
-    L->>R: read plumbline's impl only
+    L->>R: read plumbline's rules only
     alt the rules have a gap
       L-->>U: stop and propose a rule change
     else
@@ -151,7 +151,7 @@ flowchart TD
 
 ## 5. Decisions and reasons
 
-- **The agent reads only plumbline's impl at one commit, and copies no rule file into the project.** intent §5.1.
+- **The agent reads only plumbline's rules at one commit, never its design, and copies no rule file into the project.** intent §5.1.
 - **A gap in the rules stops the reproduction and becomes a proposal.** intent §5.1.
 - **A reproduction is done only when every case passes.** intent §5.3.
 - **A runner must be present wherever its part runs; otherwise it is an environment error.** intent §5.5.
@@ -176,7 +176,7 @@ flowchart TD
 
 These are checked in the M0 Done of intent §11, on an example project with the settings that came out of authoring:
 
-- the agent reads only plumbline's impl and writes the carriers, the template's reproduced part and the setup record;
+- the agent reads only plumbline's rules and conformance cases and writes the carriers, the template's reproduced part and the setup record;
 - every file in the setup record exists, and its checksum matches;
 - reproducing again in a new session with the same rules and settings gives the same list of files;
 - reproducing again leaves the project parts of carrier files and the template's project part as they were;

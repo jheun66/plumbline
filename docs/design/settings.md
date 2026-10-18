@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # settings
 
-> Basis: intent 1.5 — §3, §5.2 (settings apart from the record), §7.
+> Basis: intent 1.6 — §3, §5.2 (settings apart from the record), §7.
 
 ## 1. Responsibilities
 
@@ -102,7 +102,7 @@ flowchart TD
 - **The settings are a JSON file.** The language of the checks is not fixed, and JSON is read without a library by the runners projects commonly have. Rejected: YAML and TOML, which many runners cannot read without one. (Design-level — confirmed 2026-10-17)
 - **One folder, `.plumbline/`, holds everything plumbline keeps in a project.** A project can see at a glance what belongs to the method, and the change records (M1) have a place from the start. (Design-level — confirmed 2026-10-17)
 - **Unknown keys are an error.** It keeps the settings to the two values the method needs. A value a project wants to add belongs in its own intent or design. (Design-level — confirmed 2026-10-17)
-- **`design` is exactly one folder.** The design needs one top-level README, so it needs one root. (Design-level — confirmed 2026-10-17)
+- **`design` is exactly one folder.** The design needs one design README, so it needs one root. (Design-level — confirmed 2026-10-17)
 - **A missing layer that is in git is an error, not a skip.** Skipping is only for layers a project chose to keep out of git. Otherwise a deleted design folder would pass every check. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria

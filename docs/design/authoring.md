@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # authoring
 
-> Basis: intent 1.5 — §3 (the form of intent is not prescribed), §4 (principle 7), §7 (settings; what plumbline does not handle), §8.5, §11 (M0).
+> Basis: intent 1.6 — §3 (the form of intent is not prescribed), §4 (principle 7), §7 (settings; what plumbline does not handle), §8.5, §11 (M0).
 
 ## 1. Responsibilities
 
@@ -23,10 +23,10 @@ basis: docs/intent.md 1.5
 ### Order
 
 1. Intent: draft, resolve, confirm.
-2. The template's project part (`design-docs`), then the module map and the design's top-level README, whose `milestone` line names the first milestone. The user confirms the map.
+2. The template's project part (`design-docs`), then the module map and the design README, whose `milestone` line names the first milestone. The user confirms the map.
 3. The settings are complete, and the setup is reproduced (`reproduction`).
 4. The module documents of the first milestone. The user confirms them. Then that milestone's impl is built by implementers (`roles`).
-5. Each later milestone: once the previous milestone's work is finished, as `changes` defines it, the lead changes the README's `milestone` line to it; then its module documents are written, then its impl.
+5. Each later milestone: once the previous milestone's work is finished, as `changes` defines it, the lead changes the design README's `milestone` line to it; then its module documents are written, then its impl.
 
 The lead does all of this. It reads intent and design only, never impl (`roles`).
 
@@ -56,7 +56,7 @@ The lead does all of this. It reads intent and design only, never impl (`roles`)
 ### The module map
 
 - After intent is confirmed, the lead settles the template's project part with the user: the seven section titles, the two marker texts and the kinds of figures the project uses (`design-docs`). It writes them into the template.
-- Then the lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's top-level README: scope, reading order, terms, and the `milestone` line.
+- Then the lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design README: scope, reading order, terms, and the `milestone` line.
 - The module map is a module document. Its name and place in the design are the project's choice.
 - The map gives every module the milestone in which its document is written.
 - The user confirms the map. Every design-level decision in it then carries the confirmed marker with the date.

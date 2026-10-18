@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # carriers
 
-> Basis: intent 1.5 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §5.5 (validate also runs in CI), §8.1 (status takes the place of "start here"), §8.2, §8.3 (when validate reports and when it blocks; verify at closing), §8.4, §8.5.
+> Basis: intent 1.6 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §5.5 (validate also runs in CI), §8.1 (status takes the place of "start here"), §8.2, §8.3 (when validate reports and when it blocks; verify at closing), §8.4, §8.5.
 
 ## 1. Responsibilities
 
@@ -85,7 +85,7 @@ From M1:
 From M2:
 
 - **The role guard** is connected to the hook that an agent's file-reading and file-writing actions pass through before they happen, for every role. The connector gives the guard the role the agent plays, the action, `read` or `write`, and the paths: for a search, the files and folders it searches (`guards`). When the connector cannot tell which role an agent plays, the role table is enforced by instruction only.
-- **validate at the end of a turn** is connected to the hook that runs when the lead ends a turn. It runs `validate report` and gives its lines to the lead. It may let the lead go on once so that it can tell the user; it never holds the lead back more than once in a turn, and never blocks.
+- **validate at the end of a turn** is connected to the hook that runs when the lead ends a turn. It runs `validate report` and, when that gives at least one problem line, gives its lines to the lead. It may let the lead go on once so that it can tell the user; it never holds the lead back more than once in a turn, and never blocks. When `validate report` gives only `skip` lines, or no line, the lead is given nothing.
 - **validate before closing** has no connector. The lead runs `validate gate` before it closes a change.
 - **validate in CI** is a step of the CI the project uses. The step runs `validate gate` with its runner and entry, and fails when the verdict is `block` or `error`, saying which. When the project uses no CI, there is no such step, and the rule is enforced by instruction only.
 - **Checking the role guard's connector**: acting as the lead, reading a path that does not exist under an impl location must be blocked, and reading a design document must pass. Then, for the implementer and for the verifier, an agent of that role is started as the setup starts it, with a hand-off that says it is a check of the guard and asks only for two reads: a path that does not exist under the intent location, which must be blocked, and a design document, which must pass. A path that does not exist reveals nothing, so no role has a reason to refuse it. Reads change nothing, so the check leaves nothing behind.
@@ -174,6 +174,7 @@ sequenceDiagram
 - **The role guard's connector is checked by reads, as the lead and as each role the setup starts by hand-off.** A read changes nothing, so the check is safe; and which role an agent plays is told differently for an agent started by a hand-off, so each such role is tried. Rejected: checking only as the lead, which leaves a connector that cannot tell an implementer recorded as mechanical. (Design-level — confirmed 2026-10-18)
 - **validate's end-of-turn connector is checked by running it as the hook would, with a temporary problem in the design.** The reproducing agent cannot end its own turn and go on with the check. (Design-level — confirmed 2026-10-18)
 - **The gap guard's connector check writes its passing file outside the project root.** With the role guard in place, the lead may not write a project file in no layer; a path outside the root passes both guards and touches no project file. (Design-level — confirmed 2026-10-18)
+- Known limit: when the CI connector is checked, the setup record does not yet list what this reproduction wrote, and on a first reproduction there is none, so `validate gate` may block on the copy both times and only the failing step is seen. The passing step is then first seen in the first CI run after the setup is committed.
 
 ## 6. Verification criteria
 

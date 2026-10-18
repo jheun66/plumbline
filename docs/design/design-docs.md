@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # design-docs
 
-> Basis: intent 1.5 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
+> Basis: intent 1.6 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
 
 ## 1. Responsibilities
 
@@ -21,8 +21,8 @@ basis: docs/intent.md 1.5
 ### Design documents and module documents
 
 - Every Markdown file at the design location (`settings`) is a design document.
-- `<design location>/README.md` is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
-- The top-level README's front matter (`layers`) has one line `milestone: <name>`: the milestone the design is in now, named as the project's intent names it.
+- `<design location>/README.md`, the design README, is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- The design README's front matter (`layers`) has one line `milestone: <name>`: the milestone the design is in now, named as the project's intent names it.
 - Every other design document is a module document.
 
 ### The seven sections
@@ -54,7 +54,7 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 
 ### Basis citation
 
-- Every design document, the top-level README included, has front matter (`layers`) with one or more lines `basis: <intent document> <version>`. The intent document is its path from the project root. The version is that document's version when this design document was written or last checked against it.
+- Every design document, the design README included, has front matter (`layers`) with one or more lines `basis: <intent document> <version>`. The intent document is its path from the project root. The version is that document's version when this design document was written or last checked against it.
 - Every design document also names, in its text, the intent sections it is based on. That line is for readers and has no fixed form.
 
 ### Design-level decisions
@@ -94,7 +94,7 @@ classDiagram
     front matter: basis lines
     text: cited intent sections
   }
-  class TopLevelReadme {
+  class DesignReadme {
     scope, reading order, terms
   }
   class ModuleDocument {
@@ -105,7 +105,7 @@ classDiagram
     project part: marker texts, seven level-2 headings
     reproduced part: what each section is for
   }
-  DesignDocument <|-- TopLevelReadme
+  DesignDocument <|-- DesignReadme
   DesignDocument <|-- ModuleDocument
   ModuleDocument ..> Template : headings and markers equal
 ```
@@ -126,18 +126,18 @@ flowchart TD
 - Every design-level decision carries a marker with a state. A confirmed marker carries a date.
 - No fact appears only in a figure.
 - No design document names a location of impl.
-- The top-level README has exactly one `milestone` line.
+- The design README has exactly one `milestone` line.
 
 ## 5. Decisions and reasons
 
 - **Design-level decisions live only in section 5 of their module document, with no separate table.** intent §4 principle 7.
-- **The top-level README is the only design document that is not a module document.** intent §7.
+- **The design README is the only design document that is not a module document.** intent §7.
 - **Sections are matched by the level-2 headings of the project's template, exactly and in order.** Titles follow each project's own wording, so the rules cannot name them. Keeping them in one template file gives one copy that validate and writers share. (Design-level — confirmed 2026-10-17)
 - **No other level-2 headings in a module document.** Otherwise a check cannot tell a misspelled section from an extra one. Level 3 and below stay free for the document's own structure. (Design-level — confirmed 2026-10-17)
 - **The basis is machine-readable only for versions; the cited sections are free text.** validate compares versions. Section names differ in form from project to project and are for readers. (Design-level — confirmed 2026-10-17)
 - **The basis names the intent document by its path from the project root.** An intent made of several documents needs each one named. The path is already known from the settings. (Design-level — confirmed 2026-10-17)
-- **The top-level README carries a basis too.** Its scope, reading order and terms are derived from intent like everything else in the design. (Design-level — confirmed 2026-10-17)
-- **The top-level README names the current milestone in a `milestone` line of its front matter.** The milestone is a fact about what the design now covers, next to its scope and reading order; front matter lets a script read it (`status`). (Design-level — confirmed 2026-10-17)
+- **The design README carries a basis too.** Its scope, reading order and terms are derived from intent like everything else in the design. (Design-level — confirmed 2026-10-17)
+- **The design README names the current milestone in a `milestone` line of its front matter.** The milestone is a fact about what the design now covers, next to its scope and reading order; front matter lets a script read it (`status`). (Design-level — confirmed 2026-10-17)
 - **The template states the design-level marker, in two states.** The rules cannot name the words, and a fixed form lets validate find unmarked or undated decisions. (Design-level — confirmed 2026-10-17)
 - **The section titles and the marker texts are the template's project part. The lead writes them with the user before the module map, and a reproduction never changes them.** The rules can hold no words of a natural language and the settings hold two values only, so neither can give them. If a reproduction chose them, reproducing again could change them and fail every module document already written. The module map is written before the first reproduction, so the words must exist by then. Rejected: matching sections by number only, which lets titles drift from one document to another; fixed English titles in the rules, which would make the rules choose a language. (Design-level — confirmed 2026-10-17)
 - **The kinds of figures are the template's `figure` lines, by the info string of their code blocks.** A check must know which code blocks are figures, and the kinds are each project's choice (intent §7). The template's project part already holds the project's own words, and its front matter can be read by a script. Rejected: letting the reproducing agent find the kinds in the design documents, which can give a different answer at each reproduction; leaving rendering out of `validate`, which intent §8.3 puts there. (Design-level — confirmed 2026-10-18)

@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # validate
 
-> Basis: intent 1.5 — §5.2 (checksums find hand edits; validate gives the same answer for the same input), §5.3, §5.5, §7 (which documents are module documents; a layer not present), §8.1 (a decision line points to its change), §8.3 (what validate checks, and when it reports or blocks), §11 (M2).
+> Basis: intent 1.6 — §5.2 (checksums find hand edits; validate gives the same answer for the same input), §5.3, §5.5, §7 (which documents are module documents; a layer not present), §8.1 (a decision line points to its change), §8.3 (what validate checks, and when it reports or blocks), §11 (M2).
 
 ## 1. Responsibilities
 

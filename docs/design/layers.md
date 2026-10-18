@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # layers
 
-> Basis: intent 1.5 — §4 (principles 1–4, 8), §6, §7 (intent version).
+> Basis: intent 1.6 — §4 (principles 1–4, 8), §6, §7 (intent version).
 
 ## 1. Responsibilities
 

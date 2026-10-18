@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # guards
 
-> Basis: intent 1.5 — §2.2 (a hook that blocks without end), §5.3 (cases for the read direction hook), §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (the role table, enforced where a means exists; a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1, M2).
+> Basis: intent 1.6 — §2.2 (a hook that blocks without end), §5.3 (cases for the read direction hook), §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (the role table, enforced where a means exists; a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1, M2).
 
 ## 1. Responsibilities
 

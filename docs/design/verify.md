@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.5
+basis: docs/intent.md 1.6
 ---
 
 # verify
 
-> Basis: intent 1.5 — §5.5 (a judgment check has no cases; it limits what is read and leaves its result in the change), §8.2 (whether the diagnosis held is checked when the change closes), §8.3 (what verify looks at), §8.4 (the verifier), §11 (M2).
+> Basis: intent 1.6 — §5.5 (a judgment check has no cases; it limits what is read and leaves its result in the change), §8.2 (whether the diagnosis held is checked when the change closes), §8.3 (what verify looks at), §8.4 (the verifier), §11 (M2).
 
 ## 1. Responsibilities
 

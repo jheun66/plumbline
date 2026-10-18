@@ -1,11 +1,11 @@
 ---
-basis: docs/intent.md 1.5
-milestone: M2
+basis: docs/intent.md 1.6
+milestone: M3
 ---
 
 # plumbline design
 
-> Basis: intent 1.5 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
+> Basis: intent 1.6 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
 > Stage 1 — module map: confirmed by the user on 2026-10-16.
 > M0 module documents: bundles A (layers, design-docs, settings, roles), B (setup-record, conformance) and C (authoring, carriers, reproduction) confirmed by the user on 2026-10-17. The M0 design is complete.
 > Revised after gaps reported while building M0 impl: roles, carriers, reproduction, setup-record and overview. Confirmed by the user on 2026-10-17, except decisions still marked pending.
@@ -14,6 +14,7 @@ milestone: M2
 > Revised after the M1 Done check on 2026-10-18: roles (a file in no layer is added to a layer before it is written; an implementer leaves a gap's point unbuilt), changes (wording fixes, intent 1.4), carriers and design-docs. Every basis raised to intent 1.4.
 > M2 module documents: bundles A (roles, changes), B (design-docs, setup-record, validate, guards, verify) and C (carriers, reproduction, conformance) written on 2026-10-18.
 > Revised before the M3 reproduction on 2026-10-18: the impl location `rules` and the design README are no longer named in a form validate takes for an impl path (overview, design-docs, settings, this README), and the role guard's cases name `NOTES.md` as a project file in no layer (guards). Every basis raised to intent 1.5.
+> M3, in the change `2026-10-18-m3`: the README and the license in impl (overview, this README), the design README as one term, and wording fixes in carriers and reproduction reported by the first reproduction of plumbline's own setup. Every basis raised to intent 1.6.
 
 ## Where this document sits
 
@@ -31,12 +32,14 @@ what, why    how it is divided,    the rules agents read,
 
 ## What plumbline's impl is
 
-plumbline's impl has two parts:
+plumbline's impl has four parts:
 
 | Part | Read by | What it is |
 |---|---|---|
 | Rules | an agent reproducing a setup in a target project | what the setup must do, stated as rules only |
 | Conformance cases | the same agent, after reproducing | inputs and expected results that the reproduced mechanical parts must meet |
+| README | people visiting the repository | what plumbline is and how a project uses it ([overview.md](overview.md)) |
+| License | everyone | the text of plumbline's license, MIT-0 ([overview.md](overview.md)) |
 
 The modules in this design divide the rules. Each module that defines a mechanical part also lists its conformance cases.
 
@@ -49,7 +52,7 @@ The module map covers the first version: milestones M0 to M3. Module documents a
 | M0 | layers, design-docs, settings, roles, setup-record, conformance, authoring, carriers, reproduction |
 | M1 | changes, status, guards (gap guard), carriers (change procedures), roles (the lead's work on changes), design-docs and authoring (the `milestone` line) |
 | M2 | validate, verify, guards (role guard), carriers (verify procedure, connectors), roles (verifier, the full role table), changes (verify results, follow-up changes), setup-record (carrier roles, renderers), design-docs (figure kinds), reproduction and conformance (CI) |
-| M3 | none. validate runs on plumbline's own design documents |
+| M3 | none. The README and the license are defined in the overview; validate runs on plumbline's own design documents |
 
 M0 documents are written in three bundles. Each bundle is confirmed by the user before the next is written.
 
@@ -103,6 +106,7 @@ When text is easier to follow as a picture, the document has the picture too.
 | layer | one of intent, design, impl |
 | intent | what to build and why |
 | design | how it is divided and what it promises |
+| design README | the design's top-level README: scope, reading order, terms, the current milestone |
 | impl | the implementation, and any other product built from the design |
 | read direction | which layers may be read when writing a layer |
 | rules | the part of plumbline's impl that agents read |
