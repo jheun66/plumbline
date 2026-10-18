@@ -26,7 +26,7 @@ basis: docs/intent.md 1.4
 2. The template's project part (`design-docs`), then the module map and the design's top-level README, whose `milestone` line names the first milestone. The user confirms the map.
 3. The settings are complete, and the setup is reproduced (`reproduction`).
 4. The module documents of the first milestone. The user confirms them. Then that milestone's impl is built by implementers (`roles`).
-5. Each later milestone: once the previous milestone's impl is done, the lead changes the README's `milestone` line to it; then its module documents are written, then its impl.
+5. Each later milestone: once the previous milestone's work is finished, as `changes` defines it, the lead changes the README's `milestone` line to it; then its module documents are written, then its impl.
 
 The lead does all of this. It reads intent and design only, never impl (`roles`).
 

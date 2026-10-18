@@ -116,13 +116,13 @@ When a change is opened, the lead decides which layer is wrong.
 2. **Work**: gap items are recorded and answered; the layers are changed top-down; implementers build impl (`roles`).
 3. **Close**: when no gap item is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass, the lead sets `state: closed` and empties the current change if it names this one.
 4. **Verify**: a verifier checks the closed change and writes `verify.md` (`roles`).
-5. **Archive**: when `verify.md` is there and every finding is taken up or declined, the lead sets `state: archived`.
+5. **Archive**: when `verify.md` is there, every finding is taken up or declined, and the change's work is committed with its commits listed in `change.md`, the lead sets `state: archived`. The change's work is what it changed in the layers kept in git; a layer kept out of git is not committed, and edits to the change record itself may go into a later commit. When the work is not committed yet, the lead asks the user to commit it first.
 
 ### A milestone's work
 
 - From the first reproduction on, the work of each milestone is one change: its module documents and its impl, and, for every milestone after the first, the change of the design README's `milestone` line to it (`design-docs`).
 - Its diagnosis is `design`: the design does not yet hold that milestone's module documents.
-- The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is closed.
+- The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is archived.
 - A gap found while its documents are written or its impl is built is a gap item of this change.
 - It is closed when the milestone's impl is done, like any change: no gap item proposed, and the body says how the result was confirmed.
 
@@ -178,7 +178,7 @@ A change:
 stateDiagram-v2
   [*] --> open: the lead opens it and makes it current
   open --> closed: no gap item proposed, result confirmed,<br/>checks before closing pass
-  closed --> archived: verify result written,<br/>every finding taken up or declined
+  closed --> archived: verify result written,<br/>findings taken up or declined,<br/>work committed
   archived --> [*]
 ```
 
@@ -219,7 +219,7 @@ flowchart TD
 - A change record holds no content of a layer kept out of git.
 - Change folders are never removed or moved.
 - From the first reproduction on, a milestone's work happens within that milestone's change.
-- A change is archived only when its `verify.md` is there and its body names, for every finding, a follow-up change or the user's dated decision not to act.
+- A change is archived only when its `verify.md` is there, its body names, for every finding, a follow-up change or the user's dated decision not to act, and its work is committed and its commits are listed.
 - Only the verifier writes `verify.md`.
 
 ## 5. Decisions and reasons
@@ -241,6 +241,7 @@ flowchart TD
 - **Verify results stay in the change.** intent §8.3.
 - **A finding of verify is taken up by a follow-up change, not by reopening the closed one.** A change's state moves only forward, and its diagnosis never changes; a finding that the diagnosis did not hold can be taken up rightly only by a change with a diagnosis of its own. Rejected: reopening the closed change, which breaks both; running verify before closing, which leaves `closed` with no meaning. (Design-level — confirmed 2026-10-18)
 - **The verify result is one file, `verify.md`, whose front matter says `clean` or `findings`; its findings are numbered and named in design terms, and may name impl locations but never quote impl.** The lead reads the result and never reads impl; a location is enough to point at the problem. One key lets a check tell at a glance whether anything was found. (Design-level — confirmed 2026-10-18)
+- **A change is archived only once its work is committed; the lead asks the user to commit it when it is not.** intent §8.1 has a change hold its commits. A change opened in the same working tree after an earlier one is archived then starts from a commit that holds the earlier work, so its verifier sees only its own work. Rejected: opening a new change only on a clean working tree, which adds a check at every opening and clashes with turning between changes; leaving it as a known limit, which makes the verifier report another change's work again and again. (Design-level — confirmed 2026-10-18)
 - **The user may decline a finding; the decline is written with its date.** A verifier can be wrong, and only the user settles that. (Design-level — confirmed 2026-10-18)
 - **For a layer kept out of git, a gap item names only the location and what the layer below needs; the proposed wording goes to the user, not into the record.** Change records are in git, and the proposed wording would be content of that layer. (Design-level — confirmed 2026-10-17)
 - **The body of a change record is free text with no template.** No check reads it; what it must hold is listed above, and its words are the project's. (Design-level — confirmed 2026-10-17)
@@ -259,7 +260,8 @@ The formats here are read by `status` and `guards` and checked by `validate`. Th
 These are judgment checks, made during the M2 Done of intent §11, on the example project:
 
 - a closed change gets a `verify.md` from a fresh verifier, and is archived only after every finding is taken up by a follow-up change or declined by the user with a date;
-- a follow-up change and the change it comes from link to each other.
+- a follow-up change and the change it comes from link to each other;
+- an archived change lists its commits, and the verifier of a change opened after it was archived sees no work of it.
 
 `validate` checks the form of `verify.md`.
 
