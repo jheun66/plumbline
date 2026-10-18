@@ -4,7 +4,7 @@ basis: docs/intent.md 1.4
 
 # reproduction
 
-> Basis: intent 1.4 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners), §7 (layers kept out of git), §11 (M0).
+> Basis: intent 1.4 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners; validate also runs in CI), §7 (layers kept out of git), §8.3 (figures render where a renderer is present), §11 (M0, M2).
 
 ## 1. Responsibilities
 
@@ -12,7 +12,7 @@ basis: docs/intent.md 1.4
 
 **Does not**:
 
-- Define the setup record, the cases, the carriers, or the mechanical parts. `setup-record`, `conformance` and `carriers` do; `guards` and `status` define the parts, and `validate` (M2).
+- Define the setup record, the cases, the carriers, or the mechanical parts. `setup-record`, `conformance` and `carriers` do; `guards`, `status` and `validate` define the parts.
 - Decide the settings. The lead and the user do, while authoring (`authoring`).
 - Look for newer rules. The lead and `status` do.
 
@@ -58,13 +58,24 @@ The git history of the checked-out commit is that commit and every commit before
 3. Write the template's reproduced part (`carriers`), keeping its project part.
 4. Add to `.git/info/exclude` every path of each layer in `not_in_git` that is not there yet. Remove the paths of a layer that the previous record kept out of git and the settings no longer do.
 5. Write the mechanical parts and their connectors, and choose a runner for each. A runner must be present wherever its part runs: the developer's machine, and CI for a part that runs there. When there is none, report an environment error that names what is missing, and stop.
+   - For CI, use the CI the project already uses. When the agent finds none, it asks the user which one; when the project uses none, there is no CI step.
+   - For each `figure` name in the template (`design-docs`), choose a renderer present on the developer's machine and record it (`setup-record`). When none is present, record none for that name. A renderer need not be present in CI; where it is not, validate skips that kind of figure.
 6. Run every conformance case (`conformance`). When one fails, correct the part and run every case again.
-7. Act once through each connector to an agent with an action that must be blocked, and once with an action that must pass. When a connector does not give the expected results and cannot be corrected, its rule is enforced by instruction only.
+7. Check each connector as `carriers` says: a connector to an agent by acting through it once with an action that must be blocked and once with an action that must pass, or, for the end of a turn, by running it as the hook would; the CI connector by running its command locally on a copy. When a connector does not give the expected results and cannot be corrected, its rule is enforced by instruction only.
 8. Remove the files, and the reproduced parts, that the previous record listed and this reproduction no longer writes.
 9. Write the setup record (`setup-record`), replacing the old one.
 10. Tell the user which rules are enforced mechanically and which by instruction only, and which files were written, changed or removed. Tell the user to commit the setup record and every file that the previous or the new setup record lists and that differs from the checked-out commit, and name them. The reproduction commits nothing.
 
-In M1 a setup has two mechanical parts, `status` and the gap guard (`guards`); only the gap guard has a connector to an agent (`carriers`).
+A setup has four mechanical parts: `status`, the gap guard, the role guard (`guards`) and `validate`. The rules that may be enforced mechanically, by the names `enforcement` gives them, are:
+
+| Rule | Part | Connector |
+|---|---|---|
+| `gap guard` | `gap-guard` | before an agent writes files |
+| `role table` | `role-guard` | before an agent reads or writes files |
+| `validate at the end of a turn` | `validate`, in `report` mode | when the lead ends a turn |
+| `validate in CI` | `validate`, in `gate` mode | a CI step |
+
+`status` and validate before closing have no connector (`carriers`).
 
 ### Mechanical or instruction
 
@@ -72,14 +83,14 @@ A rule that the rules allow to be enforced mechanically is `mechanical` when all
 
 - the agent has a means to run the rule's part at the moment the rule needs: before an action, at the end of a turn, in CI;
 - the part passed every case;
-- acting through its connector gave the expected results.
+- its connector check gave the expected results.
 
 Otherwise it is `instruction`, and the carriers state it as an instruction.
 
 ### Reproducing again
 
 - The steps are the same. Reproduced files and reproduced parts are replaced; project parts are kept.
-- The agent keeps the previous record's choices (carriers, begin and end lines, runners) unless the rules, the settings or the means it has require otherwise.
+- The agent keeps the previous record's choices (carriers, begin and end lines, runners, renderers, the CI) unless the rules, the settings or the means it has require otherwise.
 
 ## 3. Flow
 
@@ -103,7 +114,7 @@ sequenceDiagram
       L->>P: write carriers and the template's reproduced part
       L->>P: update .git/info/exclude
       L->>P: write parts and connectors, choose runners
-      L->>P: run every case, act through each connector
+      L->>P: run every case, check each connector
       L->>P: remove what is no longer produced
       L->>P: write the setup record
       L-->>U: which rules are mechanical,<br/>files changed, what to commit
@@ -157,6 +168,8 @@ flowchart TD
 - **When no means reaches the lead by itself at the start of every session, the reproduction stops with an environment error.** The lead's rules must reach it without the user doing anything (`carriers`). A setup that relies on the user pointing the lead to its rules in every session would leave them to memory, as when agents keep rules by themselves. Like a missing runner, this is a lack in the environment, not in the rules. Rejected: telling the user to point the lead to its carrier at the start of every session, which breaks that contract without anything recording it. (Design-level — confirmed 2026-10-17)
 - **When there is no setup record but the git history of the checked-out commit holds one, the reproduction stops before writing anything and asks the user to restore it.** The record is in git, so a missing record that git once held was removed by hand. Reproducing as if for the first time would miss reproduced files edited by hand, and would leave the old reproduced parts behind as project text next to new ones. Rejected: asking the user at every reproduction without a record whether there was an earlier one, which asks on every true first reproduction and relies on memory; treating it as a first reproduction, which shows the damage only at the next reproduction. A record removed before it was ever committed, or one whose commits a shallow clone does not hold, is not caught. (Design-level — confirmed 2026-10-17)
 - **The reproduction commits nothing; its final report tells the user to commit the setup record and every file that either record lists and that differs from the checked-out commit, and names them.** When to commit is the user's call, and a commit made by the reproduction could mix with the user's own work. Naming the files at the end of every reproduction makes forgetting unlikely, and the record must be committed for a removed record to be caught later. Removed files and removed parts are named too, so that what git holds is exactly what the record lists. Rejected: the reproduction committing by itself, which makes commits the user did not ask for. (Design-level — confirmed 2026-10-17)
+- **A renderer is chosen per kind of figure at reproduction, on the developer's machine; where none is present, the figure check is skipped.** intent §8.3 runs the render check only where a renderer is. Renderers differ from machine to machine like runners, so they are chosen and recorded at reproduction. Rejected: requiring a renderer in CI, which makes every project's CI install one. (Design-level — confirmed 2026-10-18)
+- **The CI step goes into the CI the project already uses; when none is found, the agent asks; with none, there is no CI step.** (Design-level — confirmed 2026-10-18)
 - **What is no longer produced is removed, and exclusions of layers no longer kept out of git are removed.** The setup then is exactly what the record lists. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
@@ -178,6 +191,13 @@ In the M1 Done of intent §11, on the same project:
 - every case of `status` and `gap-guard` passes in the project;
 - acting through the gap guard's connector blocks the write below the proposed gap item and lets the other through (`carriers`), and the setup record lists the gap guard as `mechanical`.
 
+In the M2 Done of intent §11, on the same project:
+
+- every case of `role-guard` and `validate` passes in the project;
+- the role guard's connector check blocks the reads it must block, as the lead and as each role started by hand-off, and the setup record lists the role table as `mechanical`;
+- the end-of-turn and CI connector checks give the expected results, and leave nothing behind;
+- a renderer is recorded for each kind of figure the template names and the developer's machine can render.
+
 ## 7. Out of scope
 
-- Mechanical parts, with their runners, cases and connectors, added in M2: the role guard and validate.
+- None. reproduction is complete in M2.

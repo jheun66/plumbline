@@ -12,7 +12,7 @@ basis: docs/intent.md 1.4
 
 **Does not**:
 
-- List the cases of each part. The module that defines the part does, in its section 6: `guards` and `status`, and `validate` (M2).
+- List the cases of each part. The module that defines the part does, in its section 6: `guards`, `status` and `validate`.
 - Choose a part's runner. `reproduction` does, and `setup-record` records it.
 - Check judgment checks. They have no cases. What they read and what they leave is set by `verify` and `changes`.
 - Write a part's connector, or check it. `carriers` and `reproduction` do.
@@ -54,7 +54,8 @@ A connector is what connects a mechanical part to an agent's hooks or to CI. It 
 
 - A connector only translates: what the agent or CI gives, into the part's arguments and standard input; and the part's verdict, into the form the agent or CI understands. It makes no judgment of its own.
 - A connector to an agent blocks only on `block`. On `error` it reports an environment error and lets the agent go on.
-- Cases do not run through a connector. A connector to an agent is checked at reproduction by acting through it (`reproduction`). How a connector to CI is checked is set with `validate` (M2).
+- A connector to CI fails the CI run on `block` and on `error`, and says which.
+- Cases do not run through a connector. Connectors are checked at reproduction (`reproduction`, `carriers`): a connector to an agent by acting through it, a connector to CI by running its command locally on a copy of the project.
 
 ```mermaid
 flowchart LR
@@ -202,7 +203,7 @@ flowchart LR
 - **Exit status 0 is `pass`, 3 is `block`, anything else is `error`.** Common runtimes exit with 1 or 2 when a program fails unexpectedly, and a missing program gives 127. With only 3 meaning `block`, a crash or a missing runner can never block, so a broken guard cannot block without end. Rejected: 1 for `block`, which a crash also gives; a verdict word in standard output, which every caller would have to parse. (Design-level — confirmed 2026-10-17)
 - **Result lines are a code and fields separated by tabs, compared exactly and in order; standard error is free text and never compared.** Codes keep what is compared free of any natural language. Free text in standard error lets a setup explain a result in the words its project uses. Each module defines the order, so the same input gives the same output down to the order of the lines. (Design-level — confirmed 2026-10-17)
 - **A case is a JSON object that carries all of its input.** A temporary script in any runner can read one object. A case that does not depend on the project it runs in holds the same in every project. (Design-level — confirmed 2026-10-17)
-- **Git state in a case is only the list of tracked paths.** validate (M2) needs it to find tracked files of a layer not in git. Rejected: describing commits and history, which no part in the module map uses. (Design-level — confirmed 2026-10-17)
+- **Git state in a case is only the list of tracked paths.** validate needs it to find tracked files of a layer not in git. Rejected: describing commits and history, which no part in the module map uses. (Design-level — confirmed 2026-10-17)
 - **A run gets 10 seconds.** A guard runs at every action, so a slow guard already fails its purpose. The limit turns a hang into `error` instead of a stalled reproduction. A case's input is a few files, and the formats a part reads need no library, so a working part ends well within it. Rejected: a longer limit, which only makes a hang slower to find; a limit per part, which leaves cases without one until each part's module sets it; a limit chosen at reproduction, under which the same case could get different verdicts in different projects. (Design-level — confirmed 2026-10-17)
 - **Cases run without the network.** The same input must give the same result, and the network is not part of the input. (Design-level — confirmed 2026-10-17)
 - **Cases run a part through this contract, not through its connector. A connector to an agent is checked at reproduction by acting through it.** Connectors differ from one coding agent to another and the rules cannot name them, so cases cannot cover them. Without a check, a connector the agent never calls would leave a rule recorded as mechanical while nothing enforces it. Rejected: cases alone, which cannot find that; rules for connectors alone, which make a wrong translation less likely but still cannot find a connector that is never called. (Design-level — confirmed 2026-10-17)
@@ -223,4 +224,4 @@ The cases of each part are listed and checked in the module that defines the par
 
 ## 7. Out of scope
 
-- The cases of the role guard and validate (M2).
+- None. conformance is complete in M2.

@@ -107,7 +107,7 @@ flowchart TD
 
 ## 6. Verification criteria
 
-`reproduction` (M0) stops on invalid settings. `status` and the gap guard (`guards`), and later `validate` and the role guard (M2), read the settings and list conformance cases for the parts they use. Across them:
+`reproduction` stops on invalid settings. `status`, `validate` and both guards (`guards`) read the settings and list conformance cases for the parts they use. Across them:
 
 - the example in section 2 is valid;
 - a missing `layers` key, a missing layer, an empty path list, a second `design` path, or a `design` path that is a file is an error;
@@ -118,4 +118,4 @@ flowchart TD
 
 ## 7. Out of scope
 
-- The check that a file of a layer not in git is tracked by git (`validate`, M2).
+- None. settings is complete in M2.

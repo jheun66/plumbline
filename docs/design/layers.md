@@ -120,4 +120,4 @@ flowchart TD
 
 ## 7. Out of scope
 
-- Enforcing the read direction (`guards`, M2).
+- None. The read direction is enforced by the role guard (`guards`).

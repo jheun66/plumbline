@@ -165,7 +165,7 @@ sequenceDiagram
     A->>P: write document templates, guards, checks
     A->>P: add layers not in git to .git/info/exclude
     A->>P: run every conformance case
-    A->>P: act through each connector to an agent
+    A->>P: check each connector
     A->>P: write the setup record
     A-->>U: done, with which rules are mechanical and which are instructions only
   end
@@ -173,7 +173,7 @@ sequenceDiagram
 
 - The agent reads only the rules and the conformance cases, at the commit this reproduction uses: the one the user names, or else the one in the setup record. It does not read plumbline's design.
 - Until every conformance case passes, the reproduction is not done. The agent corrects what it produced and runs the cases again.
-- Each connector to an agent is checked by acting through it: one action that must be blocked and one that must pass. A rule whose connector cannot be made to work is recorded as an instruction.
+- Each connector is checked at reproduction: a connector to an agent by acting through it, one action that must be blocked and one that must pass; a connector to CI by running its command locally. A rule whose connector cannot be made to work is recorded as an instruction.
 - After the reproduction, the project runs without the rules. Rules are needed again only to reproduce again or to look for newer rules.
 
 ### A change

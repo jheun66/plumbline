@@ -14,7 +14,7 @@ basis: docs/intent.md 1.4
 
 - Choose the section titles' wording, the kinds of figures, or how design documents are laid out and named. Each project's template and its own design decide those.
 - Say how a decision that came from a gap refers to its change. `changes` does.
-- Check any of this. `validate` (M2) and `verify` (M2) do.
+- Check any of this. `validate` and `verify` do.
 
 ## 2. Public interface
 
@@ -46,7 +46,7 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 - Each project has one document template: `.plumbline/template.md`. It lies outside the design location, so it is not a design document.
 - It has a project part and a reproduced part. A reproduction writes only the reproduced part and never changes the project part.
 - The project part holds the project's own words:
-  - front matter (`layers`) with exactly two keys, each once: `confirmed: <text>` and `pending: <text>`. They are the two design-level markers. The `confirmed` text holds `YYYY-MM-DD` where the date goes;
+  - front matter (`layers`) with the keys `confirmed` and `pending`, each once, and `figure`, any number of times. `confirmed: <text>` and `pending: <text>` are the two design-level markers; the `confirmed` text holds `YYYY-MM-DD` where the date goes. Each `figure: <name>` names a kind of figure the project uses, by the info string of its fenced code blocks;
   - the seven level-2 headings, in order. Their exact text is the project's section titles.
 - The lead writes the project part with the user before the module map is written (`authoring`). When a project later changes these words, every module document is changed to match.
 - The reproduced part says what each section is for, how basis lines are written and how markers are used. It holds no level-2 heading.
@@ -67,9 +67,10 @@ A module document has no other level-2 headings. Level-3 headings and below are 
 
 ### Figures
 
+- A figure is a fenced code block in a design document whose info string begins with one of the template's `figure` names. The kinds of figures are the project's choice.
 - A figure says the same as the text. No fact appears only in a figure. Changing one changes the other.
 - A figure shows only the current milestone's scope.
-- A figure is rendered and checked for overlapping or cut-off text.
+- A figure is rendered and checked for overlapping or cut-off text. Whether it renders is checked by `validate` where a renderer is present; whether its text overlaps is judged by whoever writes it.
 
 ### What a design document never names
 
@@ -130,11 +131,12 @@ flowchart TD
 - **The top-level README names the current milestone in a `milestone` line of its front matter.** The milestone is a fact about what the design now covers, next to its scope and reading order; front matter lets a script read it (`status`). (Design-level — confirmed 2026-10-17)
 - **The template states the design-level marker, in two states.** The rules cannot name the words, and a fixed form lets validate find unmarked or undated decisions. (Design-level — confirmed 2026-10-17)
 - **The section titles and the marker texts are the template's project part. The lead writes them with the user before the module map, and a reproduction never changes them.** The rules can hold no words of a natural language and the settings hold two values only, so neither can give them. If a reproduction chose them, reproducing again could change them and fail every module document already written. The module map is written before the first reproduction, so the words must exist by then. Rejected: matching sections by number only, which lets titles drift from one document to another; fixed English titles in the rules, which would make the rules choose a language. (Design-level — confirmed 2026-10-17)
+- **The kinds of figures are the template's `figure` lines, by the info string of their code blocks.** A check must know which code blocks are figures, and the kinds are each project's choice (intent §7). The template's project part already holds the project's own words, and its front matter can be read by a script. Rejected: letting the reproducing agent find the kinds in the design documents, which can give a different answer at each reproduction; leaving rendering out of `validate`, which intent §8.3 puts there. (Design-level — confirmed 2026-10-18)
 - **The template is `.plumbline/template.md`, and its marker texts are the front matter values `confirmed` and `pending`.** The lead writes the template before the first reproduction, when no setup record exists to say where it is, so its place is fixed. `.plumbline/` already holds what plumbline keeps in a project. Front matter lets a script find the texts without reading prose. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
 
-These are checked by `validate` (M2), which lists them as conformance cases:
+These are checked by `validate`, which lists them as conformance cases:
 
 - a module document missing one of the seven sections, or with two of them swapped, or with an extra level-2 heading, fails;
 - a module document whose level-2 headings equal the template's, in order, passes, whatever the template's wording;
@@ -142,8 +144,11 @@ These are checked by `validate` (M2), which lists them as conformance cases:
 - reproducing again leaves the template's project part as it was;
 - a design document without a `basis` line fails;
 - a design-level marker that is not one of the template's two forms, or a confirmed marker without a date, fails. (Whether a decision should have carried a marker at all is a matter of judgment, not a check.)
-- a design document that names a path under an impl location fails.
+- a design document that names a path under an impl location fails;
+- with `figure: mermaid` in the template, a `mermaid` code block is a figure and a `text` code block is not.
+
+`verify` judges the impl locations that are not paths, such as test names.
 
 ## 7. Out of scope
 
-- The checks themselves (`validate`, `verify`, M2).
+- None. design-docs is complete in M2.

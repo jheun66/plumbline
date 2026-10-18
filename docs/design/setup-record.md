@@ -4,17 +4,17 @@ basis: docs/intent.md 1.4
 
 # setup-record
 
-> Basis: intent 1.4 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record).
+> Basis: intent 1.4 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record; figures render where a renderer is present), §8.4 (what each role may read).
 
 ## 1. Responsibilities
 
-**Does**: defines the setup record: the one file in which a reproduction writes what it used and what it produced. Defines its place, its format and every field, how the checksum of a reproduced file is computed (also when the reproduction wrote only part of a file), and when two copies of the settings count as the same.
+**Does**: defines the setup record: the one file in which a reproduction writes what it used and what it produced. Defines its place, its format and every field, which roles each rule carrier is meant for, how a figure is handed to its renderer, how the checksum of a reproduced file is computed (also when the reproduction wrote only part of a file), and when two copies of the settings count as the same.
 
 **Does not**:
 
 - Decide what a reproduction writes, which rule carriers and runners it chooses, or which lines mark a reproduced part. `reproduction` and `carriers` do.
 - Hold the settings people edit. `settings` does. The record holds a copy of the settings a reproduction used.
-- Check the record, or the files against it. `validate` does (M2). Report from it. `status` does.
+- Check the record, or the files against it. `validate` does. Report from it. `status` does.
 - Hold the rules. The record points at them.
 
 ## 2. Public interface
@@ -79,22 +79,27 @@ A JSON object with exactly these keys:
     }
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"] },
-    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"] },
-    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"] }
+    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] },
+    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"], "roles": ["lead"] },
+    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"], "roles": ["implementer"] }
   ],
   "parts": [
     { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
-    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" }
+    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" },
+    { "name": "role-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/role-guard" },
+    { "name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate" }
+  ],
+  "renderers": [
+    { "figure": "mermaid", "command": ["RENDERER", "--check"] }
   ],
   "enforcement": [
-    { "rule": "role table", "by": "instruction" },
+    { "rule": "role table", "by": "mechanical", "part": "role-guard" },
     { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" }
   ]
 }
 ```
 
-The paths, runners and checksums in this example are illustrations; a reproduction chooses its own.
+The paths, runners, commands and checksums in this example are illustrations; a reproduction chooses its own. The example leaves out the entries in `files` for the M2 parts and the verifier's carrier, and part of `enforcement`.
 
 | Key | Value |
 |---|---|
@@ -103,6 +108,7 @@ The paths, runners and checksums in this example are illustrations; a reproducti
 | `files` | every file the reproduction wrote, except the record itself and `.git/info/exclude` |
 | `carriers` | the rule carriers the reproduction chose |
 | `parts` | the mechanical parts of the setup, and how each is run |
+| `renderers` | for each kind of figure that has a renderer here, how to run it |
 | `enforcement` | for each rule that the rules allow to be enforced mechanically, whether it is |
 
 Any other key, anywhere in the object, is an error.
@@ -137,6 +143,7 @@ A list with one object per rule carrier.
 |---|---|
 | `kind` | what the carrier is, in the reproducing agent's words: an instruction file, a file it refers to, a script a hook runs, a skill, and so on |
 | `files` | the paths that make up the carrier. Each is listed in `files` |
+| `roles` | the roles the carrier is meant for: one or more of `lead`, `implementer`, `verifier`, each once. A carrier that every agent reads lists all three |
 
 #### `parts`
 
@@ -149,6 +156,17 @@ A list with one object per mechanical part: a guard or a deterministic check.
 | `entry` | the path of the file the runner runs. It is listed in `files` |
 
 A part is run as its `runner`, then its `entry`, then the part's own arguments (`conformance`).
+
+#### `renderers`
+
+A list with one object per kind of figure for which the reproduction found a renderer. It may be empty.
+
+| Key | Value |
+|---|---|
+| `figure` | a `figure` name from the template (`design-docs`). No name appears twice |
+| `command` | the command that renders one figure, as a list: the program and its arguments. A file it runs that the reproduction wrote is listed in `files` |
+
+A renderer is run with the project root as its working directory and the figure's text, the lines between its fences, on standard input. Exit status 0 means the figure renders; any other status means it does not. A renderer whose program cannot be started is not present.
 
 #### `enforcement`
 
@@ -201,6 +219,11 @@ classDiagram
   class Carrier {
     kind: free text
     files: paths
+    roles: meant for
+  }
+  class Renderer {
+    figure: a template figure name
+    command: command list
   }
   class Part {
     name
@@ -217,6 +240,7 @@ classDiagram
   SetupRecord *-- "*" File
   SetupRecord *-- "*" Carrier
   SetupRecord *-- "*" Part
+  SetupRecord *-- "*" Renderer
   SetupRecord *-- "*" Enforcement
   Carrier ..> File : files are listed
   Part ..> File : entry is listed
@@ -243,12 +267,14 @@ flowchart TB
   R["reproduction"] -->|"replaces whole"| S[(".plumbline/setup-record.json")]
   S -->|"commit, files<br/>written last time"| R
   S -->|"rules, settings"| T["status"]
-  S -->|"files, checksums, format"| V["validate (M2)"]
+  S -->|"files, checksums, format,<br/>renderers"| V["validate"]
+  S -->|"setup files, carriers' roles"| G["role guard"]
 ```
 
 - A reproduction reads the record it is about to replace: the commit, when the user names none, and the files written last time.
 - status reports the setup's rules version and whether the settings changed since the reproduction.
-- validate checks the record's format and every listed file's checksum.
+- validate checks the record's format and every listed file's checksum, and runs the renderers.
+- The role guard tells setup files and each carrier's roles from it (`guards`).
 
 ## 4. Invariants and contracts
 
@@ -258,6 +284,7 @@ flowchart TB
 - Right after a reproduction, every listed file exists and its checksum matches.
 - No path is listed twice in `files`. Every path in `carriers` and `parts` is listed in `files`.
 - Every `mechanical` entry in `enforcement` names a part in `parts`.
+- Every carrier names at least one role.
 - The record holds nothing from a layer not in git. Its copy of the settings holds only paths and layer names.
 - The record holds no copy of the rules.
 
@@ -273,6 +300,8 @@ flowchart TB
 - **The record and every file it lists are in git, and outside every layer location.** validate in CI needs both the files and the checksums. Setup files are not a layer (`roles`), so none of them lies at a layer location. (Design-level — confirmed 2026-10-17)
 - **A carrier's kind is free text, and a rule's name is the one the rules give it.** The rules cannot name a coding agent's means, so the kind of a carrier is the reproducing agent's own description. No check compares these values; they are for people. (Design-level — confirmed 2026-10-17)
 - **Each part records a runner, as a command list, and an entry file.** Every caller, the conformance cases included, needs only these two to run a part. The runner can differ from part to part, because each must be present only where its part runs. (Design-level — confirmed 2026-10-17)
+- **Each carrier names the roles it is meant for.** The role guard must tell which carrier a role may read (`roles`), and the kind of a carrier is free text no check reads. (Design-level — confirmed 2026-10-18)
+- **A renderer is a command that gets one figure on standard input and answers by its exit status; the reproduction records one per kind of figure it can render.** Like a runner, a renderer differs from machine to machine, so it is chosen at reproduction and recorded. The same interface as a part needs no knowledge of the kind of figure. Rejected: passing the figure as a file path, which needs a temporary file in the project or outside the working directory. (Design-level — confirmed 2026-10-18)
 - **The record holds no time.** Reproducing again with the same rules and settings then leaves the record as it was, and git shows no change. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
@@ -284,9 +313,8 @@ flowchart TB
   - a reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one`, `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it; with `rule two` in place of `rule one` it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`;
   - a reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
 - The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not.
-- `validate` (M2) lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, and a `mechanical` entry without a part are errors.
+- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, and two renderers for one figure name are errors.
 
 ## 7. Out of scope
 
-- Checking the record's format and the checksums (`validate`, M2).
-- Mechanical parts in `parts` and `enforcement` added in M2: the role guard and validate.
+- None. setup-record is complete in M2.

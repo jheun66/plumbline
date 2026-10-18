@@ -4,17 +4,17 @@ basis: docs/intent.md 1.4
 
 # changes
 
-> Basis: intent 1.4 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.4 (the lead records gaps), §11 (M1).
+> Basis: intent 1.4 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.3 (verify results stay in the change), §8.4 (the lead records gaps), §11 (M1, M2).
 
 ## 1. Responsibilities
 
-**Does**: defines the change: one unit of work, from opening to archive. Defines the change record and its place, the gap item and its states, the diagnosis of which layer is wrong and what each diagnosis changes, the current change of a working tree, how a change is opened, closed and archived, how a milestone's work is a change, and how a decision that came from a gap points back to its change.
+**Does**: defines the change: one unit of work, from opening to archive. Defines the change record and its place, the gap item and its states, the diagnosis of which layer is wrong and what each diagnosis changes, the current change of a working tree, how a change is opened, closed and archived, how a milestone's work is a change, how a decision that came from a gap points back to its change, the verify result a change keeps, and how its findings are taken up.
 
 **Does not**:
 
 - Block edits while a gap item is proposed. `guards` does (the gap guard).
 - Report changes and gap items. `status` does.
-- Define the checks that run when a change closes. `validate` and `verify` do (M2).
+- Define what is checked before a change closes, or what the verifier checks. `validate` and `verify` do.
 - Word the instructions agents receive. `carriers` does.
 
 ## 2. Public interface
@@ -24,7 +24,7 @@ basis: docs/intent.md 1.4
 - Each change has one folder, `.plumbline/changes/<name>/`, in git (`settings`: `.plumbline/` holds what plumbline keeps in a project).
 - `<name>` is `YYYY-MM-DD-<slug>`: the date the change was opened, then a slug of lowercase ASCII letters, digits and hyphens. No two changes have the same name.
 - Every folder directly under `.plumbline/changes/` is a change.
-- The folder holds `change.md` and one file per gap item, `gap-<n>.md`, numbered 1, 2, 3 and so on in the order the gap items were recorded. `<n>` is a positive integer written without leading zeros; a file whose name has any other form is not a gap item. The folder may hold other files the work needs.
+- The folder holds `change.md` and one file per gap item, `gap-<n>.md`, numbered 1, 2, 3 and so on in the order the gap items were recorded. `<n>` is a positive integer written without leading zeros; a file whose name has any other form is not a gap item. Once the change is closed, the folder also holds `verify.md`, the verify result. The folder may hold other files the work needs.
 - A change folder is never removed and never moved. A finished change stays where it is, with the state `archived`.
 - A change record never holds content of a layer kept out of git. It may name only its location: a document path, a version, a section.
 
@@ -84,6 +84,23 @@ When a change is opened, the lead decides which layer is wrong.
 - When the user objects, the point is recorded as a proposed gap item and handled like any other.
 - A fix that adds or changes what a layer states, or that has to choose between two readings neither of which a confirmed decision settles, is not a wording fix.
 
+### The verify result
+
+`verify.md` is written by the verifier (`roles`) once the change is closed. Its front matter (`layers`) has exactly one key, once:
+
+| Key | Value |
+|---|---|
+| `result` | `clean` when there is no finding; `findings` otherwise |
+
+- The body is in the project's own words. It numbers each finding 1, 2, 3 and so on, and for each names the design document and section and says what impl does not show or does otherwise. Whether the diagnosis held is part of the result; a diagnosis that did not hold is a finding. What the verifier checks is defined by `verify`.
+- It may name impl locations. It never quotes impl content.
+- It holds no content of a layer kept out of git.
+
+### Taking up findings
+
+- For each finding, the lead writes in the body of `change.md` either the follow-up change that takes it up, as a link to that change's folder, or the user's decision not to act on it, with its date.
+- A follow-up change is opened like any change, with its own diagnosis. Its body names the change and the findings it takes up, with a link to that change's folder. One follow-up change may take up several findings.
+
 ### The current change
 
 - `.plumbline/current-change` holds one line: the name of an open change. Its content, with every CR LF read as LF and one final LF removed, is the name. When the file is absent or that content is empty, there is no current change.
@@ -96,8 +113,9 @@ When a change is opened, the lead decides which layer is wrong.
 
 1. **Open**: the lead chooses the name, writes `change.md` with `state: open` and the diagnosis, and makes the change current.
 2. **Work**: gap items are recorded and answered; the layers are changed top-down; implementers build impl (`roles`).
-3. **Close**: when no gap item is `proposed`, and the body says how the result was confirmed, the lead sets `state: closed` and empties the current change if it names this one.
-4. **Archive**: when the checks that run at closing are done, the lead sets `state: archived`. In M1 no check runs at closing, so a closed change may be archived at once.
+3. **Close**: when no gap item is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass, the lead sets `state: closed` and empties the current change if it names this one.
+4. **Verify**: a verifier checks the closed change and writes `verify.md` (`roles`).
+5. **Archive**: when `verify.md` is there and every finding is taken up or declined, the lead sets `state: archived`.
 
 ### A milestone's work
 
@@ -123,7 +141,12 @@ classDiagram
     folder: .plumbline/changes/name/
     state: open, closed, archived
     diagnosis: impl, design, intent
-    body: request, tasks, how confirmed, commits
+    body: request, tasks, how confirmed, commits, findings taken up
+  }
+  class VerifyResult {
+    file: verify.md
+    result: clean or findings
+    body: numbered findings, diagnosis held or not
   }
   class GapItem {
     file: gap-n.md
@@ -142,6 +165,8 @@ classDiagram
     link to the change folder
   }
   ChangeRecord *-- "*" GapItem
+  ChangeRecord *-- "0..1" VerifyResult
+  ChangeRecord ..> ChangeRecord : follow-up takes up findings
   CurrentChange ..> ChangeRecord : names
   DecisionLine ..> ChangeRecord : links to
 ```
@@ -151,8 +176,8 @@ A change:
 ```mermaid
 stateDiagram-v2
   [*] --> open: the lead opens it and makes it current
-  open --> closed: no gap item proposed, result confirmed
-  closed --> archived: the checks at closing are done
+  open --> closed: no gap item proposed, result confirmed,<br/>checks before closing pass
+  closed --> archived: verify result written,<br/>every finding taken up or declined
   archived --> [*]
 ```
 
@@ -193,6 +218,8 @@ flowchart TD
 - A change record holds no content of a layer kept out of git.
 - Change folders are never removed or moved.
 - From the first reproduction on, a milestone's work happens within that milestone's change.
+- A change is archived only when its `verify.md` is there and its body names, for every finding, a follow-up change or the user's dated decision not to act.
+- Only the verifier writes `verify.md`.
 
 ## 5. Decisions and reasons
 
@@ -210,18 +237,30 @@ flowchart TD
 - **The diagnosis is fixed when the change is opened; a gap found later is a gap item.** Whether the diagnosis was right is checked when the change closes (intent §8.2), which needs the diagnosis as it was made. (Design-level — confirmed 2026-10-17)
 - **The layers a change touches are derived from its diagnosis and its confirmed gap items, not written separately.** A separate list could disagree with them. (Design-level — confirmed 2026-10-17)
 - **A wording fix is made at once and reported, without a gap item; an objection turns it into a gap item.** intent §8.1, §8.4. The change record says what was aligned to what, so the user can check each fix afterwards. A fix that must choose between readings is not a wording fix, because no confirmed decision makes the choice. Rejected: recording a wording fix as a gap item that is confirmed at once, which a date from the user cannot honestly carry. (Design-level — confirmed 2026-10-18)
+- **Verify results stay in the change.** intent §8.3.
+- **A finding of verify is taken up by a follow-up change, not by reopening the closed one.** A change's state moves only forward, and its diagnosis never changes; a finding that the diagnosis did not hold can be taken up rightly only by a change with a diagnosis of its own. Rejected: reopening the closed change, which breaks both; running verify before closing, which leaves `closed` with no meaning. (Design-level — confirmed 2026-10-18)
+- **The verify result is one file, `verify.md`, whose front matter says `clean` or `findings`; its findings are numbered and named in design terms, and may name impl locations but never quote impl.** The lead reads the result and never reads impl; a location is enough to point at the problem. One key lets a check tell at a glance whether anything was found. (Design-level — confirmed 2026-10-18)
+- **The user may decline a finding; the decline is written with its date.** A verifier can be wrong, and only the user settles that. (Design-level — confirmed 2026-10-18)
 - **For a layer kept out of git, a gap item names only the location and what the layer below needs; the proposed wording goes to the user, not into the record.** Change records are in git, and the proposed wording would be content of that layer. (Design-level — confirmed 2026-10-17)
 - **The body of a change record is free text with no template.** No check reads it; what it must hold is listed above, and its words are the project's. (Design-level — confirmed 2026-10-17)
 - **From the first reproduction on, each milestone's work is one change with diagnosis `design`.** A gap found while the milestone's documents are written or its impl is built then has a change to be recorded in, the gap guard holds back the layers below it, status shows the work in progress, and the checks at closing (M2) cover the milestone's impl. Rejected: opening a change only when a gap is found, which leaves the milestone's work out of status and leaves its impl unchecked when no gap came up. (Design-level — confirmed 2026-10-17)
 
 ## 6. Verification criteria
 
-The formats here are read by `status` and `guards` (M1) and checked by `validate` (M2). Those modules list the conformance cases. Across them:
+The formats here are read by `status` and `guards` and checked by `validate`. Those modules list the conformance cases. Across them:
 
 - `change.md` with `state: open` and `diagnosis: design` is valid; with `state: done`, with `diagnosis: code`, or with a third key, it is not;
 - a gap item with `state: proposed` and no `date` is valid; one with `state: proposed` and a `date`, or with `state: confirmed` and no `date`, is not;
 - with `.plumbline/current-change` naming change X, which has a proposed gap item at the design layer, an edit to an impl file belongs to X and is held back; with the marker naming change Y, which has none, the same edit is not;
 - an absent or empty `.plumbline/current-change` means there is no current change.
+- `verify.md` with `result: clean` is valid; with `result: ok`, or with a second key, it is not.
+
+These are judgment checks, made during the M2 Done of intent §11, on the example project:
+
+- a closed change gets a `verify.md` from a fresh verifier, and is archived only after every finding is taken up by a follow-up change or declined by the user with a date;
+- a follow-up change and the change it comes from link to each other.
+
+`validate` checks the form of `verify.md`.
 
 These are judgment checks, made during the M1 Done of intent §11, on the example project:
 
@@ -233,5 +272,4 @@ These are judgment checks, made during the M1 Done of intent §11, on the exampl
 
 ## 7. Out of scope
 
-- The checks at closing: `validate` blocks closing on problems, and `verify` writes its results into the change (M2).
-- Checking the format of change records (`validate`, M2).
+- None. changes is complete in M2.

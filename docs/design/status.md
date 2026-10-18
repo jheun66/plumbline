@@ -14,7 +14,7 @@ basis: docs/intent.md 1.4
 
 - Block anything. Its verdict is always `pass` when it ran.
 - Use the network. Whoever runs it fetches the rules repository's tags and gives them as input.
-- Check formats or checksums. `validate` does (M2). status checks the form only of the parts it reads.
+- Check formats or checksums. `validate` does. status checks the form only of the parts it reads.
 - Decide who runs it and when. `carriers` says (the lead's procedures).
 
 ## 2. Public interface

@@ -1,6 +1,6 @@
 ---
 basis: docs/intent.md 1.4
-milestone: M1
+milestone: M2
 ---
 
 # plumbline design
@@ -12,6 +12,7 @@ milestone: M1
 > M1 module documents: bundles A (changes, roles), B (status, guards, and the `milestone` line in design-docs and authoring) and C (carriers, with M1 wording in reproduction, setup-record, conformance, settings, layers and design-docs) confirmed by the user on 2026-10-17. The M1 design is complete.
 > Revised after gaps reported while building M1 impl: changes (a milestone's work is a change), status, guards, carriers, layers, design-docs, settings, setup-record, authoring and overview; every basis raised to intent 1.3 (archive keeps a change in place). Confirmed by the user on 2026-10-17, except decisions still marked pending.
 > Revised after the M1 Done check on 2026-10-18: roles (a file in no layer is added to a layer before it is written; an implementer leaves a gap's point unbuilt), changes (wording fixes, intent 1.4), carriers and design-docs. Every basis raised to intent 1.4.
+> M2 module documents: bundles A (roles, changes), B (design-docs, setup-record, validate, guards, verify) and C (carriers, reproduction, conformance) written on 2026-10-18.
 
 ## Where this document sits
 
@@ -46,7 +47,7 @@ The module map covers the first version: milestones M0 to M3. Module documents a
 |---|---|
 | M0 | layers, design-docs, settings, roles, setup-record, conformance, authoring, carriers, reproduction |
 | M1 | changes, status, guards (gap guard), carriers (change procedures), roles (the lead's work on changes), design-docs and authoring (the `milestone` line) |
-| M2 | validate, verify, guards (role guard), carriers (verify procedure), roles (verifier) |
+| M2 | validate, verify, guards (role guard), carriers (verify procedure, connectors), roles (verifier, the full role table), changes (verify results, follow-up changes), setup-record (carrier roles, renderers), design-docs (figure kinds), reproduction and conformance (CI) |
 | M3 | none. validate runs on plumbline's own design documents |
 
 M0 documents are written in three bundles. Each bundle is confirmed by the user before the next is written.
@@ -123,6 +124,9 @@ When text is easier to follow as a picture, the document has the picture too.
 | implementer | a fresh agent that builds impl from the design |
 | verifier | a fresh agent that checks impl against the design |
 | archive | marking a finished change as archived; it stays where it is |
+| verify result | what a verifier writes into a closed change: clean, or numbered findings |
+| follow-up change | a change opened to take up findings of another change's verify result |
+| role guard | the guard that blocks reads and writes outside a role's row of the role table |
 | design-level decision | a decision the design makes because intent does not |
 | milestone | a development stage set by intent |
 | module map | a design's modules, their dependencies, flows and global contracts |
