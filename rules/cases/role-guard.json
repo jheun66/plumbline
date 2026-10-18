@@ -5027,7 +5027,7 @@
     }
   },
   {
-    "id": "role-guard-no-setup-record-is-an-error",
+    "id": "role-guard-no-setup-record-and-a-path-needing-it-is-an-error",
     "part": "role-guard",
     "input": {
       "files": {
@@ -5064,7 +5064,7 @@
       "args": [
         "implementer",
         "read",
-        "src/main.rs"
+        ".plumbline/lead.md"
       ]
     },
     "expect": {
@@ -5114,6 +5114,147 @@
     "expect": {
       "verdict": "pass",
       "output": []
+    }
+  },
+  {
+    "id": "role-guard-no-setup-record-layer-path-still-blocks",
+    "part": "role-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        "INSTRUCTIONS.md": "Roles: lead, implementer, verifier. The lead's rules are in .plumbline/lead.md.\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        ".plumbline/implementer.md": "Implementer rules.\n",
+        ".plumbline/parts/gap-guard": "gap guard\n",
+        "docs/intent.md": "---\nversion: 1\n---\n\n# Intent\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 1\n---\n\n# cli\n",
+        "src/main.rs": "fn main() {}\n",
+        "README.md": "# Project\n",
+        ".gitignore": "target/\n",
+        "target/out.txt": "built\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: closed\ndiagnosis: design\n---\n\nThe request.\n",
+        ".plumbline/changes/2026-11-02-a/verify.md": "---\nresult: clean\n---\n\nNo findings.\n",
+        ".plumbline/current-change": ""
+      },
+      "git": [
+        ".gitignore",
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/changes/2026-11-02-a/verify.md",
+        ".plumbline/current-change",
+        ".plumbline/implementer.md",
+        ".plumbline/lead.md",
+        ".plumbline/parts/gap-guard",
+        ".plumbline/settings.json",
+        "INSTRUCTIONS.md",
+        "README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "lead",
+        "read",
+        "src/main.rs"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tsrc/main.rs\tlead\tread\timpl"
+      ]
+    }
+  },
+  {
+    "id": "role-guard-no-setup-record-missing-path-under-intent-file-blocks",
+    "part": "role-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        "INSTRUCTIONS.md": "Roles: lead, implementer, verifier. The lead's rules are in .plumbline/lead.md.\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        ".plumbline/implementer.md": "Implementer rules.\n",
+        ".plumbline/parts/gap-guard": "gap guard\n",
+        "docs/intent.md": "---\nversion: 1\n---\n\n# Intent\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 1\n---\n\n# cli\n",
+        "src/main.rs": "fn main() {}\n",
+        "README.md": "# Project\n",
+        ".gitignore": "target/\n",
+        "target/out.txt": "built\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: closed\ndiagnosis: design\n---\n\nThe request.\n",
+        ".plumbline/changes/2026-11-02-a/verify.md": "---\nresult: clean\n---\n\nNo findings.\n",
+        ".plumbline/current-change": ""
+      },
+      "git": [
+        ".gitignore",
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/changes/2026-11-02-a/verify.md",
+        ".plumbline/current-change",
+        ".plumbline/implementer.md",
+        ".plumbline/lead.md",
+        ".plumbline/parts/gap-guard",
+        ".plumbline/settings.json",
+        "INSTRUCTIONS.md",
+        "README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "implementer",
+        "read",
+        "docs/intent.md/x"
+      ]
+    },
+    "expect": {
+      "verdict": "block",
+      "output": [
+        "block\tdocs/intent.md/x\timplementer\tread\tintent"
+      ]
+    }
+  },
+  {
+    "id": "role-guard-no-setup-record-project-file-is-an-error",
+    "part": "role-guard",
+    "input": {
+      "files": {
+        ".plumbline/settings.json": "{\"layers\": {\"intent\": [\"docs/intent.md\"], \"design\": [\"docs/design\"], \"impl\": [\"src\"]}, \"not_in_git\": []}\n",
+        "INSTRUCTIONS.md": "Roles: lead, implementer, verifier. The lead's rules are in .plumbline/lead.md.\n",
+        ".plumbline/lead.md": "Lead rules.\n",
+        ".plumbline/implementer.md": "Implementer rules.\n",
+        ".plumbline/parts/gap-guard": "gap guard\n",
+        "docs/intent.md": "---\nversion: 1\n---\n\n# Intent\n",
+        "docs/design/cli.md": "---\nbasis: docs/intent.md 1\n---\n\n# cli\n",
+        "src/main.rs": "fn main() {}\n",
+        "README.md": "# Project\n",
+        ".gitignore": "target/\n",
+        "target/out.txt": "built\n",
+        ".plumbline/changes/2026-11-02-a/change.md": "---\nstate: closed\ndiagnosis: design\n---\n\nThe request.\n",
+        ".plumbline/changes/2026-11-02-a/verify.md": "---\nresult: clean\n---\n\nNo findings.\n",
+        ".plumbline/current-change": ""
+      },
+      "git": [
+        ".gitignore",
+        ".plumbline/changes/2026-11-02-a/change.md",
+        ".plumbline/changes/2026-11-02-a/verify.md",
+        ".plumbline/current-change",
+        ".plumbline/implementer.md",
+        ".plumbline/lead.md",
+        ".plumbline/parts/gap-guard",
+        ".plumbline/settings.json",
+        "INSTRUCTIONS.md",
+        "README.md",
+        "docs/design/cli.md",
+        "docs/intent.md",
+        "src/main.rs"
+      ],
+      "args": [
+        "implementer",
+        "read",
+        "README.md"
+      ]
+    },
+    "expect": {
+      "verdict": "error"
     }
   }
 ]

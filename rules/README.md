@@ -48,7 +48,7 @@ A project whose setup has been reproduced runs without these rules. Its agents r
 | lead | the agent talking with the user; it works on intent and design |
 | implementer | a fresh agent that builds impl from the design |
 | verifier | a fresh agent that checks impl against the design for one closed change |
-| hand-off | the lead giving work to a fresh implementer, or a check to a fresh verifier, by naming its role and what [roles.md](roles.md#hand-off) lists |
+| hand-off | the lead giving work to a fresh implementer, a check to a fresh verifier, or, during a reproduction, a check of the role guard to either, by naming its role and what [roles.md](roles.md#hand-off) lists |
 | reproduction (reproduce) | an agent building a project's setup from these rules and the project settings |
 | setup | everything a reproduction writes and keeps in a project: rule carriers, document templates, guards, checks, their connectors, the setup record |
 | setup record | what a reproduction used and produced ([setup-record.md](setup-record.md)) |

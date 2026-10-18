@@ -10,7 +10,7 @@ A setup has two guards: the gap guard and the role guard.
 |---|---|
 | Arguments | first the guard's own leading arguments, when its section names any; then the paths of the files the action touches (below) |
 | Standard input | empty |
-| Verdict | `block` when at least one path is blocked; `pass` when none is, and when there are no paths; `error` when the guard cannot read what it needs, or when its leading arguments are not what its section names |
+| Verdict | `block` when at least one path is blocked; `pass` when none is, and when there are no paths, whatever the leading arguments; `error` when the guard cannot read what it needs, or when its leading arguments are not what its section names |
 | Output | one line per blocked path, in the order of the arguments; nothing when the verdict is `pass` |
 
 - A guard blocks only with exit status 3, and only the actions its own rule forbids.
@@ -84,7 +84,7 @@ The cases of `gap-guard` are in [cases/gap-guard.json](cases/gap-guard.json) ([c
 - **Leading arguments**: the role of the agent that acts, `lead`, `implementer` or `verifier`; then the action, `read` or `write`.
 - A read is an action that opens the content of a file or searches the content of files. Its paths are the files it opens, or the files and folders it searches. An action that only lists the names of files is not guarded.
 - A write is an action that creates, changes or removes a file. Its paths are those files.
-- It reads the settings ([settings.md](settings.md)), the setup record ([setup-record.md](setup-record.md)), the state of changes ([changes.md](changes.md)), and which paths git ignores, when the project root is a git repository. The project root is a git repository when it holds `.git`.
+- It reads the settings ([settings.md](settings.md)), the setup record ([setup-record.md](setup-record.md)) when a path needs it, the state of changes ([changes.md](changes.md)), and which paths git ignores, when the project root is a git repository. The project root is a git repository when it holds `.git`.
 
 ### The row of a path
 
@@ -127,14 +127,19 @@ The cell of a role in each row, from [roles.md](roles.md#the-role-table):
 
 ### How it decides
 
-1. When its leading arguments are not a role and an action as above, it gives `error`.
-2. When there are no paths, it gives `pass`, without reading anything.
-3. When the settings file is missing or not valid ([settings.md](settings.md#the-format)), or the setup record is missing or not valid ([setup-record.md](setup-record.md#valid-records)), it gives `error`.
-4. Then, for each path in turn:
+It reads only what deciding the paths needs. The paths are the arguments after the first two.
+
+1. When there are no paths, it gives `pass`, without reading anything, whatever the first two arguments are.
+2. When its leading arguments are not a role and an action as above, it gives `error`.
+3. When the settings file is missing or not valid ([settings.md](settings.md#the-format)), it gives `error`.
+4. When a path falls in none of rows 1 to 8 of [The row of a path](#the-row-of-a-path), and the setup record is missing or not valid ([setup-record.md](setup-record.md#valid-records)), it gives `error`.
+5. Then, for each path in turn:
    1. Take the path's row, and the role's cell in it.
    2. When the cell does not allow the action, the path is blocked.
    3. For the verifier, `verify-result` allows a read or a write only when the change, `.plumbline/changes/<name>/`, has a `change.md` with the form [changes.md](changes.md#changemd) defines and `state: closed`. Otherwise the path is blocked.
    4. For a read of a folder, a path that exists and is a folder, the path is also blocked when it contains one of these that the role's cell does not allow it to read: a path of a layer, a file of a carrier, `.plumbline/setup-record.json` or a path in its `files`, `.plumbline/current-change`, `.git/info/exclude`, or a change folder. A folder contains a path when the path lies under it, whether or not that path exists. The change folders are the folders that listing `.plumbline/changes/` finds directly under it. The project root is a folder like any other.
+
+A path that falls in one of rows 1 to 8, such as a path in a layer, is decided without the setup record. When such a path is a folder that is read, step 5.4 looks only for the paths it can find without the setup record: it looks for no file of a carrier and no path in the record's `files`.
 
 Paths are taken as [Paths given as arguments](#paths-given-as-arguments) states.
 
@@ -145,7 +150,7 @@ The output line for a blocked path:
 | `block` | the path, relative to the project root, or as given when it lies outside; the role; the action; the row |
 
 - The project root is written `.`.
-- For a folder blocked by step 4.4, the row is that of the first path it contains that the role may not read, in the order of the rows in [The row of a path](#the-row-of-a-path).
+- For a folder blocked by step 5.4, the row is that of the first path it contains that the role may not read, in the order of the rows in [The row of a path](#the-row-of-a-path).
 
 Examples, with fields separated by spaces here for reading, and impl at `src`:
 
@@ -155,6 +160,8 @@ Examples, with fields separated by spaces here for reading, and impl at `src`:
 - `verifier read .git` gives `block .git verifier read exclude`, though `.git` itself is in the row `not-project`.
 - `implementer write src/a.rs README.md` gives `block README.md implementer write project-file` when `README.md` lies in no layer.
 - With intent in `not_in_git` and listed in `.git/info/exclude`, `implementer read docs/intent.md` still gives the row `intent`.
+- With intent at `docs/intent.md`, `implementer read docs/intent.md/x` gives `block docs/intent.md/x implementer read intent`: the path lies under the intent file, though it does not exist.
+- With no setup record, and design at `docs/design`: `lead read src/main.rs` gives `block src/main.rs lead read impl`, and `implementer read docs/design` gives `pass`. `implementer read README.md` and `implementer read .plumbline/lead.md` give `error`: those paths fall in none of rows 1 to 8.
 
 ### What always holds
 

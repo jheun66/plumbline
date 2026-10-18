@@ -93,6 +93,12 @@ To a verifier:
 - A hand-off to a verifier never carries intent content.
 - The verifier writes its result into that change and tells the lead it is done.
 
+For a check of the role guard:
+
+- During a reproduction, a hand-off may ask an implementer or a verifier for a check of the role guard instead of design sections ([carriers.md](carriers.md#checking-the-role-guards-connector)).
+- Such a hand-off names the role, says that it is a check of the role guard, and asks only for the reads that check lists. It names nothing else, except the carrier that holds the role's rules when [carriers.md](carriers.md) requires it.
+- The agent is started with it as for any other hand-off to its role. It never carries intent content.
+
 ## Changes
 
 - The lead opens, closes and archives changes, and keeps the current change ([changes.md](changes.md)).

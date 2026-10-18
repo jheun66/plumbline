@@ -56,6 +56,7 @@ The implementer:
 - how to read a design document: what each of the seven sections holds, what the design-level markers mean, and that a design never names impl locations ([design-docs.md](design-docs.md));
 - that it builds only the design sections it is handed;
 - that on a gap it stops and reports to the lead in terms of the design, leaves that point unbuilt and chooses no way to build it ([roles.md](roles.md#a-gap-found-by-the-implementer));
+- that when a hand-off asks for a check of the role guard ([roles.md](roles.md#hand-off)), it tries the reads the hand-off lists, and a blocked read is the expected result;
 - when a read or a write is blocked, to stop that work and report to the lead; never to read or write a blocked file another way;
 - when the work needs a file in no layer, to stop that work and report it to the lead ([roles.md](roles.md#files-in-no-layer)).
 
@@ -68,7 +69,8 @@ The verifier:
 - what it looks for, and how it judges whether the diagnosis held ([verify.md](verify.md));
 - the place and the form of `verify.md`: findings numbered and named in terms of the design, impl locations allowed, impl content never quoted ([changes.md](changes.md#the-verify-result));
 - to tell the lead when it is done;
-- when a read or a write is blocked, never to do it another way.
+- when a read or a write is blocked, never to do it another way;
+- that when a hand-off asks for a check of the role guard ([roles.md](roles.md#hand-off)), it tries the reads the hand-off lists, and a blocked read is the expected result.
 
 For every role:
 
@@ -109,7 +111,7 @@ The carrier every agent reads by itself is written only when step 2 has it name 
 1. The agent is started with the lead's hand-off, by the lead or by the user ([roles.md](roles.md#hand-off)). The hand-off names the role and what [roles.md](roles.md#hand-off) lists for it, and also the role's carrier when the hand-off must name it (see "Choosing a role's carrier"). When the means that reaches only that role needs the agent to be started in a particular way, it is started that way.
 2. When there is a carrier that every agent reads by itself, the agent learns there which role it plays. When no means reaches only its role, it also learns there which carrier holds its rules. When a means reaches only its role, that carrier does not name the role's carrier. When there is no carrier that every agent reads, this step does not happen.
 3. The agent reads its rules from its carrier.
-4. An implementer builds the design sections. A verifier checks the change ([verify.md](verify.md)).
+4. An implementer builds the design sections. A verifier checks the change ([verify.md](verify.md)). When the hand-off asks for a check of the role guard instead, the agent tries the reads the hand-off lists.
 
 ## What carried text may hold
 
@@ -137,7 +139,7 @@ For each mechanical part connected to an agent or to CI, a connector is written 
 
 - **The gap guard** ([guards.md](guards.md#the-gap-guard)) is connected to the hook that an agent's file-writing actions pass through before they happen, for the lead and the implementer alike. The connector gives the guard the paths the action will create, change or remove.
 - **The role guard** ([guards.md](guards.md#the-role-guard)) is connected to the hook that an agent's file-reading and file-writing actions pass through before they happen, for every role. The connector gives the guard the role the agent plays, the action, `read` or `write`, and the paths: for a search, the files and folders it searches. When the connector cannot tell which role an agent plays, the `role table` is enforced by instruction only.
-- **validate at the end of a turn** ([validate.md](validate.md)) is connected to the hook that runs when the lead ends a turn. It runs `validate` in `report` mode and gives its lines to the lead. It never blocks.
+- **validate at the end of a turn** ([validate.md](validate.md)) is connected to the hook that runs when the lead ends a turn. It runs `validate` in `report` mode and gives its lines to the lead. It may let the lead go on once, so that the lead can tell the user what `validate` reports. It never holds the lead back more than once in a turn, and never blocks.
 - **validate before closing** has no connector. The lead runs `validate` in `gate` mode before it closes a change, and never closes the change while it blocks.
 - **validate in CI** is a step of the CI the project uses ([reproduction.md](reproduction.md#steps)). The step runs `validate` in `gate` mode with its runner and entry, and fails when the verdict is `block` or `error`, saying which. When the project uses no CI, there is no such step, and `validate in CI` is enforced by instruction only.
 - **status** ([status.md](status.md)) has no connector. The lead runs it with its runner and entry ([setup-record.md](setup-record.md#parts)).
@@ -161,10 +163,18 @@ Nothing of the check reaches git, and the check leaves no change, file or marker
 
 ### Checking the role guard's connector
 
-1. Acting as the lead, the reproducing agent reads a path in an impl location. The read must be blocked. Then it reads a design document. The read must pass.
-2. For the implementer and for the verifier, the reproducing agent starts an agent of that role as the setup starts it, with a hand-off that asks for this check only. Acting as that role, reading a path in the intent location must be blocked, and reading a design document must pass.
+1. Acting as the lead, the reproducing agent reads a path that lies under an impl location and does not exist. The read must be blocked. Then it reads a design document. The read must pass.
+2. For the implementer and for the verifier, the reproducing agent starts an agent of that role as the setup starts it, with a hand-off that says it is a check of the role guard and asks only for two reads: a path that lies under the intent location and does not exist, which must be blocked; and a design document, which must pass.
+
+A path under a location that is a file lies in that location's layer: with intent at `docs/intent.md`, `docs/intent.md/x` is such a path ([guards.md](guards.md#the-role-guard)).
 
 Reads change nothing, so the check leaves nothing behind.
+
+### A connector that cannot be checked in this session
+
+When the reproducing agent cannot start an agent of a role until a new session, for example because the means that starts it was written by this reproduction, the rule whose connector check needs that agent is enforced by instruction only. The final report of the reproduction tells the user to reproduce again in a new session ([reproduction.md](reproduction.md#steps)).
+
+Such a connector stays in place, and its files are listed in the setup record ([setup-record.md](setup-record.md)). So does a connector whose check did not give the expected results and could not be corrected.
 
 ### Checking validate's connector at the end of a turn
 
