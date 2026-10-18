@@ -49,6 +49,7 @@ Examples:
 - Every path of a layer in `not_in_git` is listed in the project's `.git/info/exclude`. The lead lists them as soon as the layer is set to stay out of git ([authoring.md](authoring.md)), and every reproduction adds any that are missing ([reproduction.md](reproduction.md)).
 - The content of a layer kept out of git is never copied into a file that is in git: a design document, a change record, a rule carrier, the setup record, or any other. Only its location may be cited: a document path, a version, a section.
 - A layer kept out of git has no git history. How its history is kept is the project's choice.
+- `validate` reports a file that git tracks at a location of a layer kept out of git ([validate.md](validate.md#files-kept-out-of-git)).
 
 ## A check and a missing layer
 

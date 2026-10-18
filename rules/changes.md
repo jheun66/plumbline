@@ -1,6 +1,6 @@
 # Changes
 
-A change is one unit of work, from opening to archive. The lead opens, closes and archives changes, diagnoses them, and records their gap items ([roles.md](roles.md)).
+A change is one unit of work, from opening to archive. The lead opens, closes and archives changes, diagnoses them, and records their gap items. Once a change is closed, a verifier checks it and writes its verify result into it ([roles.md](roles.md)).
 
 Writing intent, the module map and the module documents for the first time is authoring ([authoring.md](authoring.md)). From the first reproduction on, each milestone's work is also a change ([A milestone's work](#a-milestones-work)). An intent or design document that was confirmed is changed through a change.
 
@@ -10,6 +10,7 @@ Writing intent, the module map and the module documents for the first time is au
 - Every folder directly under `.plumbline/changes/` is a change.
 - `<name>` is `YYYY-MM-DD-<slug>`: the date the change was opened, then a slug of lowercase ASCII letters, digits and hyphens. No two changes have the same name.
 - The folder holds `change.md`, and one file per gap item, `gap-<n>.md`, numbered 1, 2, 3 and so on in the order the gap items were recorded. `<n>` is a positive integer written without leading zeros. A file whose name has any other form is not a gap item.
+- Once the change is closed, the folder also holds `verify.md`, the verify result ([The verify result](#the-verify-result)).
 - The folder may hold other files the work needs.
 - A change folder is never removed and never moved. A finished change stays where it is, with the state `archived`.
 - A change record never holds content of a layer kept out of git ([settings.md](settings.md)). It names only its location: a document path, a version, a section.
@@ -30,7 +31,9 @@ The body is written in the project's own words, with no template. It holds:
 - for a bug: the current behaviour, the expected behaviour, and the behaviour that must not change;
 - the tasks;
 - how the result was confirmed;
-- the commits that belong to the change.
+- the commit that was checked out when the change was opened. A verifier's hand-off names it as the commit the change's work started from ([roles.md](roles.md#hand-off));
+- the commits that belong to the change;
+- once the change is verified, how each finding of its verify result was taken up ([Taking up findings](#taking-up-findings)).
 
 Examples:
 
@@ -91,6 +94,35 @@ Examples:
 - When the user objects, the point is recorded as a proposed gap item and handled like any other ([Gap items](#gap-items)).
 - A fix that adds or changes what a layer states, or that has to choose between two readings neither of which a confirmed decision settles, is not a wording fix.
 
+## The verify result
+
+`verify.md` in a change folder is the verify result of that change. Only the verifier writes it, once the change is closed ([roles.md](roles.md), [verify.md](verify.md)).
+
+Its front matter ([layers.md](layers.md#documents-and-front-matter)) has exactly one key, once:
+
+| Key | Value |
+|---|---|
+| `result` | `clean` when there is no finding; `findings` otherwise |
+
+- The body is in the project's own words. It numbers each finding 1, 2, 3 and so on. For each finding it names the design document and section, and says what impl does not show or does otherwise.
+- It says whether the diagnosis held. A diagnosis that did not hold is a finding.
+- It may name impl locations. It never quotes impl content.
+- It holds no content of a layer kept out of git.
+
+Examples:
+
+- Front matter with `result: clean` is valid.
+- Front matter with `result: ok`, or with a second key, is not.
+
+## Taking up findings
+
+- The lead reads the verify result and tells the user its findings.
+- For each finding, the lead writes in the body of `change.md` either the follow-up change that takes it up, as a link to that change's folder, or the user's decision not to act on it, with the date of that decision.
+- A follow-up change is opened like any change, with its own diagnosis ([Diagnosis](#diagnosis)). Its body names the change and the findings it takes up, with a link to that change's folder. One follow-up change may take up several findings.
+- A finding is never taken up by opening the closed change again.
+
+Example: a finding of change `2026-11-02-a` taken up by change `2026-11-09-b`. The body of `.plumbline/changes/2026-11-02-a/change.md` links to `../2026-11-09-b/` for that finding, and the body of `.plumbline/changes/2026-11-09-b/change.md` links to `../2026-11-02-a/` and names the finding by its number.
+
 ## The current change
 
 - `.plumbline/current-change` holds one line: the name of an open change.
@@ -111,8 +143,9 @@ Examples:
 
 1. **Open**: the lead chooses the name, writes `change.md` with `state: open` and the diagnosis, and makes the change current.
 2. **Work**: the lead records gap items and the user's answers; the layers are changed top-down; implementers build impl ([roles.md](roles.md)).
-3. **Close**: when no gap item of the change is `proposed`, and the body says how the result was confirmed, the lead sets `state: closed`. It empties `.plumbline/current-change` if that names this change.
-4. **Archive**: when the checks that run at closing are done, the lead sets `state: archived`. These rules define no check that runs at closing, so a closed change may be archived at once.
+3. **Close**: when no gap item of the change is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass, the lead sets `state: closed`. It empties `.plumbline/current-change` if that names this change. The check that runs before closing is `validate` in `gate` mode ([validate.md](validate.md)). The lead never closes a change while it blocks ([carriers.md](carriers.md)).
+4. **Verify**: the lead hands the closed change's check to a fresh verifier ([roles.md](roles.md#hand-off)). The verifier writes `verify.md` ([The verify result](#the-verify-result)).
+5. **Archive**: when `verify.md` is there, and the body of `change.md` names, for every finding, a follow-up change or the user's dated decision not to act on it ([Taking up findings](#taking-up-findings)), the lead sets `state: archived`.
 
 A change's state moves only from `open` to `closed` to `archived`.
 
@@ -122,7 +155,7 @@ A change's state moves only from `open` to `closed` to `archived`.
 - Its diagnosis is `design`: the design does not yet hold that milestone's module documents.
 - The lead opens it before that work starts: for the first milestone, after the first reproduction; for each later one, once the previous milestone's change is closed.
 - A gap found while its module documents are written or its impl is built is a gap item of this change.
-- It is closed when the milestone's impl is done, like any change: no gap item is `proposed`, and the body says how the result was confirmed.
+- It is closed when the milestone's impl is done, like any change: no gap item is `proposed`, the body says how the result was confirmed, and the checks that run before closing pass. Then it is verified and archived like any change.
 
 ## A decision that came from a gap
 
@@ -143,3 +176,5 @@ Example: with the design at `docs/design`, a decision in `docs/design/cli.md` th
 - A change record holds no content of a layer kept out of git.
 - Change folders are never removed or moved.
 - From the first reproduction on, a milestone's work happens within that milestone's change.
+- A change is archived only when its `verify.md` is there and its body names, for every finding, a follow-up change or the user's dated decision not to act on it.
+- Only the verifier writes `verify.md`.

@@ -38,7 +38,8 @@ The exit status gives the verdict:
 - A connector connects a mechanical part to an agent's hooks or to CI. The reproducing agent writes it ([carriers.md](carriers.md)).
 - A connector only translates: what the agent or CI gives, into the part's arguments and standard input; and the part's verdict, into the form the agent or CI understands. It makes no judgment of its own.
 - A connector to an agent blocks only on `block`. On `error` it reports an environment error and lets the agent go on.
-- Cases do not run through a connector. A connector to an agent is checked at reproduction by acting through it ([reproduction.md](reproduction.md)).
+- A connector to CI fails the CI run on `block` and on `error`, and says which.
+- Cases do not run through a connector. Connectors are checked at reproduction ([reproduction.md](reproduction.md#steps), [carriers.md](carriers.md#connectors)): a connector to an agent by acting through it, a connector to CI by running its command locally on a copy of the project.
 
 ## Conformance cases
 
@@ -108,14 +109,14 @@ Examples:
 
 - Every mechanical part of a setup has cases. A part that can block has at least one must-block case and one must-pass case.
 - The cases of a part are in the folder `cases/` of these rules, in one file named after the part with `.json` added. The file holds a JSON array whose items are the part's cases, all of them.
-- Judgment checks have no cases.
+- Judgment checks have no cases. verify is a judgment check ([verify.md](verify.md)).
 - Cases run a part through the contract above, not through its connector.
 
 ### When cases run
 
 - During a reproduction, in the project being reproduced, after the parts are written. The cases are read from the rules at the commit the reproduction uses.
 - The reproduction is finished only when every case of every part passes. When a case fails, the reproducing agent corrects the part and runs every case again.
-- Cases are not copied into the project, and nothing used to run them is kept there.
+- Cases are not copied into the project, and nothing used to run them is kept there. CI runs no case. After the reproduction, the checksums in the setup record find a part changed by hand ([setup-record.md](setup-record.md), [validate.md](validate.md)).
 
 ## The parts of a setup
 
@@ -124,6 +125,8 @@ A setup has exactly the mechanical parts these rules define:
 | Part | Defined in | Cases |
 |---|---|---|
 | `status` | [status.md](status.md) | [cases/status.json](cases/status.json) |
-| `gap-guard` | [guards.md](guards.md) | [cases/gap-guard.json](cases/gap-guard.json) |
+| `gap-guard` | [guards.md](guards.md#the-gap-guard) | [cases/gap-guard.json](cases/gap-guard.json) |
+| `role-guard` | [guards.md](guards.md#the-role-guard) | [cases/role-guard.json](cases/role-guard.json) |
+| `validate` | [validate.md](validate.md) | [cases/validate.json](cases/validate.json) |
 
 Its setup record's `parts` has one entry for each ([setup-record.md](setup-record.md#parts)).

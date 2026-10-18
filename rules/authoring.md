@@ -49,7 +49,7 @@ An item's mark:
 
 ## The module map
 
-1. After intent is confirmed, the lead settles the template's project part with the user: the seven section titles and the two marker texts ([design-docs.md](design-docs.md)). The lead writes them into the template.
+1. After intent is confirmed, the lead settles the template's project part with the user: the seven section titles, the two marker texts, and the kinds of figures the project uses, if any ([design-docs.md](design-docs.md#the-template)). The lead writes them into the template.
 2. The lead writes the module map from intent only: the modules, their dependencies, the flows, and the contracts that hold for every module. With it comes the design's README: scope, reading order, terms, and the `milestone` line ([design-docs.md](design-docs.md#design-documents-and-module-documents)).
 3. The map gives every module the milestone in which its document is written.
 4. The user confirms the map. Every design-level decision in it then carries the confirmed marker with the date.

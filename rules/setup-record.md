@@ -6,8 +6,9 @@ The setup record is the one file in which a reproduction writes what it used and
 
 - `.plumbline/setup-record.json` at the project root.
 - Only a reproduction writes it. Each reproduction replaces it whole. Nobody edits it by hand.
-- The record is in git, and so is every file it lists.
+- The record is in git, and so is every file it lists. `validate`, in CI too, compares those files with their checksums, without these rules or the conformance cases ([validate.md](validate.md)).
 - The record and every file it lists lie outside every layer location ([settings.md](settings.md)).
+- `status` reports from it ([status.md](status.md)). `validate` checks its format, the files it lists, and runs its renderers. The role guard tells setup files and each carrier's roles from it ([guards.md](guards.md#the-role-guard)).
 
 ## The format
 
@@ -44,6 +45,10 @@ A JSON object with exactly these keys:
       "checksum": "sha256:d7643b3243eb56482b2b34a8dde980201d3787e34475476743fd182667eec2bd"
     },
     {
+      "path": ".plumbline/verifier.md",
+      "checksum": "sha256:4b5a3755bdf889ff9ddb77dee492d9abf4e78e7b7b35cb93174f5fee56153c21"
+    },
+    {
       "path": ".plumbline/template.md",
       "checksum": "sha256:ea86728e0c9f2933951b83eea2a0b9a9e30b4aa03de63621d1e8c59f8618e15d",
       "begin": "<!-- plumbline:begin -->",
@@ -58,27 +63,57 @@ A JSON object with exactly these keys:
       "checksum": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
     },
     {
+      "path": ".plumbline/parts/role-guard",
+      "checksum": "sha256:713f888db4ae269bff261728d028470fafabfd7b67cce1542e6f104ff9fe1c45"
+    },
+    {
+      "path": ".plumbline/parts/validate",
+      "checksum": "sha256:133c8eb86cf813474ade739d5d133087e2026f56aaf366284dd1a25d98d44690"
+    },
+    {
       "path": ".plumbline/hooks/gap-guard-connector",
       "checksum": "sha256:e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
+    },
+    {
+      "path": ".plumbline/hooks/role-guard-connector",
+      "checksum": "sha256:8a93d6c7ef7d6bd7302c2fa23fd9e18a0ec0c3517e28adbd8de05e78476c75e0"
+    },
+    {
+      "path": ".plumbline/hooks/end-of-turn-connector",
+      "checksum": "sha256:eb7c6bebe49ced27cedf270ae964aea85c4e102d7d7d17bceed28cb1fa047292"
+    },
+    {
+      "path": "CI-CONFIG.yml",
+      "checksum": "sha256:1b158839f8aa339e89bb50b1603e90ec68e0fd5565fe10a7cb32729fddf7070a",
+      "begin": "# plumbline:begin",
+      "end": "# plumbline:end"
     }
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"] },
-    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"] },
-    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"] }
+    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] },
+    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"], "roles": ["lead"] },
+    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"], "roles": ["implementer"] },
+    { "kind": "file the instruction file names for the verifier", "files": [".plumbline/verifier.md"], "roles": ["verifier"] }
   ],
   "parts": [
     { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
-    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" }
+    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" },
+    { "name": "role-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/role-guard" },
+    { "name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate" }
+  ],
+  "renderers": [
+    { "figure": "mermaid", "command": ["RENDERER", "--check"] }
   ],
   "enforcement": [
-    { "rule": "role table", "by": "instruction" },
-    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" }
+    { "rule": "role table", "by": "mechanical", "part": "role-guard" },
+    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" },
+    { "rule": "validate at the end of a turn", "by": "mechanical", "part": "validate" },
+    { "rule": "validate in CI", "by": "mechanical", "part": "validate" }
   ]
 }
 ```
 
-The paths, runners and checksums in this example are illustrations. A reproduction chooses its own.
+The paths, runners, commands, begin and end lines, and checksums in this example are illustrations. A reproduction chooses its own.
 
 | Key | Value |
 |---|---|
@@ -87,6 +122,7 @@ The paths, runners and checksums in this example are illustrations. A reproducti
 | `files` | every file the reproduction wrote, except the record itself and `.git/info/exclude` |
 | `carriers` | the rule carriers the reproduction chose |
 | `parts` | the mechanical parts of the setup, and how each is run |
+| `renderers` | for each kind of figure that has a renderer on the developer's machine, how to run it |
 | `enforcement` | for each rule that may be enforced mechanically, whether it is |
 
 Any other key, anywhere in the object, is an error. The record holds no time.
@@ -121,6 +157,9 @@ A list with one object per rule carrier.
 |---|---|
 | `kind` | what the carrier is, in the reproducing agent's own words: an instruction file, a file it refers to, a script a hook runs, a skill, and so on |
 | `files` | the paths that make up the carrier. Each is listed in `files` |
+| `roles` | the roles the carrier is meant for: one or more of `lead`, `implementer` and `verifier`, each at most once. A carrier that every agent reads lists all three |
+
+The role guard tells from `roles` which carriers a role may read ([guards.md](guards.md#the-role-guard)).
 
 ### `parts`
 
@@ -134,6 +173,22 @@ A list with one object per mechanical part: a guard or a deterministic check.
 
 A part is run as its `runner`, then its `entry`, then the part's own arguments ([conformance.md](conformance.md)).
 
+### `renderers`
+
+A list with one object per kind of figure for which the reproduction found a renderer. It may be empty.
+
+| Key | Value |
+|---|---|
+| `figure` | a figure name from the template's `figure` lines ([design-docs.md](design-docs.md#the-template)). No name appears twice in the list. Whether the template still names it does not bear on whether the record is valid |
+| `command` | the command that renders one figure, as a non-empty list: the program and its arguments. A file it runs that the reproduction wrote is listed in `files` |
+
+How a renderer is run:
+
+- Its working directory is the project root.
+- Its standard input is the figure's text: the lines between the figure's opening and closing lines, each followed by LF ([design-docs.md](design-docs.md#reading-a-markdown-document)).
+- Exit status 0 means the figure renders. Any other status means it does not.
+- A renderer whose program cannot be started is not present.
+
 ### `enforcement`
 
 A list with one object per rule that may be enforced mechanically. These rules are listed in [reproduction.md](reproduction.md).
@@ -141,18 +196,18 @@ A list with one object per rule that may be enforced mechanically. These rules a
 | Key | Value |
 |---|---|
 | `rule` | the rule's name, as these rules give it |
-| `by` | `mechanical` or `instruction`. A rule is `mechanical` only when its part passed every case and acting through its connector gave the expected results ([reproduction.md](reproduction.md)). Otherwise it is `instruction` |
+| `by` | `mechanical` or `instruction`. A rule is `mechanical` only when its part passed every case and the check of its connector gave the expected results ([reproduction.md](reproduction.md#mechanical-or-instruction)). Otherwise it is `instruction` |
 | `part` | only when `by` is `mechanical`: the `name` of the part in `parts` that enforces it |
 
 Every other rule reaches agents as an instruction and is not listed.
 
 ### Valid records
 
-A record is valid when its keys and values follow everything stated under [The format](#the-format). Whether the files it lists still match their checksums does not bear on whether the record is valid.
+A record is valid when its keys and values follow everything stated under [The format](#the-format). It need not list every part or every rule these rules define: whether `parts` and `enforcement` hold an entry for each does not bear on whether the record is valid. Nor does whether the files it lists still match their checksums, or whether the template still names each figure name in `renderers`.
 
 Its copy of the settings is checked against the format in [settings.md](settings.md#the-format) without looking at the file system. Whether a path exists, or is a file or a folder, does not bear on whether the record is valid either.
 
-Among the errors: an unknown key; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a `mechanical` entry without a part.
+Among the errors: an unknown key; a missing key; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name.
 
 ## Checksums
 
@@ -186,5 +241,6 @@ Examples: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same. Add
 - Right after a reproduction, every listed file exists and its checksum matches.
 - No path is listed twice in `files`. Every path in `carriers`, and every `entry` in `parts`, is listed in `files`.
 - Every `mechanical` entry in `enforcement` names a part in `parts`.
+- Every carrier names at least one role.
 - The record holds nothing from a layer kept out of git. Its copy of the settings holds only paths and layer names.
 - The record holds no copy of the rules.

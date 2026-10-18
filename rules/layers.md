@@ -22,6 +22,8 @@
 
 Writing intent is not restricted by this table.
 
+What each role reads and writes is the role table ([roles.md](roles.md#the-role-table)). Where a setup enforces it mechanically, the role guard does ([guards.md](guards.md#the-role-guard)).
+
 ## Change direction
 
 - A change is made first in the highest layer it touches, then in each layer below.
