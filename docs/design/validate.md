@@ -241,6 +241,11 @@ Conformance cases. Each case gives the files listed and the argument, and expect
 | 60 | `.plumbline/lead.md` has CR LF line ends, and the record's checksum is that of the same lines with LF | `pass` | none |
 | 61 | a line between the begin and end lines of `INSTRUCTIONS.md` is changed | `block` | `checksum INSTRUCTIONS.md` |
 | 62 | `INSTRUCTIONS.md` has no end line | `block` | `part-not-found INSTRUCTIONS.md` |
+| 63 | the record's repository is `~/Projects/plumbline-rules` | `block` | `record .plumbline/setup-record.json` |
+| 64 | the record's repository is `file:///srv/plumbline` | `block` | `record .plumbline/setup-record.json` |
+| 65 | the record's repository is `plumbline-rules` | `block` | `record .plumbline/setup-record.json` |
+| 66 | the record's repository is `git@github.com:OWNER/plumbline.git` | `pass` | none |
+| 67 | the record's repository is `https://` | `block` | `record .plumbline/setup-record.json` |
 
 In the table, fields are separated by spaces for reading; in the cases they are tabs. Where a line number is not given, the case states it from its own file.
 

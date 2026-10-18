@@ -119,7 +119,7 @@ A record is valid when it follows everything this section says about its keys an
 
 | Key | Value |
 |---|---|
-| `repository` | the plumbline repository the rules were read from, as the user gave it |
+| `repository` | the address of the plumbline repository the rules were read from, one that other machines can reach too. It has one of two forms: `<scheme>://` and a rest that is not empty, where the scheme is ASCII letters, digits, `+`, `-` and `.`, begins with a letter, and is not `file` in any case; or `<user>@<host>:<path>`, where the user and the host hold no `/`, no `:` and no `@`, and none of the three is empty. A local path has neither form. A record whose repository has neither form is not valid |
 | `commit` | the full hash of the commit the rules were read at: 40 or 64 lowercase hexadecimal digits |
 | `tag` | optional. A tag that named that commit when the reproduction ran. It is for people; the commit is what counts |
 
@@ -292,11 +292,13 @@ flowchart TB
 - No runner and no renderer command holds an absolute path.
 - The record holds nothing from a layer not in git. Its copy of the settings holds only paths and layer names.
 - The record holds no copy of the rules.
+- The rules repository is named by an address, never by a local path.
 
 ## 5. Decisions and reasons
 
 - **The record holds where the rules came from, the settings used, the reproduced files with their checksums, the carriers, the runners, and which rules are enforced mechanically.** intent §5.2.
 - **The commit hash is what counts; a tag is for people.** intent §5.2.
+- **The rules repository is named by an address other machines can reach, never by a local path.** The record is in git and read on every machine the project is used on; status looks for newer rules at that address. A local path holds on one machine only and can show that machine's user name. Rejected: recording the repository as the user gave it, which records a local copy when the user names one. (Design-level — confirmed 2026-10-18)
 - **The settings stay a file of their own, apart from the record.** intent §5.2.
 - **The record is `.plumbline/setup-record.json`, a JSON file.** For the same reasons as the settings file: JSON is read without a library, and `.plumbline/` already holds what plumbline keeps in a project. (Design-level — confirmed 2026-10-17)
 - **The record copies the whole settings, and the two are compared as sets.** status can then say what changed, not only that something did. The settings hold only paths and layer names, so the copy carries nothing from a layer not in git. (Design-level — confirmed 2026-10-17)
@@ -320,7 +322,7 @@ flowchart TB
   - a reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
   - `validate` lists conformance cases for each of these: a whole file with CR LF line ends, a changed line inside a reproduced part, a `begin` line twice and a missing `end` line.
 - The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not. `status` lists conformance cases for both.
-- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, two renderers for one figure name, and a runner or a renderer command with an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`, are errors.
+- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, two renderers for one figure name, and a runner or a renderer command with an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`, are errors. So is a repository that is not an address, such as `~/Projects/plumbline-rules`, `plumbline-rules` or `file:///srv/plumbline`; `https://github.com/OWNER/plumbline` and `git@github.com:OWNER/plumbline.git` are addresses.
 
 ## 7. Out of scope
 
