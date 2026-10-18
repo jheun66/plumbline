@@ -3,7 +3,7 @@
 ## Design documents and module documents
 
 - Every Markdown file at the design location ([settings.md](settings.md)) is a design document.
-- The design location's top-level `README.md` is the design's README. It is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- `<design location>/README.md`, the file `README.md` directly in the design location, is the design's README. A `README.md` in a folder below it is a module document. The design's README is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
 - The design's README has exactly one `milestone` line in its front matter ([layers.md](layers.md#documents-and-front-matter)): `milestone: <name>`. It names the milestone the design is in now, as the project's intent names it.
 - Every other design document is a module document.
 - A project's section titles, its kinds of figures, and how its design documents are laid out and named are its own.

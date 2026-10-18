@@ -158,10 +158,10 @@ Examples, with fields separated by spaces here for reading, and impl at `src`:
 - `implementer read .plumbline` gives `block .plumbline implementer read current-change`.
 - `implementer read .` gives `block . implementer read exclude`: the project root contains `.git/info/exclude`, whether or not that file exists.
 - `verifier read .git` gives `block .git verifier read exclude`, though `.git` itself is in the row `not-project`.
-- `implementer write src/a.rs README.md` gives `block README.md implementer write project-file` when `README.md` lies in no layer.
+- `implementer write src/a.rs NOTES.md` gives `block NOTES.md implementer write project-file` when `NOTES.md` lies in no layer.
 - With intent in `not_in_git` and listed in `.git/info/exclude`, `implementer read docs/intent.md` still gives the row `intent`.
 - With intent at `docs/intent.md`, `implementer read docs/intent.md/x` gives `block docs/intent.md/x implementer read intent`: the path lies under the intent file, though it does not exist.
-- With no setup record, and design at `docs/design`: `lead read src/main.rs` gives `block src/main.rs lead read impl`, and `implementer read docs/design` gives `pass`. `implementer read README.md` and `implementer read .plumbline/lead.md` give `error`: those paths fall in none of rows 1 to 8.
+- With no setup record, and design at `docs/design`: `lead read src/main.rs` gives `block src/main.rs lead read impl`, and `implementer read docs/design` gives `pass`. `implementer read NOTES.md` and `implementer read .plumbline/lead.md` give `error`: those paths fall in none of rows 1 to 8.
 
 ### What always holds
 

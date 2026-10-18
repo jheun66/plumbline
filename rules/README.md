@@ -1,6 +1,6 @@
 # plumbline rules
 
-These rules set up a project to be developed in three layers: intent, design and impl. The rules are this folder, at one commit of the plumbline repository.
+These rules set up a project to be developed in three layers: intent, design and impl. The rules are this folder, `rules` at the top of the plumbline repository, at one commit of that repository. It holds the rules and their conformance cases. Every agent that uses the rules starts at this file.
 
 ## Where to start
 
