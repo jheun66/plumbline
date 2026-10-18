@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # guards
 
-> Basis: intent 1.4 — §2.2 (a hook that blocks without end), §5.3 (cases for the read direction hook), §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (the role table, enforced where a means exists; a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1, M2).
+> Basis: intent 1.5 — §2.2 (a hook that blocks without end), §5.3 (cases for the read direction hook), §5.5, §8.1 (lower layers are not edited while a gap is unconfirmed, within that change), §8.4 (the role table, enforced where a means exists; a guard never blocks without end; environment errors; what a hook cannot see), §11 (M1, M2).
 
 ## 1. Responsibilities
 
@@ -245,7 +245,7 @@ Conformance cases for `role-guard`. Unless a case says otherwise, the working di
 
 - `.plumbline/settings.json`: `intent` `["docs/intent.md"]`, `design` `["docs/design"]`, `impl` `["src"]`, `not_in_git` `[]`;
 - `.plumbline/setup-record.json`: a valid record that lists `INSTRUCTIONS.md` as a carrier for all three roles, `.plumbline/lead.md` as a carrier for `lead`, `.plumbline/implementer.md` as a carrier for `implementer`, and `.plumbline/parts/gap-guard` as a part's entry;
-- those four files, `docs/intent.md`, `docs/design/cli.md`, `src/main.rs` and `README.md`;
+- those four files, `docs/intent.md`, `docs/design/cli.md`, `src/main.rs` and `NOTES.md`;
 - `.gitignore` holding `target/`, and `target/out.txt`;
 - `.plumbline/changes/2026-11-02-a/change.md` with `state: closed`, `diagnosis: design`, and `verify.md` beside it with `result: clean`;
 - `.plumbline/current-change`, empty.
@@ -266,7 +266,7 @@ Every cell of the role table is a case: the role and the action as leading argum
 | `.plumbline/implementer.md` | `carrier` | P | P | P | B | B | B |
 | `.plumbline/parts/gap-guard` | `setup-file` | P | P | B | B | B | B |
 | `.git/info/exclude` | `exclude` | P | P | B | B | B | B |
-| `README.md` | `project-file` | P | B | P | B | P | B |
+| `NOTES.md` | `project-file` | P | B | P | B | P | B |
 | `target/out.txt` | `not-project` | P | P | P | P | P | P |
 | `/plumbline-elsewhere/x.md` | `not-project` | P | P | P | P | P | P |
 
@@ -280,7 +280,7 @@ More cases:
 | 4 | none | `implementer read .plumbline` | `block` | `block .plumbline implementer read current-change` |
 | 5 | none | `lead read .plumbline` | `pass` | none |
 | 6 | `change.md` has `state: open` | `verifier write .plumbline/changes/2026-11-02-a/verify.md` | `block` | `block .plumbline/changes/2026-11-02-a/verify.md verifier write verify-result` |
-| 7 | none | `implementer write src/a.rs README.md src/b.rs docs/intent.md` | `block` | `block README.md implementer write project-file`, then `block docs/intent.md implementer write intent` |
+| 7 | none | `implementer write src/a.rs NOTES.md src/b.rs docs/intent.md` | `block` | `block NOTES.md implementer write project-file`, then `block docs/intent.md implementer write intent` |
 | 8 | `intent` in `not_in_git` in the settings and the record's copy, and `.git/info/exclude` lists `/docs/intent.md` | `implementer read docs/intent.md` | `block` | `block docs/intent.md implementer read intent` |
 | 9 | the working directory is not a git repository | `implementer write target/out.txt` | `block` | `block target/out.txt implementer write project-file` |
 | 10 | none | `implementer read ./src/../docs/design/cli.md` | `pass` | none |
@@ -291,7 +291,7 @@ More cases:
 | 15 | no setup record | `implementer read` | `pass` | none |
 | 16 | no setup record | `lead read src/main.rs` | `block` | `block src/main.rs lead read impl` |
 | 17 | no setup record | `implementer read docs/intent.md/x` | `block` | `block docs/intent.md/x implementer read intent` |
-| 18 | no setup record | `implementer read README.md` | `error` | — |
+| 18 | no setup record | `implementer read NOTES.md` | `error` | — |
 
 Fields are separated by spaces in the tables and by tabs in the cases.
 

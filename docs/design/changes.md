@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # changes
 
-> Basis: intent 1.4 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.3 (verify results stay in the change), §8.4 (the lead records gaps), §11 (M1, M2).
+> Basis: intent 1.5 — §4 (principles 3, 4, 7), §7 (layers kept out of git), §8.1, §8.2, §8.3 (verify results stay in the change), §8.4 (the lead records gaps), §11 (M1, M2).
 
 ## 1. Responsibilities
 

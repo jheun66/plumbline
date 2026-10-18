@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # roles
 
-> Basis: intent 1.4 — §4 (principles 2, 3), §8.1 and §8.2 (who opens changes, records gaps and diagnoses), §8.3 (the verifier), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
+> Basis: intent 1.5 — §4 (principles 2, 3), §8.1 and §8.2 (who opens changes, records gaps and diagnoses), §8.3 (the verifier), §8.4, §8.5 (who writes intent and design), §11 (what each milestone adds).
 
 ## 1. Responsibilities
 

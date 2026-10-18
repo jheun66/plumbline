@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # carriers
 
-> Basis: intent 1.4 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §5.5 (validate also runs in CI), §8.1 (status takes the place of "start here"), §8.2, §8.3 (when validate reports and when it blocks; verify at closing), §8.4, §8.5.
+> Basis: intent 1.5 — §4 (principle 8), §5.1 (the project runs without the rules; reproduced and project parts), §5.2 (newer rules only with a network), §5.4, §5.5 (validate also runs in CI), §8.1 (status takes the place of "start here"), §8.2, §8.3 (when validate reports and when it blocks; verify at closing), §8.4, §8.5.
 
 ## 1. Responsibilities
 

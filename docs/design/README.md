@@ -1,11 +1,11 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 milestone: M2
 ---
 
 # plumbline design
 
-> Basis: intent 1.4 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
+> Basis: intent 1.5 — §1, §4 (principles 5–7), §6, §10, §11, §13. intent is not published.
 > Stage 1 — module map: confirmed by the user on 2026-10-16.
 > M0 module documents: bundles A (layers, design-docs, settings, roles), B (setup-record, conformance) and C (authoring, carriers, reproduction) confirmed by the user on 2026-10-17. The M0 design is complete.
 > Revised after gaps reported while building M0 impl: roles, carriers, reproduction, setup-record and overview. Confirmed by the user on 2026-10-17, except decisions still marked pending.
@@ -13,6 +13,7 @@ milestone: M2
 > Revised after gaps reported while building M1 impl: changes (a milestone's work is a change), status, guards, carriers, layers, design-docs, settings, setup-record, authoring and overview; every basis raised to intent 1.3 (archive keeps a change in place). Confirmed by the user on 2026-10-17, except decisions still marked pending.
 > Revised after the M1 Done check on 2026-10-18: roles (a file in no layer is added to a layer before it is written; an implementer leaves a gap's point unbuilt), changes (wording fixes, intent 1.4), carriers and design-docs. Every basis raised to intent 1.4.
 > M2 module documents: bundles A (roles, changes), B (design-docs, setup-record, validate, guards, verify) and C (carriers, reproduction, conformance) written on 2026-10-18.
+> Revised before the M3 reproduction on 2026-10-18: the impl location `rules` and the design README are no longer named in a form validate takes for an impl path (overview, design-docs, settings, this README), and the role guard's cases name `NOTES.md` as a project file in no layer (guards). Every basis raised to intent 1.5.
 
 ## Where this document sits
 
@@ -134,5 +135,5 @@ When text is easier to follow as a picture, the document has the picture too.
 ## Files
 
 - One document per module, named after the module: `layers.md`, `changes.md`, and so on.
-- When a module needs a second document, it becomes a folder with the first document as its `README.md`.
+- When a module needs a second document, it becomes a folder, and the first document becomes `<module>/README.md`.
 - Links between documents are relative. Moving a document updates its links.

@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # design-docs
 
-> Basis: intent 1.4 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
+> Basis: intent 1.5 — §4 (principles 5–7), §7 (which documents are module documents), §8.3 (the template as validate's reference).
 
 ## 1. Responsibilities
 
@@ -21,7 +21,7 @@ basis: docs/intent.md 1.4
 ### Design documents and module documents
 
 - Every Markdown file at the design location (`settings`) is a design document.
-- The design location's top-level `README.md` is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
+- `<design location>/README.md` is the only design document that is not a module document. It holds what applies to the whole design: scope, reading order, terms.
 - The top-level README's front matter (`layers`) has one line `milestone: <name>`: the milestone the design is in now, named as the project's intent names it.
 - Every other design document is a module document.
 
@@ -114,7 +114,7 @@ Which rules apply to a design document:
 
 ```mermaid
 flowchart TD
-  A["a Markdown file at the design location"] --> B{"the top-level README.md?"}
+  A["a Markdown file at the design location"] --> B{"the design README?"}
   B -->|"yes"| C["design document: basis lines"]
   B -->|"no"| D["module document: basis lines,<br/>the seven sections in order,<br/>markers on design-level decisions"]
 ```

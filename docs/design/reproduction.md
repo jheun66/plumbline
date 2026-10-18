@@ -1,10 +1,10 @@
 ---
-basis: docs/intent.md 1.4
+basis: docs/intent.md 1.5
 ---
 
 # reproduction
 
-> Basis: intent 1.4 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners; validate also runs in CI), §7 (layers kept out of git), §8.3 (figures render where a renderer is present), §11 (M0, M2).
+> Basis: intent 1.5 — §5.1, §5.2, §5.3, §5.4, §5.5 (choosing runners; validate also runs in CI), §7 (layers kept out of git), §8.3 (figures render where a renderer is present), §11 (M0, M2).
 
 ## 1. Responsibilities
 
