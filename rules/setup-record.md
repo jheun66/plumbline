@@ -131,11 +131,20 @@ Any other key, anywhere in the object, is an error. The record holds no time.
 
 | Key | Value |
 |---|---|
-| `repository` | the plumbline repository the rules were read from, as the user gave it |
+| `repository` | the address of the plumbline repository the rules were read from: one that other machines can reach too, in one of the two forms below. It is never a local path |
 | `commit` | the full hash of the commit the rules were read at: 40 or 64 lowercase hexadecimal digits |
 | `tag` | optional. A tag that named that commit when the reproduction ran |
 
 The commit identifies the rules. A tag does not.
+
+An address has one of these two forms:
+
+- `<scheme>://` and then a rest that is not empty. The scheme is made of ASCII letters, digits, `+`, `-` and `.`, and begins with a letter. It is not `file`, whatever the case of its letters.
+- `<user>@<host>:<path>`. The user and the host hold no `/`, no `:` and no `@`. None of the three is empty.
+
+A local path has neither form. A record whose repository has neither form is not valid ([Valid records](#valid-records)).
+
+Examples: `https://github.com/OWNER/plumbline` and `git@github.com:OWNER/plumbline.git` are addresses. `~/Projects/plumbline-rules`, `plumbline-rules`, `/srv/plumbline`, `../plumbline`, `C:\src\plumbline`, `file:///srv/plumbline`, `FILE:///srv/plumbline` and `https://` are not.
 
 ### `files`
 
@@ -218,7 +227,7 @@ A record is valid when its keys and values follow everything stated under [The f
 
 Its copy of the settings is checked against the format in [settings.md](settings.md#the-format) without looking at the file system. Whether a path exists, or is a file or a folder, does not bear on whether the record is valid either.
 
-Among the errors: an unknown key; a missing key; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name; a runner or a renderer command with an element that is an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`; a runner or a renderer command whose program holds `/` or `\`, such as `tools/mmdc`.
+Among the errors: an unknown key; a missing key; a repository that is not an address, such as `~/Projects/plumbline-rules`, `plumbline-rules`, `file:///srv/plumbline` or `https://`; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name; a runner or a renderer command with an element that is an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`; a runner or a renderer command whose program holds `/` or `\`, such as `tools/mmdc`.
 
 ## Checksums
 
@@ -249,6 +258,7 @@ Examples: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same. Add
 ## What always holds
 
 - Only a reproduction writes the record, and it replaces it whole.
+- The rules repository is named by its address, never by a local path.
 - Right after a reproduction, every listed file exists and its checksum matches.
 - No path is listed twice in `files`. Every path in `carriers`, and every `entry` in `parts`, is listed in `files`.
 - Every `mechanical` entry in `enforcement` names a part in `parts`.
