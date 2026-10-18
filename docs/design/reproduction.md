@@ -37,7 +37,7 @@ The agent stops and says why when:
 - the settings file is not valid (`settings`);
 - a layer location is `.plumbline/`, contains it, or lies inside it;
 - the template's project part does not exist yet (`authoring`);
-- the previous setup record exists, and what the reproduction reads from it does not have the form `setup-record` defines: that it is a JSON object, and its `rules`, `settings`, `files`, `carriers`, `parts`, `renderers` and `enforcement`, as far as the reproduction reads them. A record written under older rules, which lacks a key these rules added, is read as it is;
+- the previous setup record exists, and what the reproduction reads from it does not have the form `setup-record` defines: that it is a JSON object, and its `rules`, `settings`, `files`, `carriers`, `parts`, `renderers` and `enforcement`, as far as the reproduction reads them. A record written under older rules, which lacks a key these rules added, is read as it is. A runner or a renderer command that these rules do not allow (`setup-record`, Commands) is read as it is too, whoever wrote it: that runner or renderer is not kept, and step 5 chooses it again;
 - there is no setup record, but the git history of the checked-out commit holds one: it was removed by hand. The agent asks the user to restore it, from git;
 - a file that the previous setup record lists with a reproduced part exists, but the part cannot be found in it (`setup-record`, checksums). The agent names the file, and the begin or end line that is missing, appears more than once, or comes in the wrong order. A file that no longer exists is not this case; step 1 names it;
 - the agent has no means that reaches the lead at the start of every session by itself: neither one that reaches only the lead, nor one that every agent reads by itself (`carriers`). This is an environment error;
@@ -90,7 +90,7 @@ Otherwise it is `instruction`, and the carriers state it as an instruction.
 ### Reproducing again
 
 - The steps are the same. Reproduced files and reproduced parts are replaced; project parts are kept.
-- The agent keeps the previous record's choices (carriers, begin and end lines, runners, renderers, the CI) unless the rules, the settings or the means it has require otherwise.
+- The agent keeps the previous record's choices (carriers, begin and end lines, runners, renderers, the CI) unless the rules, the settings or the means it has require otherwise. A runner or a renderer command that these rules do not allow is never kept.
 
 ## 3. Flow
 
@@ -171,8 +171,10 @@ flowchart TD
 - **The reproduction commits nothing; its final report tells the user to commit the setup record and every file that either record lists and that differs from the checked-out commit, and names them.** When to commit is the user's call, and a commit made by the reproduction could mix with the user's own work. Naming the files at the end of every reproduction makes forgetting unlikely, and the record must be committed for a removed record to be caught later. Removed files and removed parts are named too, so that what git holds is exactly what the record lists. Rejected: the reproduction committing by itself, which makes commits the user did not ask for. (Design-level — confirmed 2026-10-17)
 - **A renderer is chosen per kind of figure at reproduction, on the developer's machine; where none is present, the figure check is skipped.** intent §8.3 runs the render check only where a renderer is. Renderers differ from machine to machine like runners, so they are chosen and recorded at reproduction. Rejected: requiring a renderer in CI, which makes every project's CI install one. (Design-level — confirmed 2026-10-18)
 - **A runner or a renderer reachable only by an absolute path counts as not present, and no file the reproduction writes holds a path particular to the developer's machine.** The setup is in git and is used on other machines and in CI; a path true on one machine fails elsewhere and, under a home folder, shows that machine's user name. A renderer that is not recorded only leaves its figures unchecked, and telling the user what to put on the PATH lets the next reproduction record it. Rejected: writing a script into the project that calls the absolute path, which moves the same path into a file in git. (Design-level — confirmed 2026-10-18)
+- **A runner or a renderer command that these rules do not allow does not stop a reproduction: it is read as it is and chosen again.** It is only a choice, and replacing it loses nothing. A record written under older rules can hold one, and the record can be neither edited by hand nor removed without stopping the next reproduction, so stopping would leave the project with no way to be reproduced again. Rejected: stopping for the user's agreement, which asks about an entry no one chose to keep and that loses nothing when replaced. Settled in [this change](../../.plumbline/changes/2026-10-18-no-absolute-paths/). (Design-level — confirmed 2026-10-18)
 - **The CI step goes into the CI the project already uses; when none is found, the agent asks; with none, there is no CI step.** (Design-level — confirmed 2026-10-18)
 - **What is no longer produced is removed, and exclusions of layers no longer kept out of git are removed.** The setup then is exactly what the record lists. (Design-level — confirmed 2026-10-17)
+- Known limit: the rules at one commit do not say which keys of the setup record later rules added, so a reproducing agent cannot always tell a record written under older rules, which lacks such a key, from one whose key was removed by hand. Every setup record written since the first version holds every key these rules define.
 
 ## 6. Verification criteria
 
@@ -199,7 +201,8 @@ In the M2 Done of intent §11, on the same project:
 - the role guard's connector check blocks the reads it must block, as the lead and as each role started by hand-off, and the setup record lists the role table as `mechanical`;
 - the end-of-turn and CI connector checks give the expected results, and leave nothing behind;
 - a renderer is recorded for each kind of figure the template names and the developer's machine can render, by a name found on the PATH;
-- after a reproduction, no file the reproduction wrote holds a path under the developer's home folder.
+- after a reproduction, no file the reproduction wrote holds a path under the developer's home folder;
+- with a previous setup record whose renderer command holds an absolute path, the reproduction does not stop; it records that kind of figure's renderer again, by a name found on the PATH, or records none.
 
 ## 7. Out of scope
 

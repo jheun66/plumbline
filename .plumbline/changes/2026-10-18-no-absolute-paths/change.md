@@ -23,12 +23,14 @@ The setup record of this repository records the Mermaid renderer by an absolute 
 2. reproduction: a runner or a renderer counts as present only when it can be recorded that way; a renderer reachable only by an absolute path is not recorded, and the user is told what to put on the PATH. No file the reproduction writes holds a path particular to the developer's machine.
 3. validate: conformance cases for the new form of the record.
 4. An implementer aligns the rules and the cases.
-5. The Mermaid renderer is put on the PATH of this machine, and this repository's setup is reproduced at the new rules commit.
-6. Tag v1.1.
+5. reproduction: a runner or a renderer command an older record holds and these rules do not allow is read and chosen again (gap-1).
+6. The Mermaid renderer is put on the PATH of this machine, and this repository's setup is reproduced at the new rules commit.
+7. Tag v1.1.
 
 ## Wording fixes
 
 - setup-record §2 (Commands) and §5, reproduction §2 step 5: a command's program is only a name found on the PATH, with no `/` or `\`; the alternative of a relative path to a file the reproduction wrote is removed, aligned to the decision the user confirmed. Whether the program is found on a machine does not decide validity. validate §6 gains case 59 for a program given as a relative path. Reported by the implementer: a case runs in its own folder, where a relative program cannot be found.
+- reproduction §2 and §5: the exception for a runner or a renderer command that these rules do not allow holds whoever wrote the record, aligned to "Reproducing again" and §6 of the same document, which state it without the condition. Reported by the implementer: a reproducing agent cannot tell which rules wrote a record. reproduction §5 gains a known limit for the older exception on missing keys.
 
 ## How the result was confirmed
 
