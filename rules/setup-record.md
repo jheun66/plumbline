@@ -1,25 +1,23 @@
 # Setup record
 
-The setup record is the one file in which a reproduction writes what it used and what it produced.
+The setup record is where a reproduction writes what it used and what it wrote. When it is written is in [reproduction.md](reproduction.md). When its checksums are compared is in [validate.md](validate.md).
 
 ## The file
 
-- `.plumbline/setup-record.json` at the project root.
-- Only a reproduction writes it. Each reproduction replaces it whole. Nobody edits it by hand.
-- The record is in git, and so is every file it lists. `validate`, in CI too, compares those files with their checksums, without these rules or the conformance cases ([validate.md](validate.md)).
-- The record and every file it lists lie outside every layer location ([settings.md](settings.md)).
-- `status` reports from it ([status.md](status.md)). `validate` checks its format, the files it lists, and runs its renderers. The role guard tells setup files and each carrier's roles from it ([guards.md](guards.md#the-role-guard)).
+- It is `.plumbline/setup-record.json`.
+- Only a reproduction writes it. Each reproduction writes it anew, whole. Nobody edits it by hand.
+- It is in git, and so is every file it lists.
 
-## The format
+## The form
 
-A JSON object with exactly these keys:
+One JSON object with exactly these keys. The paths, commands and checksums in the example are made up.
 
 ```json
 {
   "rules": {
     "repository": "https://github.com/OWNER/plumbline",
     "commit": "0123456789abcdef0123456789abcdef01234567",
-    "tag": "v0.1"
+    "tag": "v2.0"
   },
   "settings": {
     "layers": {
@@ -37,232 +35,151 @@ A JSON object with exactly these keys:
       "end": "<!-- plumbline:end -->"
     },
     {
-      "path": ".plumbline/lead.md",
-      "checksum": "sha256:bb5e6a13ff86dc4f333bbef04ca0657bfebcbc2b173a2a42aedd4d1e849e3d3e"
-    },
-    {
-      "path": ".plumbline/implementer.md",
-      "checksum": "sha256:d7643b3243eb56482b2b34a8dde980201d3787e34475476743fd182667eec2bd"
-    },
-    {
-      "path": ".plumbline/verifier.md",
-      "checksum": "sha256:4b5a3755bdf889ff9ddb77dee492d9abf4e78e7b7b35cb93174f5fee56153c21"
-    },
-    {
-      "path": ".plumbline/template.md",
-      "checksum": "sha256:ea86728e0c9f2933951b83eea2a0b9a9e30b4aa03de63621d1e8c59f8618e15d",
-      "begin": "<!-- plumbline:begin -->",
-      "end": "<!-- plumbline:end -->"
-    },
-    {
-      "path": ".plumbline/parts/status",
-      "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
-    },
-    {
-      "path": ".plumbline/parts/gap-guard",
-      "checksum": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
-    },
-    {
-      "path": ".plumbline/parts/role-guard",
-      "checksum": "sha256:713f888db4ae269bff261728d028470fafabfd7b67cce1542e6f104ff9fe1c45"
-    },
-    {
       "path": ".plumbline/parts/validate",
-      "checksum": "sha256:133c8eb86cf813474ade739d5d133087e2026f56aaf366284dd1a25d98d44690"
-    },
-    {
-      "path": ".plumbline/hooks/gap-guard-connector",
-      "checksum": "sha256:e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
-    },
-    {
-      "path": ".plumbline/hooks/role-guard-connector",
-      "checksum": "sha256:8a93d6c7ef7d6bd7302c2fa23fd9e18a0ec0c3517e28adbd8de05e78476c75e0"
-    },
-    {
-      "path": ".plumbline/hooks/end-of-turn-connector",
-      "checksum": "sha256:eb7c6bebe49ced27cedf270ae964aea85c4e102d7d7d17bceed28cb1fa047292"
-    },
-    {
-      "path": "CI-CONFIG.yml",
-      "checksum": "sha256:1b158839f8aa339e89bb50b1603e90ec68e0fd5565fe10a7cb32729fddf7070a",
-      "begin": "# plumbline:begin",
-      "end": "# plumbline:end"
+      "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
     }
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] },
-    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"], "roles": ["lead"] },
-    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"], "roles": ["implementer"] },
-    { "kind": "file the instruction file names for the verifier", "files": [".plumbline/verifier.md"], "roles": ["verifier"] }
+    { "kind": "instruction file, reproduced part", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] }
   ],
   "parts": [
-    { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
-    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" },
-    { "name": "role-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/role-guard" },
     { "name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate" }
   ],
   "renderers": [
     { "figure": "mermaid", "command": ["RENDERER", "--check"] }
   ],
   "enforcement": [
-    { "rule": "role table", "by": "mechanical", "part": "role-guard" },
-    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" },
-    { "rule": "validate at the end of a turn", "by": "mechanical", "part": "validate" },
-    { "rule": "validate in CI", "by": "mechanical", "part": "validate" }
+    { "rule": "intent-read", "by": "mechanical", "part": "role-guard" },
+    { "rule": "design-write", "by": "instruction" }
   ]
 }
 ```
 
-The paths, runners, commands, begin and end lines, and checksums in this example are illustrations. A reproduction chooses its own.
-
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `rules` | where the rules came from |
-| `settings` | a copy of the settings the reproduction used, in the format of [settings.md](settings.md) |
-| `files` | every file the reproduction wrote, except the record itself and `.git/info/exclude` |
+| `rules` | where the rules were read from |
+| `settings` | a copy of the settings the reproduction used, in the form of the settings file ([layers.md](layers.md#the-settings-file)) |
+| `files` | every file the reproduction wrote, except the setup record itself and `.git/info/exclude` |
 | `carriers` | the rule carriers the reproduction chose |
-| `parts` | the mechanical parts of the setup, and how each is run |
-| `renderers` | for each kind of figure that has a renderer on the developer's machine, how to run it |
-| `enforcement` | for each rule that may be enforced mechanically, whether it is |
+| `parts` | the mechanical parts, and how to run each |
+| `renderers` | for each figure kind that has a renderer, how to render it |
+| `enforcement` | for each rule that may be enforced mechanically, whether it is, or is left as an instruction |
 
-Any other key, anywhere in the object, is an error. The record holds no time.
+Any other key, at any level, breaks the form.
 
 ### `rules`
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `repository` | the address of the plumbline repository the rules were read from: one that other machines can reach too, in one of the two forms below. It is never a local path |
+| `repository` | the address of the plumbline repository the rules were read from. It is reachable from other machines too: it has one of the two forms below. A path on the machine is never one |
 | `commit` | the full hash of the commit the rules were read at: 40 or 64 lowercase hexadecimal digits |
-| `tag` | optional. A tag that named that commit when the reproduction ran |
-
-The commit identifies the rules. A tag does not.
+| `tag` | optional. A tag that named that commit when the reproduction ran. The commit is what names the rules; the tag is for people |
 
 An address has one of these two forms:
 
-- `<scheme>://` and then a rest that is not empty. The scheme is made of ASCII letters, digits, `+`, `-` and `.`, and begins with a letter. It is not `file`, whatever the case of its letters.
-- `<user>@<host>:<path>`. The user and the host hold no `/`, no `:` and no `@`. None of the three is empty.
+- `<scheme>://` followed by a rest that is not empty. The scheme begins with an ASCII letter, and holds only ASCII letters, digits, `+`, `-` and `.`. It is not `file`, in any case of its letters.
+- `<user>@<host>:<path>`. None of the three is empty. The user and the host hold no `/`, `:` or `@`.
 
-A local path has neither form. A record whose repository has neither form is not valid ([Valid records](#valid-records)).
-
-Examples: `https://github.com/OWNER/plumbline` and `git@github.com:OWNER/plumbline.git` are addresses. `~/Projects/plumbline-rules`, `plumbline-rules`, `/srv/plumbline`, `../plumbline`, `C:\src\plumbline`, `file:///srv/plumbline`, `FILE:///srv/plumbline` and `https://` are not.
+Examples: `https://github.com/OWNER/plumbline` and `git@github.com:OWNER/plumbline.git` are addresses. `~/Projects/plumbline`, `plumbline`, `/srv/plumbline`, `../plumbline`, `C:\src\plumbline`, `file:///srv/plumbline` and `https://` are not.
 
 ### `files`
 
-A list with one object per file. No path appears twice.
+One object per file. No path appears twice.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `path` | relative to the project root, with `/` |
+| `path` | relative to the project root, in the form of a location ([layers.md](layers.md#the-settings-file)) |
 | `checksum` | `sha256:` followed by 64 lowercase hexadecimal digits |
-| `begin`, `end` | only for a file the project also writes: the exact text of the line that opens the reproduced part and of the line that closes it |
+| `begin`, `end` | only for a file the project also writes: the exact text of the line that opens the reproduced part, and of the line that closes it. Both are present, or neither. Each is not empty, holds no line break, and they differ |
 
-An entry without `begin` and `end` is a whole file: the reproduction wrote all of it. An entry with both is a reproduced part: the reproduction wrote the lines from `begin` to `end`, and the rest of the file is the project's.
+Without `begin` and `end`, the reproduction wrote the whole file. With both, the reproduction wrote only the lines from `begin` to `end`, and the rest is the project's.
 
 ### `carriers`
 
-A list with one object per rule carrier.
+One object per rule carrier.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `kind` | what the carrier is, in the reproducing agent's own words: an instruction file, a file it refers to, a script a hook runs, a skill, and so on |
-| `files` | the paths that make up the carrier. Each is listed in `files` |
-| `roles` | the roles the carrier is meant for: one or more of `lead`, `implementer` and `verifier`, each at most once. A carrier that every agent reads lists all three |
-
-The role guard tells from `roles` which carriers a role may read ([guards.md](guards.md#the-role-guard)).
+| `kind` | what the carrier is, in the reproducing AI's own words: an instruction file, a file it points to, a script a hook runs, a skill, and so on. It is not empty |
+| `files` | the paths that make up the carrier, one or more, none twice. Each is the `path` of an entry in `files` |
+| `roles` | the roles the carrier reaches: one or more of `lead`, `implementer` and `verifier`, each at most once |
 
 ### `parts`
 
-A list with one object per mechanical part: a guard or a deterministic check.
+One object per mechanical part.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `name` | the part's name, as these rules name it ([conformance.md](conformance.md#the-parts-of-a-setup)) |
-| `runner` | the command that runs the part, as a list: the program and any arguments it needs before the entry file. It has the form [Commands](#commands) states |
-| `entry` | the path of the file the runner runs. It is listed in `files` |
+| `name` | the part's name: not empty, and not twice. A reproduction writes the names the files that state the parts give: `role-guard` ([roles.md](roles.md#the-role-guard)) and `validate` ([validate.md](validate.md)) |
+| `runner` | the command that runs the part, as a list: the runner, and any arguments it needs before the entry file. It has the form [Commands](#commands) states |
+| `entry` | the path of the file the runner runs. It is the `path` of an entry in `files` |
 
-A part is run as its `runner`, then its `entry`, then the part's own arguments ([conformance.md](conformance.md)).
+A part is run as its `runner`, then its `entry`, then the part's own arguments ([conformance.md](conformance.md#running-a-part)).
 
 ### `renderers`
 
-A list with one object per kind of figure for which the reproduction found a renderer. It may be empty.
+One object per figure kind for which a renderer was found. The list may be empty.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `figure` | a figure name from the template's `figure` lines ([design-docs.md](design-docs.md#the-template)). No name appears twice in the list. Whether the template still names it does not bear on whether the record is valid |
-| `command` | the command that renders one figure, as a non-empty list: the program and its arguments. It has the form [Commands](#commands) states. A file it runs that the reproduction wrote is listed in `files` |
+| `figure` | a figure kind named in the template: one or more characters, none of them white space. No kind appears twice |
+| `command` | the command that renders one figure, as a list. It has the form [Commands](#commands) states. A file it runs that the reproduction wrote is in `files` |
 
-How a renderer is run:
-
-- Its working directory is the project root.
-- Its standard input is the figure's text: the lines between the figure's opening and closing lines, each followed by LF ([design-docs.md](design-docs.md#reading-a-markdown-document)).
-- Exit status 0 means the figure renders. Any other status means it does not.
-- A renderer whose program cannot be started is not present.
+A renderer runs in the project root, with the figure's text on standard input: the lines between the figure's opening line and its closing line, each followed by LF ([design-docs.md](design-docs.md#reading-a-markdown-document)). Ending with status 0 means the figure rendered; any other status means it did not. A renderer that cannot be started counts as absent.
 
 ### Commands
 
-A part's `runner` and a renderer's `command` hold no absolute path:
+A part's `runner` and a renderer's `command` are lists of one or more texts, and hold no absolute path:
 
-- The first element, the program, is a name the system finds on the PATH, such as `python3`. It holds no `/` and no `\`.
-- No element begins with `/` or `\`, or with a letter, a `:`, and then `/` or `\`.
+- The first element is a name found on the PATH. It is not empty, and holds no `/` and no `\`.
+- No element begins with `/` or `\`, or with an ASCII letter, a `:`, and then `/` or `\`.
 
-A record with a runner or a renderer command that breaks either is not valid ([Valid records](#valid-records)).
-
-Examples, as JSON: `["python3"]`, `["python3", ".plumbline/render"]` and `["git", "--version"]` have this form. `["/usr/bin/python3"]`, `["/usr/local/bin/mmdc"]` and `["C:\\tools\\mmdc.exe"]` do not: each is an absolute path. `["tools/mmdc"]` does not either: its program holds `/`.
+Examples, as JSON: `["python3"]`, `["python3", ".plumbline/render"]` and `["git", "--version"]` have this form. `["/usr/bin/python3"]`, `["/usr/local/bin/mmdc"]` and `["C:\\tools\\mmdc.exe"]` do not: each is an absolute path. `["tools/mmdc"]` does not either: its first element holds `/`.
 
 ### `enforcement`
 
-A list with one object per rule that may be enforced mechanically. These rules are listed in [reproduction.md](reproduction.md).
+One object per rule that may be enforced mechanically.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `rule` | the rule's name, as these rules give it |
-| `by` | `mechanical` or `instruction`. A rule is `mechanical` only when its part passed every case and the check of its connector gave the expected results ([reproduction.md](reproduction.md#mechanical-or-instruction)). Otherwise it is `instruction` |
-| `part` | only when `by` is `mechanical`: the `name` of the part in `parts` that enforces it |
+| `rule` | the rule's name: not empty, and not twice. A reproduction writes `intent-read`, the implementer and the verifier cannot read intent, and `design-write`, the implementer cannot write design. Other names come from records written under older rules |
+| `by` | `mechanical` or `instruction`. It is `mechanical` only when the part that enforces it passed every conformance case, and acting through its connector blocked and passed as expected ([reproduction.md](reproduction.md#mechanical-or-instruction)) |
+| `part` | present exactly when `by` is `mechanical`: the `name` of the entry in `parts` that enforces the rule |
 
-Every other rule reaches agents as an instruction and is not listed.
+### What does not bear on the form
 
-### Valid records
+- Whether a listed file exists, or matches its checksum.
+- Whether a runner or a renderer can be started on the machine where the record is read.
+- Whether the template still names each figure kind in `renderers`.
+- Whether a path in the copy of the settings exists. That copy is checked against the settings file's form without looking at files.
 
-A record is valid when its keys and values follow everything stated under [The format](#the-format). It need not list every part or every rule these rules define: whether `parts` and `enforcement` hold an entry for each does not bear on whether the record is valid. Nor does whether the files it lists still match their checksums, whether the template still names each figure name in `renderers`, or whether the program of a runner or a renderer can be started on the machine where the record is read.
-
-Its copy of the settings is checked against the format in [settings.md](settings.md#the-format) without looking at the file system. Whether a path exists, or is a file or a folder, does not bear on whether the record is valid either.
-
-Among the errors: an unknown key; a missing key; a repository that is not an address, such as `~/Projects/plumbline-rules`, `plumbline-rules`, `file:///srv/plumbline` or `https://`; a commit of 39 digits; a checksum without `sha256:`; a path listed twice in `files`; a carrier file that is not listed in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without a part; an `instruction` entry with a part; two renderers for one figure name; a runner or a renderer command with an element that is an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`; a runner or a renderer command whose program holds `/` or `\`, such as `tools/mmdc`.
+Among the ways to break the form: an unknown key; a missing key; a `commit` that is not 40 or 64 digits; a `repository` that is a path on the machine; a checksum without `sha256:`; a path listed twice in `files`; a carrier file or a part's `entry` that is not in `files`; a carrier without `roles`, or with a role other than the three; a `mechanical` entry without `part`, or an `instruction` entry with one; two renderers for one figure kind; a runner whose first element is `/usr/bin/python3`.
 
 ## Checksums
 
-To compute the checksum of a listed file:
-
-1. Read the file's bytes and replace every CR LF pair with LF.
+1. Read the file's bytes, and turn every CR LF into LF.
 2. For a whole file, take all the bytes.
 3. For a reproduced part, split the bytes into lines at LF. The line equal to `begin` and the line equal to `end` each occur exactly once in the file, `begin` first. Take the bytes from the start of the `begin` line to the end of the `end` line, with the `end` line's LF when it has one.
-4. The checksum is `sha256:` followed by the SHA-256 digest of the bytes taken, in lowercase hexadecimal.
+4. The checksum is `sha256:` followed by the SHA-256 of the bytes taken, in lowercase hexadecimal.
 
-If the `begin` line or the `end` line is missing, occurs more than once, or the `end` line comes first, the reproduced part cannot be found. That is an error, not a mismatch.
-
-A file has at most one entry, so at most one reproduced part. A file the project also writes can hold a reproduced part only if it can hold those two lines. Otherwise a reproduction writes it whole or does not write it.
+When the `begin` line or the `end` line is missing, occurs more than once, or the `end` line comes first, the reproduced part cannot be found. That is not a checksum that differs.
 
 Examples:
 
 - An empty whole file has `sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
-- A whole file holding `a` CR LF `b` CR LF and one holding `a` LF `b` LF both have `sha256:911169ddaaf146aff539f58c26c489af3b892dff0fe283c1c264c65ae5aa59a2`.
-- A reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one`, `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it. With `rule two` in place of `rule one` it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`.
-- A reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
+- A whole file holding `a` CR LF `b` CR LF, and one holding `a` LF `b` LF, both have `sha256:911169ddaaf146aff539f58c26c489af3b892dff0fe283c1c264c65ae5aa59a2`.
+- A reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one` and `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it. With `rule two` in place of `rule one`, it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`.
 
-## The same settings
+## Steps
 
-The settings in the record and the settings file are the same when every layer has the same set of paths and `not_in_git` names the same set of layers. Order and formatting do not count.
-
-Examples: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same. Adding a path, or adding a layer to `not_in_git`, is not.
+1. When a reproduction has written the setup and every conformance case passes, it writes the setup record, whole.
+2. When reproducing again, the reproduction reads the previous setup record to know the files it wrote before.
+3. validate compares the checksums of the files the setup record lists.
 
 ## What always holds
 
-- Only a reproduction writes the record, and it replaces it whole.
-- The rules repository is named by its address, never by a local path.
-- Right after a reproduction, every listed file exists and its checksum matches.
-- No path is listed twice in `files`. Every path in `carriers`, and every `entry` in `parts`, is listed in `files`.
-- Every `mechanical` entry in `enforcement` names a part in `parts`.
-- Every carrier names at least one role.
-- No runner and no renderer command holds an absolute path. The program of each is a name found on the PATH.
-- The record holds nothing from a layer kept out of git. Its copy of the settings holds only paths and layer names.
-- The record holds no copy of the rules.
+- Only a reproduction writes the setup record.
+- Every file in `files` was written by a reproduction, and every file the reproduction wrote, except the setup record and `.git/info/exclude`, is in `files`.
+- Every file named in `carriers`, `parts` and `renderers` is in `files`.
+- A file has at most one reproduced part.
+- No runner and no renderer command holds an absolute path.
