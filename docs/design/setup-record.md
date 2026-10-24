@@ -1,40 +1,30 @@
----
-basis: docs/intent.md 1.6
----
-
-# setup-record
-
-> Basis: intent 1.6 — §5.1 (the rules are not copied; reproduced files; reproduced and project parts), §5.2, §5.4 (carriers and enforcement are recorded), §5.5 (runners are recorded), §8.3 (what validate checks against the record; figures render where a renderer is present), §8.4 (what each role may read).
+# Setup record
 
 ## 1. Responsibilities
 
-**Does**: defines the setup record: the one file in which a reproduction writes what it used and what it produced. Defines its place, its format and every field, which roles each rule carrier is meant for, how a figure is handed to its renderer, how the checksum of a reproduced file is computed (also when the reproduction wrote only part of a file), and when two copies of the settings count as the same.
+- Defines where the setup record is and its form.
+- Defines how checksums are computed.
 
-**Does not**:
-
-- Decide what a reproduction writes, which rule carriers and runners it chooses, or which lines mark a reproduced part. `reproduction` and `carriers` do.
-- Hold the settings people edit. `settings` does. The record holds a copy of the settings a reproduction used.
-- Check the record, or the files against it. `validate` does. Report from it. `status` does.
-- Hold the rules. The record points at them.
+When the setup record is written is in Reproduction; when checksums are compared is in Validate.
 
 ## 2. Public interface
 
 ### The file
 
-- `.plumbline/setup-record.json` at the project root.
-- Only a reproduction writes it. Each reproduction replaces it whole. Nobody edits it by hand.
-- It is in git, and so is every file it lists. validate in CI compares those files with their checksums, without the rules or the conformance cases.
+- It is `.plumbline/setup-record.json`.
+- Only a reproduction writes it. Each reproduction writes it anew, whole. Nobody edits it by hand.
+- It is in git, and so is every file it lists.
 
-### The format
+### The form
 
-A JSON object with exactly these keys:
+One JSON object with exactly these keys. The paths, commands and checksums in the example are made up for illustration.
 
 ```json
 {
   "rules": {
     "repository": "https://github.com/OWNER/plumbline",
     "commit": "0123456789abcdef0123456789abcdef01234567",
-    "tag": "v0.1"
+    "tag": "v2.0"
   },
   "settings": {
     "layers": {
@@ -52,278 +42,146 @@ A JSON object with exactly these keys:
       "end": "<!-- plumbline:end -->"
     },
     {
-      "path": ".plumbline/lead.md",
-      "checksum": "sha256:bb5e6a13ff86dc4f333bbef04ca0657bfebcbc2b173a2a42aedd4d1e849e3d3e"
-    },
-    {
-      "path": ".plumbline/implementer.md",
-      "checksum": "sha256:d7643b3243eb56482b2b34a8dde980201d3787e34475476743fd182667eec2bd"
-    },
-    {
-      "path": ".plumbline/template.md",
-      "checksum": "sha256:ea86728e0c9f2933951b83eea2a0b9a9e30b4aa03de63621d1e8c59f8618e15d",
-      "begin": "<!-- plumbline:begin -->",
-      "end": "<!-- plumbline:end -->"
-    },
-    {
-      "path": ".plumbline/parts/status",
+      "path": ".plumbline/parts/validate",
       "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
-    },
-    {
-      "path": ".plumbline/parts/gap-guard",
-      "checksum": "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
-    },
-    {
-      "path": ".plumbline/hooks/gap-guard-connector",
-      "checksum": "sha256:e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
     }
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part: the roles and where each role's rules are", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] },
-    { "kind": "file the instruction file names for the lead", "files": [".plumbline/lead.md"], "roles": ["lead"] },
-    { "kind": "file the instruction file names for the implementer", "files": [".plumbline/implementer.md"], "roles": ["implementer"] }
+    { "kind": "instruction file, reproduced part", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] }
   ],
   "parts": [
-    { "name": "status", "runner": ["RUNNER"], "entry": ".plumbline/parts/status" },
-    { "name": "gap-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/gap-guard" },
-    { "name": "role-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/role-guard" },
     { "name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate" }
   ],
   "renderers": [
     { "figure": "mermaid", "command": ["RENDERER", "--check"] }
   ],
   "enforcement": [
-    { "rule": "role table", "by": "mechanical", "part": "role-guard" },
-    { "rule": "gap guard", "by": "mechanical", "part": "gap-guard" }
+    { "rule": "intent-read", "by": "mechanical", "part": "role-guard" },
+    { "rule": "design-write", "by": "instruction" }
   ]
 }
 ```
 
-The paths, runners, commands and checksums in this example are illustrations; a reproduction chooses its own. The example leaves out the entries in `files` for the M2 parts and the verifier's carrier, and part of `enforcement`.
-
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `rules` | where the rules came from |
-| `settings` | a copy of the settings the reproduction used, in the format of `settings` |
-| `files` | every file the reproduction wrote, except the record itself and `.git/info/exclude` |
+| `rules` | where the rules were read from |
+| `settings` | a copy of the settings the reproduction used, in the form of the settings file (Layers and settings) |
+| `files` | every file the reproduction wrote, except the setup record itself and `.git/info/exclude` |
 | `carriers` | the rule carriers the reproduction chose |
-| `parts` | the mechanical parts of the setup, and how each is run |
-| `renderers` | for each kind of figure that has a renderer here, how to run it |
-| `enforcement` | for each rule that the rules allow to be enforced mechanically, whether it is |
+| `parts` | the mechanical parts and how to run each |
+| `renderers` | for each figure kind that has a renderer, how to render |
+| `enforcement` | for each rule that may be enforced mechanically, whether it is, or is left as an instruction |
 
-Any other key, anywhere in the object, is an error.
-
-A record is valid when it follows everything this section says about its keys and values. It need not list every part or every rule the rules define. Whether the files it lists still match their checksums has no bearing on whether the record is valid. Its copy of the settings is checked against the format of `settings` without looking at the file system: whether a path exists, or is a file or a folder, has no bearing either.
+Any other key makes the form wrong.
 
 #### `rules`
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `repository` | the address of the plumbline repository the rules were read from, one that other machines can reach too. It has one of two forms: `<scheme>://` and a rest that is not empty, where the scheme is ASCII letters, digits, `+`, `-` and `.`, begins with a letter, and is not `file` in any case; or `<user>@<host>:<path>`, where the user and the host hold no `/`, no `:` and no `@`, and none of the three is empty. A local path has neither form. A record whose repository has neither form is not valid |
+| `repository` | the address of the plumbline repository the rules were read from. It must be reachable from other machines too: an address that starts with `<scheme>://` (the scheme is not `file`), or of the form `<user>@<host>:<path>`. A path on the machine is not allowed |
 | `commit` | the full hash of the commit the rules were read at: 40 or 64 lowercase hexadecimal digits |
 | `tag` | optional. A tag that named that commit when the reproduction ran. It is for people; the commit is what counts |
 
 #### `files`
 
-A list with one object per file. No path appears twice.
+One object per file. No path appears twice.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `path` | relative to the project root, with `/` |
+| `path` | relative to the project root, separated by `/` |
 | `checksum` | `sha256:` followed by 64 lowercase hexadecimal digits |
 | `begin`, `end` | only for a file the project also writes: the exact text of the line that opens the reproduced part and of the line that closes it |
 
-An entry without `begin` and `end` is a whole file: the reproduction wrote all of it. An entry with both is a reproduced part: the reproduction wrote the lines from `begin` to `end`, and the rest of the file is the project's.
+Without `begin` and `end`, the reproduction wrote the whole file. With both, the reproduction wrote only the lines from `begin` to `end`, and the rest is the project's.
 
 #### `carriers`
 
-A list with one object per rule carrier.
+One object per rule carrier.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `kind` | what the carrier is, in the reproducing agent's words: an instruction file, a file it refers to, a script a hook runs, a skill, and so on |
-| `files` | the paths that make up the carrier. Each is listed in `files` |
-| `roles` | the roles the carrier is meant for: one or more of `lead`, `implementer`, `verifier`, each once. A carrier that every agent reads lists all three |
+| `kind` | what it is, in the reproducing AI's words: an instruction file, a file it points to, a script a hook runs, a skill, and so on |
+| `files` | the paths that make up the carrier. Each is in `files` |
+| `roles` | the roles the carrier reaches: one or more of `lead`, `implementer`, `verifier`, each once |
 
 #### `parts`
 
-A list with one object per mechanical part: a guard or a deterministic check.
+One object per mechanical part.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `name` | the part's name, as the module that defines the part names it |
-| `runner` | the command that runs the part, as a list: the program and any arguments it needs before the entry file |
-| `entry` | the path of the file the runner runs. It is listed in `files` |
+| `name` | the part's name: not empty, and not twice. A reproduction writes the names the modules that define the parts give (`validate`, `role-guard`) |
+| `runner` | the command that runs the part, as a list: the runner and any arguments it needs before the entry file |
+| `entry` | the path of the file the runner runs. It is in `files` |
 
-A part is run as its `runner`, then its `entry`, then the part's own arguments (`conformance`).
+A part is run as its `runner`, then its `entry`, then the part's own arguments (Conformance cases).
 
 #### `renderers`
 
-A list with one object per kind of figure for which the reproduction found a renderer. It may be empty.
+One object per figure kind for which a renderer was found. It may be empty.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `figure` | a `figure` name from the template (`design-docs`). No name appears twice. Whether the template still names it has no bearing on whether the record is valid |
-| `command` | the command that renders one figure, as a list: the program and its arguments. A file it runs that the reproduction wrote is listed in `files` |
+| `figure` | a figure kind named in the template. No name appears twice |
+| `command` | the command that renders one figure, as a list. A file it runs that the reproduction wrote is in `files` |
 
-A renderer is run with the project root as its working directory and the figure's text, the lines between its fences, on standard input. Exit status 0 means the figure renders; any other status means it does not. A renderer whose program cannot be started is not present.
+A renderer runs in the project root, with the figure's text (the lines between its opening and closing fences) on standard input. Ending with 0 means it rendered; anything else means it did not. A renderer that cannot be started counts as absent.
 
 #### Commands
 
-A part's `runner` and a renderer's `command` hold no absolute path. Their first element, the program, is a name the system finds on the PATH, such as `python3`: it holds no `/` and no `\`. No element begins with `/` or `\`, or with a letter, a `:` and then `/` or `\`. A record that breaks either is not valid. Whether the program is found on a given machine has no bearing on whether the record is valid.
+`runner` and `command` hold no absolute path. The first element (the runner) is a name found on the PATH, so it holds no `/` or `\`. No element starts with `/` or `\`, or with a letter, `:` and then `/` or `\`.
 
 #### `enforcement`
 
-A list with one object per rule that the rules allow to be enforced mechanically.
+One object per rule that may be enforced mechanically.
 
-| Key | Value |
+| Key | Holds |
 |---|---|
-| `rule` | the rule's name, as the rules give it |
-| `by` | `mechanical` or `instruction`. A rule is `mechanical` only when its part passed every case and acting through its connector gave the expected results (`conformance`, `reproduction`). Otherwise it is `instruction` |
-| `part` | only when `by` is `mechanical`: the `name` of the part in `parts` that enforces it |
-
-Every other rule reaches agents as an instruction and is not listed.
+| `rule` | the rule's name: not empty, and not twice. A reproduction writes `intent-read` (the implementer and the verifier cannot read intent) and `design-write` (the implementer cannot write design). Other names come from records written under older rules |
+| `by` | `mechanical` or `instruction`. It is `mechanical` only when the part that enforces it passed every conformance case and acting through its connector blocked and passed as expected |
+| `part` | only when `by` is `mechanical`: the `name` of the part that enforces it |
 
 ### Checksums
 
-To compute the checksum of a listed file:
-
-1. Read the file's bytes and replace every CR LF pair with LF.
+1. Read the file's bytes and turn every CR LF into LF.
 2. For a whole file, take all the bytes.
-3. For a reproduced part, split the bytes into lines at LF. The line equal to `begin` and the line equal to `end` each occur exactly once in the file, `begin` first. Take the bytes from the start of the `begin` line to the end of the `end` line, with the `end` line's LF when it has one.
-4. The checksum is `sha256:` followed by the SHA-256 digest of the bytes taken, in lowercase hexadecimal.
+3. For a reproduced part, split the bytes into lines at LF. The line equal to `begin` and the line equal to `end` each occur exactly once in the file, `begin` first. Take the bytes from the start of the `begin` line to the end of the `end` line (with the `end` line's LF, when it has one).
+4. The checksum is `sha256:` followed by the SHA-256 of the bytes taken, in lowercase hexadecimal.
 
-If the `begin` line or the `end` line is missing, occurs more than once, or the `end` line comes first, the reproduced part cannot be found. That is an error, not a mismatch.
-
-A file has at most one entry, so at most one reproduced part. A file the project also writes can hold a reproduced part only if it can hold those two lines. Otherwise a reproduction writes it whole or does not write it.
-
-### The same settings
-
-The settings in the record and the settings file are the same when every layer has the same set of paths and `not_in_git` names the same set of layers. Order and formatting do not count.
+When the `begin` line or the `end` line is missing, occurs more than once, or `end` comes first, the reproduced part cannot be found. That is not the same as a checksum that differs.
 
 ## 3. Flow
 
-```mermaid
-classDiagram
-  class SetupRecord {
-  }
-  class Rules {
-    repository
-    commit: full hash
-    tag: optional
-  }
-  class Settings {
-    copy of the settings used
-  }
-  class File {
-    path
-    checksum
-    begin, end: only for a reproduced part
-  }
-  class Carrier {
-    kind: free text
-    files: paths
-    roles: meant for
-  }
-  class Renderer {
-    figure: a template figure name
-    command: command list
-  }
-  class Part {
-    name
-    runner: command list
-    entry: path
-  }
-  class Enforcement {
-    rule: name from the rules
-    by: mechanical or instruction
-    part: when mechanical
-  }
-  SetupRecord *-- Rules
-  SetupRecord *-- Settings
-  SetupRecord *-- "*" File
-  SetupRecord *-- "*" Carrier
-  SetupRecord *-- "*" Part
-  SetupRecord *-- "*" Renderer
-  SetupRecord *-- "*" Enforcement
-  Carrier ..> File : files are listed
-  Part ..> File : entry is listed
-  Enforcement ..> Part : names
-```
-
-Computing a checksum:
-
-```mermaid
-flowchart TD
-  A["read the bytes,<br/>CR LF becomes LF"] --> B{"entry has<br/>begin and end?"}
-  B -->|"no"| C["take all the bytes"]
-  B -->|"yes"| D{"begin line and end line<br/>each exactly once,<br/>begin first?"}
-  D -->|"no"| E["error: the part<br/>cannot be found"]
-  D -->|"yes"| F["take the bytes from the begin line<br/>through the end line"]
-  C --> G["sha256: and the digest<br/>in lowercase hex"]
-  F --> G
-```
-
-Who writes and who reads the record:
-
-```mermaid
-flowchart TB
-  R["reproduction"] -->|"replaces whole"| S[(".plumbline/setup-record.json")]
-  S -->|"commit, files<br/>written last time"| R
-  S -->|"rules, settings"| T["status"]
-  S -->|"files, checksums, format,<br/>renderers"| V["validate"]
-  S -->|"setup files, carriers' roles"| G["role guard"]
-```
-
-- A reproduction reads the record it is about to replace: the commit, when the user names none, and the files written last time.
-- status reports the setup's rules version and whether the settings changed since the reproduction.
-- validate checks the record's format and every listed file's checksum, and runs the renderers.
-- The role guard tells setup files and each carrier's roles from it (`guards`).
+1. When the reproduction has written the setup and every conformance case passes, it writes the setup record, whole.
+2. When reproducing again, the reproduction reads the previous setup record to know the files it wrote before.
+3. Validate compares the checksums of the files the setup record lists.
 
 ## 4. Invariants and contracts
 
-- Only a reproduction writes the record, and it replaces it whole.
-- The record and every file it lists are in git.
-- The record and every file it lists lie outside every layer location (`settings`).
-- Right after a reproduction, every listed file exists and its checksum matches.
-- No path is listed twice in `files`. Every path in `carriers` and `parts` is listed in `files`.
-- Every `mechanical` entry in `enforcement` names a part in `parts`.
-- Every carrier names at least one role.
-- No runner and no renderer command holds an absolute path.
-- The record holds nothing from a layer not in git. Its copy of the settings holds only paths and layer names.
-- The record holds no copy of the rules.
-- The rules repository is named by an address, never by a local path.
+- Only a reproduction writes the setup record.
+- Every file in `files` was written by the reproduction, and every file the reproduction wrote (except the setup record and `.git/info/exclude`) is in `files`.
+- Every file named in `carriers`, `parts` and `renderers` is in `files`.
+- A file has at most one reproduced part.
 
 ## 5. Decisions and reasons
 
-- **The record holds where the rules came from, the settings used, the reproduced files with their checksums, the carriers, the runners, and which rules are enforced mechanically.** intent §5.2.
-- **The commit hash is what counts; a tag is for people.** intent §5.2.
-- **The rules repository is named by an address other machines can reach, never by a local path.** The record is in git and read on every machine the project is used on; status looks for newer rules at that address. A local path holds on one machine only and can show that machine's user name. Rejected: recording the repository as the user gave it, which records a local copy when the user names one. (Design-level — confirmed 2026-10-18)
-- **The settings stay a file of their own, apart from the record.** intent §5.2.
-- **The record is `.plumbline/setup-record.json`, a JSON file.** For the same reasons as the settings file: JSON is read without a library, and `.plumbline/` already holds what plumbline keeps in a project. (Design-level — confirmed 2026-10-17)
-- **The record copies the whole settings, and the two are compared as sets.** status can then say what changed, not only that something did. The settings hold only paths and layer names, so the copy carries nothing from a layer not in git. (Design-level — confirmed 2026-10-17)
-- **Checksums are SHA-256, taken after CR LF is turned into LF.** SHA-256 comes with the standard library of common runners and as a command on common systems. Git may change line endings when it checks a file out, which would otherwise change a checksum from one machine to another. (Design-level — confirmed 2026-10-17)
-- **A reproduced part is marked by a begin line and an end line that the record names, with one part per file.** Comment syntax differs from one file type to another, so the rules cannot fix the lines. The reproducing agent chooses them and the record names them, so validate finds the part without knowing the file type. Rejected: fixed marker text, which some file types cannot hold; a checksum over the whole file, which would report the project's own edits. (Design-level — confirmed 2026-10-17)
-- **The record and every file it lists are in git, and outside every layer location.** validate in CI needs both the files and the checksums. Setup files are not a layer (`roles`), so none of them lies at a layer location. (Design-level — confirmed 2026-10-17)
-- **A carrier's kind is free text, and a rule's name is the one the rules give it.** The rules cannot name a coding agent's means, so the kind of a carrier is the reproducing agent's own description. No check compares these values; they are for people. (Design-level — confirmed 2026-10-17)
-- **Each part records a runner, as a command list, and an entry file.** Every caller, the conformance cases included, needs only these two to run a part. The runner can differ from part to part, because each must be present only where its part runs. (Design-level — confirmed 2026-10-17)
-- **Each carrier names the roles it is meant for.** The role guard must tell which carrier a role may read (`roles`), and the kind of a carrier is free text no check reads. (Design-level — confirmed 2026-10-18)
-- **A renderer is a command that gets one figure on standard input and answers by its exit status; the reproduction records one per kind of figure it can render.** Like a runner, a renderer differs from machine to machine, so it is chosen at reproduction and recorded. The same interface as a part needs no knowledge of the kind of figure. Rejected: passing the figure as a file path, which needs a temporary file in the project or outside the working directory. (Design-level — confirmed 2026-10-18)
-- **A runner or a renderer command holds no absolute path, and its program is a name found on the PATH.** The record is in git and shared by everyone who works on the project, and an absolute path is true on one machine only; under a home folder it also puts that machine's user name into the repository. Rejected: recording the path the reproducing agent found, which works on that machine alone and shows its user name; leaving the form to each reproduction, which lets the same happen in any project. (Design-level — confirmed 2026-10-18)
-- **The record holds no time.** Reproducing again with the same rules and settings then leaves the record as it was, and git shows no change. (Design-level — confirmed 2026-10-17)
+- The commit is what counts; the tag is added for people. A commit never changes.
+- The repository address must be reachable from other machines, so that a clone or another machine can reproduce again.
+- Commands hold no absolute path. Paths differ between machines, and the record would fit only one machine.
+- Checksums are computed with line ends turned into LF. A change only in line ends, from the operating system or git settings, is not an edit by hand.
+- A reproduced part's checksum covers only that part. The rest is where the project edits.
 
 ## 6. Verification criteria
 
-- After a reproduction, every file in `files` exists and its checksum matches (intent §11, M0).
-- Checksums:
-  - an empty whole file has `sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`;
-  - a whole file holding `a` CR LF `b` CR LF and one holding `a` LF `b` LF both have `sha256:911169ddaaf146aff539f58c26c489af3b892dff0fe283c1c264c65ae5aa59a2`;
-  - a reproduced part made of the lines `<!-- plumbline:begin -->`, `rule one`, `<!-- plumbline:end -->`, each ending in LF, has `sha256:0feea6f5b44d05e5c486ab443fce6ba01ec0951d9ee6c24d79a907c3758e9f67`, whatever project lines come before and after it; with `rule two` in place of `rule one` it has `sha256:372194c54600515e210c907b2e0b3ffc3381da531960057b83ac9ae667b1f878`;
-  - a reproduced part whose `begin` line occurs twice, or whose `end` line is missing, is an error.
-  - `validate` lists conformance cases for each of these: a whole file with CR LF line ends, a changed line inside a reproduced part, a `begin` line twice and a missing `end` line.
-- The same settings: `["src", "tests"]` and `["tests", "src"]` for `impl` are the same; adding a path, or adding a layer to `not_in_git`, is not. `status` lists conformance cases for both.
-- `validate` lists conformance cases for the record's format. Among them: an unknown key, a commit of 39 digits, a checksum without `sha256:`, a path listed twice, a carrier file that is not listed in `files`, a carrier without `roles`, a `mechanical` entry without a part, two renderers for one figure name, and a runner or a renderer command with an absolute path, such as `/usr/local/bin/mmdc` or `C:\tools\mmdc.exe`, are errors. So is a repository that is not an address, such as `~/Projects/plumbline-rules`, `plumbline-rules` or `file:///srv/plumbline`; `https://github.com/OWNER/plumbline` and `git@github.com:OWNER/plumbline.git` are addresses.
+Shown by validate's conformance cases (Validate).
+
+- A setup record with the right form → no problem.
+- An unknown key; a `commit` that is not 40 or 64 digits; a `repository` that is a path on the machine; a `runner` whose first element is `/usr/bin/python3`; a part's `entry` that is not in `files` → `record` each.
+- The content of a whole-file entry changed → `checksum`.
+- The same content with CR LF line ends → no problem.
+- A change inside a reproduced part → `checksum`. A change only outside it → no problem.
+- A reproduced part with no `end` line, or with the `begin` line twice → `part-not-found`.
 
 ## 7. Out of scope
 
-- None. setup-record is complete in M2.
+None.
