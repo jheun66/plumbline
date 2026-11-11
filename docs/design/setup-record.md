@@ -2,144 +2,145 @@
 
 ## 1. Responsibilities
 
-- Defines where the setup record is and its form.
-- Defines how checksums are computed.
+- Defines the setup record, including the settings snapshot, role carriers and actual enforcement coverage.
+- Defines file checksums and the references that validate can check.
 
-When the setup record is written is in Reproduction; when checksums are compared is in Validate.
+Reproduction writes the record and verifies its claims through the actual tools. Validate checks its form and file checksums.
 
 ## 2. Public interface
 
 ### The file
 
 - It is `.plumbline/setup-record.json`.
-- Only a reproduction writes it. Each reproduction writes it anew, whole. Nobody edits it by hand.
-- It is in git, and so is every file it lists.
+- Only reproduction writes it, replacing the whole record each time. It is not edited by hand.
+- It and every file it lists are kept in git.
 
 ### The form
 
-One JSON object with exactly these keys. The paths, commands and checksums in the example are made up for illustration.
+One JSON object with exactly the keys below. The example uses one project-defined role. Paths, commands, checksums and evidence are illustrative, not default settings or actual test results.
 
 ```json
 {
   "rules": {
     "repository": "https://github.com/OWNER/plumbline",
-    "commit": "0123456789abcdef0123456789abcdef01234567",
-    "tag": "v2.0"
+    "commit": "0123456789abcdef0123456789abcdef01234567"
   },
   "settings": {
-    "layers": {
-      "intent": ["docs/intent.md"],
-      "design": ["docs/design"],
-      "impl": ["src", "tests"]
-    },
-    "not_in_git": ["intent"]
+    "layers": {"intent": ["docs/intent.md"], "design": ["docs/design"], "impl": ["src"]},
+    "not_in_git": ["intent"],
+    "roles": {
+      "zones": [
+        {"name": "design", "layer": "design", "paths": ["docs/design"]},
+        {"name": "product", "layer": "impl", "paths": ["src"]}
+      ],
+      "members": [{
+        "name": "builder", "read_zones": ["design", "product"], "write_zones": ["product"],
+        "duty": "Build assigned design and perform the five checks.", "model": "PROJECT_MODEL"
+      }],
+      "guard": {"read_zones": false, "write_zones": true, "shell": "literal"}
+    }
   },
   "files": [
-    {
-      "path": "INSTRUCTIONS.md",
-      "checksum": "sha256:0f8ffbd6cd643eb1b595ee683fc34eef9d208436d1ecbf35585077d17151e2d7",
-      "begin": "<!-- plumbline:begin -->",
-      "end": "<!-- plumbline:end -->"
-    },
-    {
-      "path": ".plumbline/parts/validate",
-      "checksum": "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
-    }
+    {"path": "LEAD_INSTRUCTIONS.md", "checksum": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "begin": "<!-- plumbline:begin -->", "end": "<!-- plumbline:end -->"},
+    {"path": "BUILDER_INSTRUCTIONS.md", "checksum": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+    {"path": ".plumbline/parts/role-guard", "checksum": "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
+    {"path": ".plumbline/parts/validate", "checksum": "sha256:3333333333333333333333333333333333333333333333333333333333333333"}
   ],
   "carriers": [
-    { "kind": "instruction file, reproduced part", "files": ["INSTRUCTIONS.md"], "roles": ["lead", "implementer", "verifier"] }
+    {"kind": "instruction file", "files": ["LEAD_INSTRUCTIONS.md"], "roles": ["lead"]},
+    {"kind": "instruction file", "files": ["BUILDER_INSTRUCTIONS.md"], "roles": ["builder"]}
   ],
   "parts": [
-    { "name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate" }
+    {"name": "role-guard", "runner": ["RUNNER"], "entry": ".plumbline/parts/role-guard"},
+    {"name": "validate", "runner": ["RUNNER"], "entry": ".plumbline/parts/validate"}
   ],
-  "renderers": [
-    { "figure": "mermaid", "command": ["RENDERER", "--check"] }
-  ],
+  "renderers": [],
   "enforcement": [
-    { "rule": "intent-read", "by": "mechanical", "part": "role-guard" },
-    { "rule": "design-write", "by": "instruction" }
+    {"rules": ["intent-read", "design-write", "write-zones"], "roles": ["builder"], "channel": "file",
+     "by": "mechanical", "part": "role-guard", "scope": "Connected file read, search and write tools",
+     "limits": ["Unconnected tools and intent copies without known provenance remain instructions"],
+     "evidence": "All role-guard cases at the recorded commit passed; allowed and forbidden operations checked through each connected tool"},
+    {"rules": ["read-zones"], "roles": ["builder"], "channel": "file",
+     "by": "instruction", "scope": "Reads outside the assigned zones", "limits": ["Read-zone enforcement was not requested"]},
+    {"rules": ["intent-read", "design-write", "read-zones", "write-zones"], "roles": ["builder"], "channel": "shell",
+     "by": "instruction", "scope": "Shell commands", "limits": ["No shell hook is available"]}
   ]
 }
 ```
 
 | Key | Holds |
 |---|---|
-| `rules` | where the rules were read from |
-| `settings` | a copy of the settings the reproduction used, in the form of the settings file (Layers and settings) |
-| `files` | every file the reproduction wrote, except the setup record itself and `.git/info/exclude` |
-| `carriers` | the rule carriers the reproduction chose |
-| `parts` | the mechanical parts and how to run each |
-| `renderers` | for each figure kind that has a renderer, how to render |
-| `enforcement` | for each rule that may be enforced mechanically, whether it is, or is left as an instruction |
+| `rules` | the source repository and commit |
+| `settings` | the complete settings used by reproduction, including zones, members and guard choices, in the form defined by Layers and settings |
+| `files` | every file reproduction wrote, except this record and `.git/info/exclude` |
+| `carriers` | rule carriers and the roles they reach |
+| `parts` | mechanical parts and their runners |
+| `renderers` | available figure renderers |
+| `enforcement` | verified mechanical coverage and instruction limits for each role, rule and channel |
 
-Any other key makes the form wrong.
+All keys are required. The last five values are lists; lists may be empty only where their contracts allow it. Every object uses only its documented fields and types. Role references are checked against this record's settings snapshot, not against later changes to the live settings.
 
 #### `rules`
 
 | Key | Holds |
 |---|---|
-| `repository` | the address of the plumbline repository the rules were read from. It must be reachable from other machines too: an address that starts with `<scheme>://` (the scheme is not `file`), or of the form `<user>@<host>:<path>`. A path on the machine is not allowed |
-| `commit` | the full hash of the commit the rules were read at: 40 or 64 lowercase hexadecimal digits |
-| `tag` | optional. A tag that named that commit when the reproduction ran. It is for people; the commit is what counts |
+| `repository` | a repository address usable from other machines: `<scheme>://` with a scheme other than `file`, or `<user>@<host>:<path>`; not a local path |
+| `commit` | the full commit hash, 40 or 64 lowercase hexadecimal digits |
+| `tag` | optional text: a tag naming that commit at reproduction time, for people; the commit remains authoritative |
 
 #### `files`
 
-One object per file. No path appears twice.
+One entry per file, with a unique project-relative `path` using `/` and a `checksum` of `sha256:` followed by 64 lowercase hexadecimal digits. Paths have no absolute prefix, empty component, `.` or `..`.
 
-| Key | Holds |
-|---|---|
-| `path` | relative to the project root, separated by `/` |
-| `checksum` | `sha256:` followed by 64 lowercase hexadecimal digits |
-| `begin`, `end` | only for a file the project also writes: the exact text of the line that opens the reproduced part and of the line that closes it |
-
-Without `begin` and `end`, the reproduction wrote the whole file. With both, the reproduction wrote only the lines from `begin` to `end`, and the rest is the project's.
+For a file the project also writes, add both `begin` and `end`: distinct, nonempty strings giving the exact opening and closing marker lines, without line endings. The checksum covers that part, including its markers. Without them it covers the whole file. Having just one marker field is invalid. Each file has at most one reproduced part.
 
 #### `carriers`
 
-One object per rule carrier.
+Each entry has `kind` (nonempty descriptive text), `files` (a nonempty list of distinct paths listed in `files`) and `roles` (a nonempty list of distinct role names). Valid names are `lead` and the members in the settings snapshot. Every one of those roles is reached by at least one carrier.
 
-| Key | Holds |
-|---|---|
-| `kind` | what it is, in the reproducing AI's words: an instruction file, a file it points to, a script a hook runs, a skill, and so on |
-| `files` | the paths that make up the carrier. Each is in `files` |
-| `roles` | the roles the carrier reaches: one or more of `lead`, `implementer`, `verifier`, each once |
+A shared carrier may reach several roles, but Roles and Reproduction still restrict which instructions each role receives. Listing a shared carrier does not give a role permission to read another role's instructions. The project workflow stays in the carriers' project parts; its text is not copied into the record.
 
 #### `parts`
 
-One object per mechanical part.
+Each entry has a unique, nonempty `name`, a nonempty command list `runner`, and an `entry` path listed in `files`. The module defining the part supplies its name: `role-guard` or `validate`. Both parts are recorded even if no connector can enforce a guard. Run a part as its runner, entry file and own arguments, in that order (Conformance cases).
 
-| Key | Holds |
-|---|---|
-| `name` | the part's name: not empty, and not twice. A reproduction writes the names the modules that define the parts give (`validate`, `role-guard`) |
-| `runner` | the command that runs the part, as a list: the runner and any arguments it needs before the entry file |
-| `entry` | the path of the file the runner runs. It is in `files` |
-
-A part is run as its `runner`, then its `entry`, then the part's own arguments (Conformance cases).
+Custom recognizers and analyzers written during reproduction are included in `files`. They are helpers, not additional parts with the common verdict contract. Their invocation and behavior follow Roles.
 
 #### `renderers`
 
-One object per figure kind for which a renderer was found. It may be empty.
+Each entry has a unique `figure` name from the template and a nonempty `command` list. Include only figure kinds with an available renderer. A reproduced file invoked by the command is listed in `files`.
 
-| Key | Holds |
-|---|---|
-| `figure` | a figure kind named in the template. No name appears twice |
-| `command` | the command that renders one figure, as a list. A file it runs that the reproduction wrote is in `files` |
-
-A renderer runs in the project root, with the figure's text (the lines between its opening and closing fences) on standard input. Ending with 0 means it rendered; anything else means it did not. A renderer that cannot be started counts as absent.
+The renderer runs from the project root, with the figure source between the fences on standard input. Exit 0 means it rendered; another exit means it did not. A renderer that cannot start counts as absent.
 
 #### Commands
 
-`runner` and `command` hold no absolute path. The first element (the runner) is a name found on the PATH, so it holds no `/` or `\`. No element starts with `/` or `\`, or with a letter, `:` and then `/` or `\`.
+The `runner` and `command` lists contain strings and no absolute paths. Their first element is a nonempty program name found on PATH, without `/` or `\`. No element starts with `/` or `\`, or a letter followed by `:` and `/` or `\`.
 
 #### `enforcement`
 
-One object per rule that may be enforced mechanically.
+An entry groups roles and rules only when they share the same coverage and limitations.
 
-| Key | Holds |
+| Field | Holds |
 |---|---|
-| `rule` | the rule's name: not empty, and not twice. A reproduction writes `intent-read` (the implementer and the verifier cannot read intent) and `design-write` (the implementer cannot write design). Other names come from records written under older rules |
-| `by` | `mechanical` or `instruction`. It is `mechanical` only when the part that enforces it passed every conformance case and acting through its connector blocked and passed as expected |
-| `part` | only when `by` is `mechanical`: the `name` of the part that enforces it |
+| `rules` | a nonempty list of distinct names: `intent-read`, `design-write`, `read-zones`, `write-zones` |
+| `roles` | a nonempty list of distinct member names from the settings snapshot; never `lead` |
+| `channel` | `file` for file tools, or `shell` for shell commands |
+| `by` | `mechanical` or `instruction` |
+| `scope` | nonempty text naming the tools, operations and content covered |
+| `limits` | a list of nonempty descriptions of what remains instruction-only; may be empty if no further limit applies |
+| `part` | required only for `mechanical`: `role-guard`, present in `parts` |
+| `evidence` | required only for `mechanical`: nonempty text identifying the passed cases and the actual connector checks that support the stated scope |
+
+Expand each entry into its rule × role × channel combinations. Every non-lead role has exactly one entry for each of the four rules on each of the two channels. Missing or duplicate combinations are invalid. With no non-lead roles, the list is empty. `intent-read` and `design-write` apply to every non-lead role; the other rules describe its configured zones.
+
+`mechanical` applies only within the described, tested scope. Everything outside it remains an instruction. A requested guard is not evidence: cases must pass, and actual connected tools must demonstrate the allowed and forbidden operations for all listed roles. Partial-file coverage must state its recognition and checked-edit guarantees. Limits include unavailable recognition, unconnected tools, intent copies with unknown provenance and any inability to preserve a checked edit until application. `instruction` entries give the reason in a nonempty `limits` list and have neither `part` nor `evidence`.
+
+Disabled zone guards cannot be recorded as mechanical for that zone rule. With shell choice `none`, all shell entries are instructions. Otherwise mechanical shell scope describes the selected `literal` or `cautious` behavior, not proof of arbitrary program effects. Roles remain bound by their permissions regardless of these entries.
+
+### Previous records
+
+A record from older rules is not silently converted into this form. Reproduction may read its documented old form to recover generated files, marker boundaries and reusable tool choices, but must obtain the current role settings instead of inventing missing roles. Validate reports `record` for a record that does not satisfy the current form. A valid snapshot may differ from current settings; that difference does not make its role references invalid. Settings changes still require reproduction.
 
 ### Checksums
 
@@ -152,9 +153,17 @@ When the `begin` line or the `end` line is missing, occurs more than once, or `e
 
 ## 3. Flow
 
-1. When the reproduction has written the setup and every conformance case passes, it writes the setup record, whole.
-2. When reproducing again, the reproduction reads the previous setup record to know the files it wrote before.
-3. Validate compares the checksums of the files the setup record lists.
+```mermaid
+flowchart TB
+  A["Settings and generated files"] --> C["Write the complete<br/>setup record"]
+  B["Cases and connector checks<br/>Scope and limitations"] --> C
+  C --> D["Validate structure<br/>and file checksums"]
+  C --> E["Reproduce again using<br/>the previous file list"]
+```
+
+1. Reproduction writes the setup, passes every conformance case and checks the actual connectors. Unavailable or unverified coverage stays instruction-only.
+2. It records the settings snapshot, generated files and checksums, role carriers, commands and coverage, replacing the whole record.
+3. Validate checks the record's structure and compares the listed file checksums. A later reproduction uses the previous record to identify what it generated before.
 
 ## 4. Invariants and contracts
 
@@ -162,6 +171,8 @@ When the `begin` line or the `end` line is missing, occurs more than once, or `e
 - Every file in `files` was written by the reproduction, and every file the reproduction wrote (except the setup record and `.git/info/exclude`) is in `files`.
 - Every file named in `carriers`, `parts` and `renderers` is in `files`.
 - A file has at most one reproduced part.
+- Every role has a carrier, and every non-lead rule–role–channel combination is accounted for exactly once.
+- Mechanical claims are bounded by the recorded scope and evidence; unchecked coverage remains an instruction.
 
 ## 5. Decisions and reasons
 
@@ -170,17 +181,23 @@ When the `begin` line or the `end` line is missing, occurs more than once, or `e
 - Commands hold no absolute path. Paths differ between machines, and the record would fit only one machine.
 - Checksums are computed with line ends turned into LF. A change only in line ends, from the operating system or git settings, is not an edit by hand.
 - A reproduced part's checksum covers only that part. The rest is where the project edits.
+- The settings snapshot gives old role references a stable meaning. Coverage is recorded separately from requested guards because tools may enforce only part of what was requested.
 
 ## 6. Verification criteria
 
 Shown by validate's conformance cases (Validate).
 
 - A setup record with the right form → no problem.
+- A custom role roster, including no non-lead roles, with matching carriers and coverage → no problem. Live settings may have changed since that snapshot.
+- Unknown carrier roles, missing role carriers, invalid file or part references, missing or duplicate enforcement combinations, or mechanical claims incompatible with the snapshot's guard choices → `record`.
+- A mechanical entry without scope or evidence, or an instruction entry without a reason → `record`.
 - An unknown key; a `commit` that is not 40 or 64 digits; a `repository` that is a path on the machine; a `runner` whose first element is `/usr/bin/python3`; a part's `entry` that is not in `files` → `record` each.
 - The content of a whole-file entry changed → `checksum`.
 - The same content with CR LF line ends → no problem.
 - A change inside a reproduced part → `checksum`. A change only outside it → no problem.
 - A reproduced part with no `end` line, or with the `begin` line twice → `part-not-found`.
+
+Reproduction also reviews the truth of the coverage and limitations against actual connector checks. A syntactically valid record alone does not prove them.
 
 ## 7. Out of scope
 

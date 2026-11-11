@@ -2,148 +2,177 @@
 
 ## 1. Responsibilities
 
-- Says the order in which the lead reads plumbline's rules and builds the setup in a project.
-- Says what each role must receive, and through which carriers.
-- Says how to tell whether a rule is enforced mechanically or left as an instruction.
-- Says how to reproduce again.
+- Defines how the lead reads plumbline's rules and builds a project's setup.
+- Defines how the configured roles receive their instructions and follow the project's workflow.
+- Defines how to check mechanical enforcement and record its limits.
+- Defines how to reproduce again while preserving project parts.
 
-The form of the setup record is in Setup record; how cases run is in Conformance cases.
+Layers and settings defines the settings. Roles defines permissions and guard behavior. A change defines the workflow. Setup record defines the record; Conformance cases defines how cases run.
 
 ## 2. Public interface
 
 ### Who and when
 
 - The lead reproduces, in its conversation with the user.
-- The first reproduction comes after the module map is confirmed and the settings are complete.
-- A project reproduces again when it moves to another rules commit, when its settings change, or when the user asks.
+- The first reproduction follows confirmation of the module map and completion of the settings and project workflow.
+- Reproduce again when the rules commit or settings change, or when the user asks. A workflow change that needs different carriers or role startup also requires reproduction.
 
 ### Input
 
-- The plumbline repository and a commit: the ones the user names, or else the ones in the setup record. A tag is resolved to its commit. On a first reproduction with no commit given, the lead asks the user; it may propose the newest tag.
-- The repository address must be reachable from other machines (Setup record). When given a copy on the machine, the lead reads the rules from it and asks the user for the address of the original repository. Without an address, it stops before writing anything.
-- The settings file, the previous setup record, the project parts of carrier files, and the template's project part.
+- The plumbline repository and commit named by the user, or otherwise those in the setup record. Resolve a tag to its commit. On a first reproduction with no version given, ask the user; the lead may propose the newest tag.
+- The repository address must be usable from other machines (Setup record, Public interface). For a local copy without a usable recorded address, ask for the original repository's address before writing anything.
+- The complete settings, previous setup record when present, project parts of carriers including the workflow, and the template's project part.
 
-### When it stops before writing anything
+### Before writing
 
-When any of these holds, it writes nothing, stops, and tells the user why in plain words.
+Check the inputs and planned setup first. Stop without writing and explain when:
 
-- The project is not a git repository.
-- The settings file is missing or does not have its form (Layers and settings).
-- A layer location is `.plumbline`, contains it, or lies inside it.
-- The template's project part does not exist yet (Design documents).
-- The previous setup record exists, and what the reproduction reads from it does not have its form. But a record written under older rules that lacks a key newer rules added, a repository that is not an address, and a command the current rules do not allow, are read as they are. Such a command is not kept; a new one is chosen.
-- There is no setup record, but the git history has one: it was removed by hand. The lead asks the user to restore it from git.
-- A file the previous setup record lists with a reproduced part exists, but the part cannot be found in it. The lead names the file, and the boundary line that is missing, appears twice, or is out of order.
-- There is no carrier that reaches the lead by itself at the start of every session (below, "How carriers reach roles"). This is an environment error.
-- The rules at that commit cannot be read.
+- The project is not a git repository; the settings are missing or malformed; or a layer location is `.plumbline`, contains it, or lies inside it.
+- The template's project part is absent (Design documents, Public interface).
+- The workflow leaves a required choice open, refers to an unconfigured role, or cannot cover the planned work and the five checks with the assigned roles' permissions. Resolve this with the user; do not add default roles, models or permissions. An empty member list is valid settings syntax, but does not make unassigned work feasible.
+- The previous record cannot be read in its documented form. An older form may be read to recover generated files, marker boundaries and tool choices; missing current role settings must be obtained from the user. An old local repository location or a now-disallowed command may be read, but needs a valid replacement before it is recorded again.
+- No setup record exists but git history has one. Ask the user to restore the removed record from git.
+- A previously recorded file exists but its reproduced part cannot be located: a marker is missing, repeated or out of order. Name the file and the faulty boundary; do not guess which contents to replace.
+- No carrier can reach the lead automatically at every session start. This is an environment error.
+- The chosen rules commit cannot be read, or the rules leave a necessary part of the setup undefined. Report the gap and propose a rules change.
+
+Compare existing reproduced files and parts with the previous record's checksums. Tell the user which are missing or changed. Recreate, replace or remove them only with the user's agreement; without it, stop before writing. Changes solely in project parts are preserved and do not count as edits to reproduced parts.
+
+Confirm that the workflow specifies assignments, work across zones, coordination of shared write zones, communication and reporting, handling findings, resuming after design updates, and responsibility for all five checks (A change, Public interface). It grants no extra permissions. Check that each declared part recognizer matches its description; a missing definition or disagreement is resolved with the user. Settle the contract of a recognizer to be made during reproduction before using it. A valid recognition method that cannot be implemented is an enforcement limitation, not permission to widen the zone.
 
 ### Reading the rules
 
-- The lead reads only plumbline's rules and conformance cases at that commit, from a copy kept outside the project. It never reads plumbline's design, even when the copy holds it.
-- No rule file is copied into the project. What AIs must do reaches them through carriers.
-- When the rules do not say what to produce, the lead does not fill the gap. It stops, says what the rules do not say, and proposes a change to the rules.
+- Read only plumbline's rules and conformance cases at the chosen commit, from a copy outside the project. Do not read plumbline's design, even when that copy contains it.
+- Do not copy rule files or cases into the project. The reproduced carriers and tools provide the setup without needing that copy at runtime.
+- When the rules leave a gap, stop the dependent reproduction work, explain what is missing and propose a rules change. Do not invent the missing contract.
 
-### Steps
+### Producing the setup
 
-1. Tell the user which files in the previous setup record are missing or have a different checksum: they were removed or edited by hand. Only with the user's agreement are they written again, or removed in step 8. Without agreement, stop before writing anything.
-2. Choose the rule carriers and write them. Keep project parts as they are.
-3. Write the template's reproduced part. Keep its project part as it is.
-4. Add to `.git/info/exclude`, when missing, the locations of the layers kept out of git and the work note's place (`/.plumbline/work-note.md`). Remove the lines of a layer that was kept out of git before and no longer is.
-5. Write the parts (the role guard, validate) and their connectors, and choose a runner for each part. A runner counts as present only when it can be recorded by a name found on the PATH. When none is present, report an environment error that names what is missing, and stop. For each figure kind in the template, choose a renderer present on this machine; when none is, record none. A renderer reachable only through an absolute path is recorded as none too, and the final report tells the user what to put on the PATH.
-6. Run every conformance case (Conformance cases). When one fails, fix the part and run every case again.
-7. Act through the connectors (below, "Checking connectors").
-8. Remove the files and reproduced parts the previous setup record listed and this reproduction no longer writes.
-9. Write the setup record anew, whole (Setup record).
-10. Tell the user in plain words: which rules are enforced mechanically and which are left as instructions; which files were written, changed and removed; what to commit (the setup record, and the files listed in the previous or the new setup record that changed). The reproduction commits nothing. When a carrier was written or changed and it is read only when a session starts, tell the user it reaches that role only from a new session on.
+1. Choose and write the rule carriers for `lead` and every member in the current settings. Preserve project parts, including the agreed workflow.
+2. Write the template's reproduced part, preserving its project part.
+3. Add the excluded layer locations and `/.plumbline/work-note.md` to `.git/info/exclude` when absent. Remove old layer-exclusion lines when that layer is now tracked; preserve unrelated lines.
+4. Write both parts, `role-guard` and `validate`, and the available connectors. Write any required recognizer or analyzer helpers. Choose runners that meet Setup record's command form and can start by a name on PATH. Without a usable runner, report what is missing and stop with an environment error. For each figure kind, record an available renderer in the same command form; otherwise record none and explain the omission. If a renderer is available only by an absolute path, the final report says what to put on PATH.
+5. Run every conformance case as specified in Conformance cases, including isolated files, links and helper commands. Preparation or runner-start failure is not a passing expected-error case. Fix a failing part and run all cases again. Separately check custom recognizers against selected and excluded contents and boundary changes; the shared marker cases do not prove a custom recognizer. If a part or its helpers change later in reproduction, rerun all cases before recording coverage.
+6. Check the actual connectors as described below. Establish the tested scope and remaining instruction limits for each role and channel.
+7. Remove obsolete reproduced files or parts listed in the previous record. When a file also has a project part, remove only the reproduced part and keep the project contents. Do not delete unrecorded files by inference from a removed role's name.
+8. Replace the setup record whole, using the current settings snapshot, all generated files and helpers, carriers reaching every role, both parts, available renderers and the checked enforcement coverage (Setup record, Public interface).
+9. Report completion and limitations as described below. Commit nothing.
+
+Until all cases pass and the current coverage is recorded, reproduction is incomplete. If it stops after writing has begun, report the changed files and unfinished work; do not present the previous record as evidence for the changed setup.
 
 ### What each role receives
 
-| Role | Receives |
+| Recipient | Receives |
 |---|---|
-| lead | the three layers, their locations, and the layers kept out of git (Layers and settings); the read direction, fixing from the top down, and asking about gaps; the whole role table, which role an AI plays, how to start the implementer and the verifier, and the hand-offs (Roles); how to write design documents (Design documents); Writing intent; A change; Status; how to run validate and report its result; what to do when the role guard blocks or reports an environment error; how to reproduce; that the content of a layer kept out of git is never copied into a layer in git; that reproduced files are never edited by hand, and that the setup changes only by changing the rules or the settings and reproducing again |
-| implementer | its row of the role table; the layer locations, and the intent location as a place it never reads; how to read a design document (what the seven sections mean; the design never names locations of impl); that it builds only the design sections it is handed; that on a gap it leaves that point unbuilt and reports it in terms of the design; that when a file in no layer must be written, it stops that work and reports; that when blocked, it stops that work and reports, and never does it another way; its report |
-| verifier | its row of the role table; the layer locations, and the intent location as a place it never reads; how to read a design document; its hand-off; the five checks and how to judge the diagnosis (A change); its report; that when blocked, it never does it another way |
+| `lead` | Layer locations and git exclusions; read direction and its own read/write limits; the complete role list, duties, models and zones; role identification and startup; the agreed workflow and hand-offs; Writing intent, Design documents, A change and Status; running validate on request and reporting results; guard blocks and errors; reproduction and its recorded limits |
+| Each configured member | Its name, duty, model, read zones and write zones with their paths, patterns and part definitions; the common limits in Roles; layer locations, including intent as forbidden; how to read design's seven sections; its workflow assignments, communication routes, hand-offs and reports; the five checks and diagnosis rules for its assigned check scope; guard blocks, errors and instruction limits |
 
-- Every location is written as the settings give it.
-- A rule that could not be enforced mechanically is written as an instruction. When `intent-read` is an instruction, the implementer and the verifier receive "never read intent" as an instruction. When `design-write` is an instruction, the implementer receives "never write design" as an instruction.
+Write paths as configured. Every non-lead role receives the limits against reading intent or its copies, searching their ancestor folders and changing design. It receives only its permitted share of a task, leaves gaps and work outside its zones, and reports without copying impl to the lead. Its own instructions, settings and `.git/HEAD` are setup reads under Roles; other roles' instructions and the work note are not shared context.
+
+State all permission limits even where mechanical guards exist. Disabled, unavailable or untested guards leave those limits as instructions. The lead also receives the rules against copying an excluded layer's content into a tracked layer and editing reproduced contents by hand. Setup changes go through the rules, settings or project parts as appropriate, then reproduction.
 
 ### How carriers reach roles
 
-- The reproducing lead chooses carriers from the means it has: an instruction file, part of one, a file it points to, a script a hook runs, a skill, and so on.
-- Each role's rules go in a carrier only that role receives.
-- A carrier every AI reads by itself holds no role's rules. It holds only the role names, which AI plays which role, and, for a role no carrier can reach alone, where that role's rules are. When it has nothing to point to, no such carrier is written.
-- The lead's rules reach it at the start of every session, without the user doing anything: through a carrier only the lead receives, or because the carrier every AI reads points to them.
-- The implementer and the verifier receive their rules when started: through a carrier only that role receives, or because the carrier every AI reads points to them. When that carrier reaches the role only if it is started in a certain way (for example, as a given kind of agent), the lead starts it that way. When neither works, the hand-off names where its rules are.
-- Carrier files are in git, belong to no layer, and are listed in the setup record.
-- What a carrier holds: rules only. No reasons, history or open questions. Nothing that points to plumbline's intent or design. No content of a layer kept out of git. Nothing the rules do not say. What a project adds goes in a project part.
+- Choose from the available means: instruction files, marked parts of files, referenced files, hooks, skills and role startup mechanisms.
+- Put each role's instructions in a carrier that only that role receives. A shared startup carrier holds only role names, role identification and references to role-specific instructions. Omit it when unnecessary. Recording a shared carrier does not authorize access to another role's instructions.
+- The lead receives its rules at every session start without user action, either directly or through the shared carrier's reference.
+- Start each configured member as a fresh AI with its selected model and without the lead's conversation or intent. Use the startup mechanism that delivers that role's rules. If no automatic carrier reaches it, name its instruction file in the hand-off. Do not silently substitute a role or model that the available tool cannot start; report the environment limitation.
+- Carrier files are tracked, outside every layer, and listed in the setup record. Every configured role, including lead, must be reached by at least one recorded carrier.
+- Reproduced carrier contents are rules only: no reasons, history, open questions, reference to plumbline's intent or design, or content from excluded layers. Project-specific working rules belong in project parts.
 
 ### Reproduced parts and project parts
 
-- When a carrier is a file the project also writes, the reproduction writes only what lies between a begin line and an end line. The two lines are chosen to suit the file type and recorded in the setup record. The rest is the project part, and reproducing again leaves it as it is.
-- A project part holds the project's own working rules (language, code comment policy, and so on). A reproduced part never holds them.
-- A file that cannot hold the two lines is not used; another file is chosen.
-- The template has both parts too. Its reproduced part says what each of the seven sections holds, and has no level-2 heading.
+- In a file also written by the project, write only the reproduced part between distinct begin and end marker lines, including the markers. Choose lines suitable for the file type and record them. Keep everything outside them unchanged.
+- Project parts hold the project's workflow and other working rules, such as language and code comment policy. Arrange them so each role receives its relevant instructions within Roles' access limits. Reproduction does not rewrite those choices.
+- Use a different file when the format cannot hold marker lines.
+- The template has both parts. Its reproduced part describes the seven sections without adding level-2 headings.
 
 ### Connectors
 
-- The role guard is connected, for every role, to the hook an AI passes through just before it reads or writes files. The connector gives the part the AI's role, the action, and the paths (for a search, the folders searched). When the connector cannot tell an AI's role, both rules are left as instructions.
-- Validate has no connector. The lead runs it with its runner and entry.
+Connect `role-guard` to the available file and shell hooks that run before an operation. A connector translates tool facts into the guard's input; it does not make its own permission decision or execute a shell command to discover its effects (Roles, Public interface).
 
-### Checking connectors
+- Role identity comes from the active role startup, not a role's claimed name. Without reliable identity, the affected coverage remains instruction-only.
+- Paths, searched folders or the exact complete selection, ranges, edits and shell working directory describe the actual tool operation. `instruction_paths` comes from the active role's carriers; `intent_copies` comes from setup or tool provenance. Neither is a list invented by the requesting role.
+- The checked operation must be the one applied. For partial edits, preserve the checked contents and exact replacements until application, or require a fresh check after a change. If the tool cannot guarantee this, record that limit. A claimed narrow edit cannot authorize an unverified whole-file replacement.
+- Preserve the distinction between `block` and `error`. Report the reason, stop the affected operation and let the role report to the lead. Do not retry unchanged indefinitely or bypass through another tool.
+- Validate has no automatic hook. The lead runs it only on user request, using its recorded runner and entry.
 
-- The lead starts the implementer and the verifier as the setup starts them, with a hand-off that says this is a check of the role guard, and asks only for these:
-  - The implementer and the verifier each: read a path that does not exist under the intent location → must be blocked. Read a design document → must pass.
-  - The implementer: write a new file at a path that does not exist under the design location → must be blocked. When it is not blocked and the file is created, the lead removes it, and that rule is left as an instruction.
-- A path that does not exist reveals nothing, so no role has a reason to refuse.
-- When a role cannot be started before a new session because of a carrier this reproduction wrote, the rule whose check needs it is left as an instruction, and the final report tells the user to reproduce again in a new session. The connector stays in place and is listed in the setup record.
+### Checking actual connectors
 
-### Mechanical or instruction
+Check every role and tool channel for which mechanical coverage will be claimed. Start roles with the configured model and carrier mechanism, without the lead's conversation, and identify the task as a guard check. Exercise the actual tool hook and inspect its guard result; calling the guard directly proves only the part.
 
-`intent-read` and `design-write` are enforced mechanically only when all of these hold; otherwise they are left as instructions.
+Use nonexistent paths or disposable synthetic files so that an unexpected pass cannot reveal or alter real intent, design or impl. File-part and write checks need disposable contents. A disposable test project is suitable only when it exercises the same connector, role startup, settings and relevant tool configuration; record any difference and leave unverified actual-project coverage as an instruction. Never copy real intent into a fixture. Remove synthetic files and stop temporary processes after checks, including failures.
 
-- There is a means to run the part just before the action.
-- The part passed every conformance case.
-- The connector check gave the expected results.
+| Coverage to check | Evidence through the connector |
+|---|---|
+| Mandatory limits | For each non-lead role, intent reads and ancestor searches, including outside parents, are blocked; design creation, changes and deletion are blocked. Check symbolic-link resolution and known-copy metadata where those are claimed. Include an allowed operation under that role's permissions or setup-read exceptions. |
+| Optional zone guards | With each requested guard on, selected contents are allowed and excluded contents are blocked. Check the actual path patterns and any file parts. A role with no write zones is not assigned an allowed impl write merely to complete a probe. |
+| File parts | Custom recognition matches the description; partial reads and edits stay inside the recognized ranges; boundary changes cannot acquire other contents. The operation applied matches the checked bytes and replacements, including detection of changed input. |
+| Shell inspection | The chosen `none`, `literal` or `cautious` behavior agrees with Roles. Check identified file effects, ordinary arguments that are not paths, and unresolved effects. Inspection does not execute the command. The tool's later execution, if tested, uses only disposable data. |
+| Metadata and failures | Identity, instruction paths and copy locations have the stated trusted sources. Guard errors are reported as errors and prevent the affected operation. Missing hooks or metadata are recorded as limits. |
 
-### Reproducing again
+An AI declining a probe, a missing target file or a tool's unrelated access error is not proof that the guard blocked it. A failed or unavailable check cannot support mechanical coverage. Repair and recheck, or leave that scope as an instruction. If a changed carrier requires a new session, keep the connector and record its untested scope as instruction-only; tell the user to reproduce again in a new session.
 
-- The steps are the same. Reproduced files and reproduced parts are written anew; project parts are kept.
-- The previous setup record's choices (carriers, boundary lines, runners, renderers) are kept unless the rules, the settings or the means at hand changed. A command the current rules do not allow is never kept.
+### Mechanical coverage and the record
+
+Mechanical coverage requires all conformance cases to pass, a hook before the operation, trustworthy operation input, and successful checks through the actual connector for every listed role. It covers only the tools, operations and contents those checks support.
+
+For each non-lead role, record `intent-read`, `design-write`, `read-zones` and `write-zones` for both `file` and `shell`, exactly once per combination. Group entries only when their scope and limits agree. Mechanical entries identify the cases and connector checks in `evidence`; instruction entries explain the reason in `limits` (Setup record, Public interface).
+
+Disabled zone guards are instructions for those zone rules. Shell choice `none` makes all shell entries instructions. Other shell entries describe the chosen inspection behavior, not proof of arbitrary program effects. Partial-file coverage states recognition and checked-edit guarantees. Record unconnected tools, unknown-origin intent copies, unavailable recognizers and content-stability limitations wherever they apply. Never infer coverage from a setting, a declared recognizer or a passed case alone.
+
+### Completion and reproducing again
+
+Report in plain words:
+
+- Which roles receive which carriers, and which changes take effect only in new sessions.
+- Which rules are mechanically enforced for which roles and tools, what remains instruction-only, and what could not be checked or started.
+- Which files were written, changed or removed; what to commit: the setup record and changed files listed in the previous or new record. Also explain any local exclusion changes and unavailable renderers.
+
+Reproducing again follows the same checks and preserves project parts. Keep previous carrier, marker, runner and renderer choices when the rules, settings and available means still support them; never keep a now-invalid command. Old coverage is not evidence for changed settings, tools or connectors. Read old records only in their documented form and write the new record in full, without inventing missing roles.
 
 ## 3. Flow
 
-1. The user asks for a reproduction (with a commit or a tag, if any).
-2. The lead reads the settings, the previous setup record and the project parts.
-3. When a stop condition holds, it stops and tells the user.
-4. It reads the rules at that commit from the copy outside the project. When the rules have a gap, it stops and proposes a change to the rules.
-5. It goes through steps 1 to 10 above.
+```mermaid
+flowchart TB
+  A["Check inputs<br/>and workflow"] --> B["Build setup<br/>Keep project parts"]
+  B --> C{"All cases<br/>pass?"}
+  C -->|no| B
+  C -->|yes| D["Check connectors<br/>and coverage"]
+  D --> E["Write complete<br/>setup record"]
+  E --> F["Report changes<br/>and limits"]
+```
+
+Resolve input problems and changes made by hand before writing. Generate the setup, run all cases and check connectors. Remove obsolete reproduced contents, write the complete record and report. An unavailable connector can leave an instruction limit; a failed conformance case leaves reproduction incomplete.
 
 ## 4. Invariants and contracts
 
-- A reproduction commits nothing.
-- A reproduction never changes project parts.
-- A reproduction ends only when every conformance case passes.
-- Every file a reproduction wrote is in the setup record (except the setup record and `.git/info/exclude`), and every file in the setup record was written by a reproduction.
-- Rule files and conformance cases are never copied into the project.
+- Reproduction commits nothing and never changes project parts.
+- Roles, models, permissions and workflow come from explicit project decisions; reproduction supplies no missing defaults.
+- Reproduction finishes only after every conformance case passes and the record describes the actual setup and enforcement limits.
+- Every lasting file written by reproduction is recorded, except the setup record and `.git/info/exclude`; every recorded file was written by reproduction. Disposable test files are removed.
+- Rules and cases are not copied into the project. The finished setup works without the external rules copy.
+- No untested or unavailable coverage is described as mechanical.
 
 ## 5. Decisions and reasons
 
-- The lead reproduces. There are things to ask the user, such as what to do with files edited by hand. To another project's lead, plumbline's rules are not that project's impl, so it may read them.
-- The copy of the rules is kept outside the project, so rules never mix with project files.
-- Files edited by hand are written again only with the user's agreement. The user may have edited them on purpose.
-- Connectors are checked by acting through them. Cases test only the parts, and connectors differ between AI tools, so cases cannot test them.
-- The checks use paths that do not exist. Even when not blocked, nothing is revealed.
-- A check that needs a role reachable only from a new session waits for the next reproduction, so that no rule is recorded as mechanical without being checked.
+- The lead reproduces because choices and gaps need the user. Another project's lead may read plumbline's rules: they are not that project's impl. Keeping the copy outside the project separates it from project files.
+- Settings syntax alone cannot show whether the workflow is feasible. The assigned roles must collectively build the planned work and complete the five checks within their permissions.
+- Project parts survive reproduction so project choices, including workflow, are not lost. Replacing manually changed reproduced contents needs agreement because the change may be intentional.
+- Cases test the common parts; actual connector checks establish what the available AI tools enforce. Synthetic contents keep failed checks from exposing or damaging project work.
+- Coverage is recorded separately by role, rule and channel because tools may enforce different subsets. New-session-only checks wait rather than being reported as already passed.
 
 ## 6. Verification criteria
 
-This needs judgment, so there are no cases. Reproducing in another project shows:
+These require judgment during reproduction in another project:
 
-- In a project after reproduction, validate gives no `record`, `checksum`, `part-not-found` or `template` line.
-- Reproducing again in a new session with the same rules and settings gives the same list of files in the setup record.
-- Reproducing again leaves project parts as they are.
-- The locations of the layers kept out of git and the work note's place are in `.git/info/exclude`.
-- The final report names the rules enforced mechanically, those left as instructions, and the files to commit.
+- Missing roles or workflow choices are reported before writing; no default roster, model or check assignment appears. A workflow that cannot cover required work is not accepted merely because settings parse.
+- Every configured role receives only its own instructions through its specified startup and model. The lead starts with its rules automatically; non-lead roles receive neither intent nor the lead's conversation.
+- All common cases pass using the reproduced parts and isolated fixtures. Custom recognizers are checked separately, and fixture preparation failure never counts as an expected error.
+- Every mechanical record entry identifies passed cases and successful actual connector checks for its roles and scope. Disabled guards, shell `none`, unavailable recognition, unknown copy provenance, unconnected tools and unpreserved edits have the appropriate instruction limits.
+- When the user requests validate after reproduction, it reports no `record`, `checksum`, `part-not-found` or `template` problem. Passing validate alone is not evidence of guard coverage.
+- Reproduction with unchanged rules, settings, workflow and environment preserves the recorded file list. Project parts remain unchanged, including when a role or carrier is removed. Old files and marker boundaries are recovered from documented older records without inventing current roles.
+- Excluded layers and the work note are excluded locally; unrelated exclusion lines remain. The final report covers changed files, the commit set, enforcement limits and new-session requirements.
 
 ## 7. Out of scope
 

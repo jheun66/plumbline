@@ -53,7 +53,7 @@ When intent is confirmed, its top says, in the project's own words, that the use
 
 ## 6. Verification criteria
 
-This needs judgment, so there are no conformance cases. The verifier checks that the rules state the flow and conditions above without omission.
+This needs judgment, so there are no executable conformance cases. The project's assigned roles review whether the rules state the flow and conditions above without omission, including the draft marks, the handling of open items and proposals, and confirmation only after the user reads and understands the whole. This review checks the rules, not a target project's intent.
 
 ## 7. Out of scope
 

@@ -20,7 +20,7 @@ The mechanical parts are the role guard (`role-guard`) and validate (`validate`)
 
 - The working directory is the project root. A part finds the project only through it, never through where its own files are.
 - The arguments and standard input are defined by the part's module. Either may be empty.
-- The result depends only on the files in the working directory (a git repository there included), the arguments and standard input. It does not use the network.
+- The result depends on the project files (including its git repository), paths and contents explicitly selected by the request, the arguments and standard input. Role-guard requests may name paths outside the project, as defined in Roles. It does not use the network.
 
 **Verdict**: given by the exit status.
 
@@ -43,7 +43,8 @@ The mechanical parts are the role guard (`role-guard`) and validate (`validate`)
 A connector connects a part to an AI tool's hooks. It differs from one AI tool to another, so the rules do not fix it; the reproducing AI writes it.
 
 - A connector only translates: what the AI tool gives, into the part's arguments and standard input; and the part's verdict, into the form the AI tool understands. It makes no judgment of its own.
-- It blocks only on `block`. On `error` it reports an environment error and lets the AI go on.
+- It blocks only on `block`. On `error` it reports an environment error without presenting it as a policy denial. The role stops the affected operation and reports it under Roles; independent work can continue.
+- It passes trusted role identity, copy provenance, instruction paths, ranges and edits from the actual setup and operation, as specified in Roles. It preserves the checked operation when applying it; unsupported guarantees are recorded as instructions. It never executes a shell command merely to inspect it.
 - Cases run the part directly, not through a connector. A connector is checked at reproduction by acting through it (Reproduction).
 
 ### The form of a case
@@ -73,37 +74,64 @@ A case is one JSON object. In this example, the part, its argument and its outpu
 |---|---|
 | `id` | the case's name, unique among all cases. A failing case is reported by it |
 | `part` | the name of the part the case is for |
-| `input.files` | the files of the working directory: an object from path to content. A path is relative, separated by `/` |
-| `input.git` | optional. When present, the working directory is a git repository in which git tracks exactly these paths. Each is in `input.files`. When absent, the working directory is inside no git repository |
+| `input.files` | required object from project-relative file paths to UTF-8 text contents |
+| `input.outside_files` | optional object from paths relative to the fixture's `outside` directory to UTF-8 contents; empty when absent |
+| `input.symlinks` | optional object from project-relative link paths to relative link targets; empty when absent |
+| `input.commands` | optional object of controlled helper commands, defined below; empty when absent |
+| `input.git` | optional. When present, the working directory is a git repository in which git tracks exactly these paths. Each is in `input.files` or `input.symlinks`. When absent, the working directory is inside no git repository |
 | `input.args` | optional. The arguments, as a list. Empty when absent |
 | `input.stdin` | optional. The standard input. Empty when absent |
 | `expect.verdict` | `pass`, `block` or `error` |
 | `expect.output` | optional. The result lines the part must write, in order. When absent, the output is not compared. An empty list means there must be no result line |
 
-Any other key makes the case wrong.
+Unknown fields or wrong types make the case invalid. `id` and `part` are nonempty strings; argument and output lists contain strings, and standard input is text. Invalid cases and failures to prepare the fixture are reported separately from the part's verdict. They never satisfy an expected `error`.
 
 - A case expecting `block` is a must-block case; a case expecting `pass` is a must-pass case.
-- A case holds every file it needs, the settings file included. It uses no file of the project it runs in, other than the part's own.
+- A case holds all of its data, including the complete role settings. It uses the reproduced part and its helpers, but does not borrow the target project's settings, intent, design or other data. No default roles are supplied.
+- `input.stdin` is passed verbatim. For a role-guard case it can carry the JSON for ranges, edits, known copies, instruction paths or shell inspection. Case-supplied metadata tests the guard; it is not evidence that a live connector obtains that metadata from a trustworthy source.
+
+### Isolated fixtures
+
+Each case gets a new temporary root outside every git repository. It contains `project` (the working directory), `outside` (data outside the project) and `bin` (helper commands). For example, `input.outside_files` key `intent-copy.md` is addressed from the project as `../outside/intent-copy.md`. A parent search uses `..` and cannot expose the real target project's files.
+
+File and link keys are nonempty relative paths using `/`, with no empty component, `.` or `..`. File keys and link keys cannot collide or use another fixture file or link as an ancestor. `.git/` entries require `input.git` to be present. Link targets are resolved from the link's parent; they may use `..` and name missing paths, but must stay inside the temporary root after link resolution. Cycles and absolute targets make the case invalid. Linked data needed by the case is declared in the fixture. `input.git` may track declared files or links, not outside files or git's own metadata.
+
+### Helper commands
+
+`input.commands` keys match `PLUMBLINE_CASE_[A-Z0-9_]+`. Each value has exactly one of these forms:
+
+- `{"stdout": "not valid JSON\n", "exit": 0}`: consume standard input, write this UTF-8 text and return the specified integer exit status from 0 to 255.
+- `{"timeout": true}`: consume standard input, produce no output and remain running until the case's timeout cleanup stops it.
+- `{"missing": true}`: do not create the command. Fixture preparation checks that this name cannot be found on the test PATH; a collision is a preparation error.
+
+The case runner creates non-missing helpers using an available runtime and places `bin` first on PATH for this case only. Helper behavior is fixed; no arbitrary code is supplied in these fields. Helpers allow reproducible unavailable-program, malformed-recognition, nonzero-exit and timeout cases. They do not replace the separate reproduction check that a project's real recognizer matches its description.
 
 ### Running a case
 
-1. Make a new, empty directory that is inside no git repository.
-2. When the case has `input.git`, make the directory a git repository.
-3. Write every file in `input.files`, making folders as needed. A path under `.git/` is written into the repository made in step 2.
-4. When the case has `input.git`, make git track exactly those paths.
-5. Run the part: the runner and entry file the reproduction chose, then `input.args`. The working directory is the case's directory, the standard input is `input.stdin`, and there is no network. Stop it when it has not ended after 60 seconds.
-6. Take the verdict from the exit status. Turn CR LF into LF in standard output and split it into lines. A final LF does not start an empty line.
-7. The case passes when the verdict equals `expect.verdict` and, when the case has `expect.output`, the lines equal it, in order.
-8. Remove the directory.
+```mermaid
+flowchart TB
+  A["Read and validate<br/>the case"] --> B["Prepare isolated files,<br/>links and commands"]
+  B --> C["Run the reproduced part<br/>with the case input"]
+  C --> D["Compare verdict<br/>and output"]
+  D --> E["Stop fixture processes<br/>and remove the fixture"]
+```
 
-- The entry file is the one in the project being reproduced, found from that project's root.
-- When the runner cannot be started at all, it is reported as an environment error that names the runner.
+1. Validate the case and create its temporary root and directories.
+2. If `input.git` is present, initialize a git repository in `project`.
+3. Write `input.files` under `project` and `input.outside_files` under `outside`, making directories as needed and preserving the supplied UTF-8 bytes and line endings. Then create the declared symbolic links. Do not replace links with copied files if the platform cannot create them; report a preparation error.
+4. Prepare helper commands. If `input.git` is present, make git track exactly its paths.
+5. Run the actual reproduced part with its runner, entry and `input.args`. Its working directory is `project`, standard input is `input.stdin`, and the case's helper commands are on PATH. There is no network. Stop it if it has not ended after 60 seconds.
+6. Take the verdict from the part's exit status or timeout. Normalize CR LF to LF in standard output and split into lines; a final LF does not create an empty line.
+7. The case passes only when the verdict equals `expect.verdict` and, if present, the ordered output lines equal `expect.output`.
+8. Stop any fixture processes and remove the whole temporary root, including when execution or comparison fails.
+
+The entry file and its reproduced helper files come from the project being reproduced; they are not the case's data files. An unavailable runner is a case-execution environment failure, not a successful expected `error`. A part that starts and returns an error is judged by its verdict as usual.
 
 ### Which parts have cases
 
 - Every mechanical part has cases. A part that can block has at least one must-block case and one must-pass case.
 - The module that defines a part lists all its cases in its verification criteria, as inputs and expected results.
-- Work that needs judgment (diagnosis, the verifier's check, status) has no cases.
+- Work that needs judgment (diagnosis, the five checks, status) has no executable cases. Project-specific recognizers and live connector coverage are checked during reproduction as well as through applicable guard cases.
 
 ## 3. Flow
 
@@ -117,6 +145,7 @@ Any other key makes the case wrong.
 - A reproduction ends only when every case of every part passes.
 - Cases are not copied into the project, and nothing used to run them is left there.
 - The same case expects the same verdict and output in any project.
+- Outside paths and links in a case stay inside its temporary fixture. A malformed fixture or missing execution capability is never counted as a passing part case.
 
 ## 5. Decisions and reasons
 
@@ -125,10 +154,11 @@ Any other key makes the case wrong.
 - `error` is never treated as `block`, so that an environment problem that cannot be fixed does not block work without end.
 - Cases do not go through connectors. Connectors differ between AI tools, so the same case cannot run through them.
 - Cases are not left in the project. A part edited after reproduction is found by its checksum.
+- Isolated outside files and symbolic links exercise the real path-normalization contract without depending on a machine's directory layout. Fixed helpers exercise recognizer failures without choosing a project language.
 
 ## 6. Verification criteria
 
-This module has no cases of its own. Reproducing in another project shows that the cases of the role guard and validate run in this form and by these steps, and that a reproduction passes every case.
+This module has no part of its own. During reproduction, verify that the runner prepares the fixtures exactly, runs every role-guard and validate case, compares the required output, and removes the fixture on success, failure and timeout. Include a link to intent, an outside intent copy, a parent search, a byte-range edit and each helper-command form. Unsupported links or an unavailable runner must be reported as environment failures, never as passing cases.
 
 ## 7. Out of scope
 

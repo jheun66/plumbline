@@ -5,7 +5,7 @@
 - Checks the whole project by machine when the user asks.
 - Gives the same answer for the same input.
 
-Checks that need judgment are the verifier's (A change); whether there are newer rules is the lead's (Status).
+Checks that need judgment follow the project's assigned roles and workflow (A change). The lead checks whether newer rules exist (Status).
 
 ## 2. Public interface
 
@@ -20,11 +20,19 @@ Checks that need judgment are the verifier's (A change); whether there are newer
 
 | What | Where |
 |---|---|
-| the layer locations and the layers kept out of git | the settings file (Layers and settings) |
+| the complete settings, including layer locations, git exclusions, named zones, role members and guard choices | the settings file (Layers and settings) |
 | the setup record, the files it lists, the renderers | the setup record (Setup record) |
 | the section titles and figure kinds | the template's project part (Design documents) |
 | design documents | every Markdown file inside the design location |
 | which files git tracks | the git repository at the project root |
+
+### Settings and record validation
+
+Settings must satisfy the complete form in Layers and settings. Validate checks role and zone references, allowed layer assignments, required fields and recognition declarations. Missing roles are a `settings` problem, not an invitation to supply a default roster. An empty member list is valid; whether that roster can perform the planned work is a judgment made during reproduction.
+
+The record must satisfy Setup record, including its own complete settings snapshot, carrier coverage, file and part references, and the enforcement combinations. Those references use the snapshot, even when live settings have changed. Invalid live settings do not prevent validation of an otherwise readable record against its own snapshot.
+
+Validate checks structure, not the truth of an enforcement claim. It does not invoke a recognizer, execute a shell command being inspected, rerun guard cases or operate through connectors. Evidence, scope and limits must have their documented form; their adequacy is checked during reproduction. A `pass` from validate alone is not proof of guard coverage or completion of the five checks.
 
 ### Problem lines
 
@@ -34,7 +42,7 @@ Each line is a code and its fields, separated by tabs. Line numbers count from 1
 |---|---|---|
 | `settings` | path | the settings file is missing or does not have its form |
 | `missing-layer` | layer | a layer in git has none of its locations present |
-| `record` | path | the setup record is missing or does not have its form |
+| `record` | path | the setup record is missing or fails its form, including internal references or enforcement coverage entries |
 | `checksum` | path | a file the setup record lists is missing, or its checksum differs |
 | `part-not-found` | path | in a file with a reproduced part, the part's begin or end line cannot be found |
 | `template` | path | the template is missing, or its project part does not have its form |
@@ -96,6 +104,7 @@ Within a code, lines are ordered by their fields in turn: line numbers as number
 - The same input gives the same answer. It does not use the network.
 - It writes no file.
 - It runs only when the user asks.
+- Role settings and enforcement records are checked without inventing roles or promoting untested coverage to mechanical enforcement.
 
 ## 5. Decisions and reasons
 
@@ -105,7 +114,7 @@ Within a code, lines are ordered by their fields in turn: line numbers as number
 
 ## 6. Verification criteria
 
-Shown by conformance cases (Conformance cases). In each case the settings are intent `docs/intent.md`, design `docs/design`, impl `src`, and the template and the setup record are valid. Only what differs is given.
+Shown by conformance cases (Conformance cases). Unless stated otherwise, use the complete settings in the Setup record example: intent `docs/intent.md`, design `docs/design`, impl `src`, with its named zones, `builder` member and guard choices. The template and setup record are valid, and all listed files have matching checksums. Only the difference is given.
 
 Must-pass cases (`pass`):
 
@@ -117,12 +126,23 @@ Must-pass cases (`pass`):
 - A figure with no renderer → only a `skip figures` line.
 - The project root is not a git repository → only a `skip tracked not-git` line.
 - With design kept out of git, design is absent → only a `skip layer design` line.
+- Empty members, empty write zones or shared write zones, with a correspondingly valid record → no lines.
+- A part zone without recognition when neither requested zone guard needs it → no lines.
+- A valid current roster differs from the valid record snapshot → no `record` line just because the role names differ.
+- A selected guard remains instruction-only with a stated reason and complete coverage entries → no lines.
+- A structurally valid custom recognition command cannot be found → no line from settings validation; the command is not invoked.
 
 Must-block cases (`block`):
 
 - No settings file → `settings`.
+- Missing `roles`, duplicate role or zone names, a `lead` member, unknown zone references, an intent zone, a design write zone, an empty duty or model, an unknown field, invalid guard types or shell choice → `settings` each.
+- A requested zone guard uses a file-part zone without recognition, or a recognition declaration has an invalid form → `settings`.
 - A layer in git has no location present → `missing-layer`.
 - No setup record → `record`.
+- A snapshot missing role settings; an unknown carrier role; a role with no carrier; a reference to an unlisted file or part → `record` each.
+- An unknown enforcement rule, role or channel; a missing or repeated rule–role–channel combination; empty scope; mechanical coverage without evidence or its part; an instruction entry with no reason or with mechanical-only fields → `record` each.
+- Mechanical zone enforcement while that guard is off, or mechanical shell enforcement with shell choice `none` → `record`.
+- A record in an older form that lacks the required fields → `record`; no migration is performed.
 - The content of a file the setup record lists changed → `checksum`.
 - A line inside a reproduced part changed → `checksum`.
 - A reproduced part's end line is missing → `part-not-found`.
@@ -136,6 +156,8 @@ Must-block cases (`block`):
 Error cases (`error`):
 
 - One argument is given.
+
+Also verify output ordering and deduplication when several settings or record defects coexist. A record-format defect suppresses its dependent checksum and figure checks as specified above; a valid snapshot remains independently checkable when live settings are invalid.
 
 ## 7. Out of scope
 

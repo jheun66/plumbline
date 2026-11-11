@@ -6,16 +6,16 @@ This design says how plumbline's rules are divided and what each part promises. 
 
 | Module | Document | What it does |
 |---|---|---|
-| Layers and settings | `layers.md` | what the three layers are and where they are, the settings file, what each project decides |
-| Roles | `roles.md` | what the lead, the implementer and the verifier do, read and write; hand-offs; the two things blocked mechanically |
+| Layers and settings | `layers.md` | the three layers and the settings form: layer locations, layers kept out of git, and role settings, including zones and guard choices |
+| Roles | `roles.md` | the lead, the limits every project-defined role keeps, and how the role guard applies the settings |
 | Design documents | `design-docs.md` | the module map and module documents: the seven sections, figures, plain writing |
 | Writing intent | `intent-writing.md` | how intent is written and confirmed with the user |
-| A change | `change.md` | from diagnosis to commit, what the verifier checks, the work note |
+| A change | `change.md` | from diagnosis to commit, the workflow each project defines, the five checks, and the work note |
 | Status | `status.md` | how the lead answers when the user asks where things stand |
 | Validate | `validate.md` | the checks run on request and their output |
-| Setup record | `setup-record.md` | the setup record and checksums |
+| Setup record | `setup-record.md` | the settings used, the files and carriers made for the roles, what is enforced mechanically, and checksums |
 | Conformance cases | `conformance.md` | the form of conformance cases |
-| Reproduction | `reproduction.md` | how the lead reads the rules and builds the setup, what each role receives, reproducing again |
+| Reproduction | `reproduction.md` | how the lead builds the setup for the project's roles and workflow, checks the guards, and reproduces again |
 | Public documents | `publishing.md` | this repository's README and license |
 
 Read them in the order of this table.
@@ -33,42 +33,42 @@ A relies on B when A uses names or promises B defines.
 | A change | Layers and settings, Roles |
 | Status | A change |
 | Validate | Layers and settings, Design documents, Setup record |
-| Setup record | Layers and settings |
+| Setup record | Layers and settings, Roles |
 | Conformance cases | Roles, Validate |
-| Reproduction | Layers and settings, Roles, Design documents, Validate, Setup record, Conformance cases |
-| Public documents | nothing |
+| Reproduction | Layers and settings, Roles, Design documents, Writing intent, A change, Status, Validate, Setup record, Conformance cases |
+| Public documents | Layers and settings, Roles, Reproduction |
 
 ## Flows
 
 ### Starting a project
 
 ```mermaid
-flowchart LR
+flowchart TB
   A["1. write and confirm<br/>intent"] --> B["2. write and confirm<br/>the module map"]
-  B --> C["3. decide<br/>the settings"]
+  B --> C["3. decide settings,<br/>roles and workflow"]
   C --> D["4. reproduce<br/>the setup"]
   D --> E["5. write and confirm<br/>module documents"]
-  E --> F["6. the implementer<br/>builds impl"]
+  E --> F["6. follow the workflow:<br/>build impl and complete<br/>the five checks"]
 ```
 
 1. The lead and the user write and confirm intent (Writing intent).
 2. The lead writes the module map and the user confirms it (Design documents).
-3. The layer locations and the layers kept out of git are decided and written in the settings file (Layers and settings).
-4. The lead reads the rules and reproduces the setup (Reproduction, Setup record, Conformance cases).
+3. The lead and the user decide the layer locations, the layers kept out of git, and the role settings: names, read zones, write zones, duties, models, and guard choices (Layers and settings, Roles). They also decide the workflow: who receives and reports what, who handles findings, how work is shared, and who completes the five checks (A change).
+4. The lead reads the rules and reproduces the setup for those settings and that workflow (Reproduction, Setup record, Conformance cases).
 5. For each milestone, module documents are written and the user reads and confirms all of them (Design documents).
-6. The implementer builds impl (Roles, A change).
+6. The project-defined roles follow the workflow to build impl and complete the five checks. The project decides whether the role that checks differs from the role that built it (Roles, A change).
 
 ### One change
 
-Diagnosis → fix from the top layer down → the implementer fixes impl → the verifier checks what changed → commit. See A change.
+Diagnosis → fix and confirm any affected upper layers → the project-defined roles change impl and complete the five checks through the project's workflow → handle findings → commit. Findings are resolved before the change ends. The lead can follow progress and knows whether the five checks are complete, including when roles communicate directly. See A change.
 
 ### Reproducing again
 
-When the rules commit or the settings change, the lead reproduces again. It finds the files it made before in the setup record, removes them and makes them anew, and writes a new setup record once every conformance case passes. See Reproduction.
+When the rules commit or the settings change, or the user asks, the lead reproduces again. It uses the previous setup record to find the files and reproduced parts to replace or remove, and preserves project parts. It checks the new setup and records which rules are enforced mechanically and which remain instructions. See Reproduction.
 
 ## Promises that hold for every module
 
-1. The rules name no particular AI tool, model name or natural language. They say only that each project decides its language and its code comment policy.
+1. The rules name no particular AI tool, model name or natural language, and set no code comment policy.
 2. The rules hold rules only: no reasons, no history, nothing that points to intent or design.
 3. What reaches the user (questions, notices, check results) is said in plain words, with no name left unexplained.
 4. The content of a layer kept out of git is never copied into a file of a layer in git.
@@ -77,6 +77,6 @@ When the rules commit or the settings change, the lead reproduces again. It find
 
 ## Milestones
 
-There is one milestone (fixing plumbline). All eleven module documents are written in it, in the order of the table above.
+There is one milestone: letting each project define its roles. The eleven modules above are reviewed in it. Their documents are updated where the role settings, guards, workflow or five checks affect their contracts.
 
-Current milestone: fixing plumbline.
+Current milestone: letting each project define its roles.
