@@ -76,7 +76,7 @@ figure: mermaid
 <!-- plumbline:end -->
 ```
 
-- The project part is the figure kind lines at the top and the seven section titles. A project that uses no figures has no figure line, and no `---` lines around it. The lead writes it ([roles.md](roles.md#the-three-roles)).
+- The project part is the figure kind lines at the top and the seven section titles. A project that uses no figures has no figure line, and no `---` lines around it. The lead writes it ([roles.md](roles.md#the-lead-and-the-project-defined-roles)).
 - The reproduced part runs from the begin line to the end line that the setup record gives for the template ([setup-record.md](setup-record.md#files)). A reproduction writes it. It says what each of the seven sections holds, and has no level-2 heading.
 
 The project part has its form when both of these hold:

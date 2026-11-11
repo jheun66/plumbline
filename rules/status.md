@@ -1,50 +1,51 @@
 # Status
 
-The lead says where things stand when the user asks. It reports things to fix when it learns of them, and checks for newer rules when the user asks about the rules. There is no mechanical part for any of this.
-
 ## The answer
 
-- A few lines in plain words. They say what is finished, what is being done now, how many pieces the current work has and which one it is on, and what comes next.
-- No name is left unexplained: milestone numbers, commit hashes, file names, and so on. A milestone is named by what it does, not by a number.
+- A few lines in plain words. They say: what is finished, what is being done now, how many pieces the current work has and which one it is on, what comes next.
+- No name left unexplained (milestone numbers, commit hashes, file names, and so on). A milestone is named by what it does, not by a number.
+- When a change is in progress, distinguish completed tasks from completion of the change. Include remaining checks, findings or questions when they determine what happens next.
 
 Example:
 
-> The word-count program has finished its first milestone (reading and counting documents). Now the design of the second milestone, "showing the results", is being written. Two of its three module documents are confirmed. Once the third is confirmed, the implementer builds it, and then the third milestone starts.
+> The word-count program can read and count documents. It is now being extended to show the results. The screen changes are complete, but two of the five checks and one reported issue remain. The assigned roles will fix the issue and finish the checks before this milestone is complete.
 
 ## Where it reads
 
-- intent: the milestones and the scope;
-- the design README: the module map and the current milestone ([design-docs.md](design-docs.md#the-module-map));
-- the work note: the change in progress, and how far it is ([change.md](change.md#the-work-note)). When there is no work note, no change is in progress.
+- intent: milestones and scope
+- the design README: the module map and the current milestone
+- the work note: assigned tasks and progress, check results, unresolved findings and questions
+
+The lead maintains the note from reports received through the project's workflow ([change.md](change.md#the-work-note)). Direct exchanges between roles must still supply enough progress and result information for the lead to update it. A report that a task is built does not establish that the five checks are complete. Missing reports remain unconfirmed; the lead requests the needed update through the workflow, without reading impl.
+
+## Reporting things to fix
+
+When the lead learns of one of these, it tells the user in plain words what to do.
+
+| When it learns | It tells |
+|---|---|
+| the lead changed the settings | the setup must be reproduced again |
+| validate says a reproduced file's checksum differs | that file was edited by hand; fix the rules or the settings and reproduce again |
+| validate says the setup record is missing or broken | the setup must be reproduced again |
+
+## Newer rules
+
+When the user asks about the rules, and the network is available, the lead fetches the tags of the plumbline repository the setup record names.
+
+- When there is a tag with a higher version than the tag on the setup record's commit, it says: "the setup was made from rules version X, and version Y is out".
+- When the setup record's commit has no tag, it names the tag with the highest version.
+- When the network is not available, it says it could not check.
+- A version is whole numbers joined by dots, with or without a leading `v`. Versions compare number by number from the left; a missing number counts as 0 (`1.2` equals `1.2.0`). A tag not of this form is ignored.
 
 ## Steps
 
 1. The user asks where things stand.
 2. The lead reads intent's milestones, the design README's module map and current milestone, and the work note.
-3. It answers in the form above.
-
-## Things to fix
-
-When the lead learns of one of these, it tells the user in plain words what to do:
-
-| When it learns | It tells |
-|---|---|
-| the lead changed the settings | the setup must be reproduced again |
-| validate says a reproduced file's checksum differs | that file was edited by hand; the rules or the settings are fixed, and the setup is reproduced again |
-| validate says the setup record is missing or broken | the setup must be reproduced again |
-
-## Newer rules
-
-When the user asks about the rules:
-
-- When the network is available, the lead fetches the tags of the plumbline repository the setup record names.
-- A version is whole numbers joined by dots, with or without a leading `v`, such as `v1.2` or `1.2`. Versions compare number by number from the left; a missing number counts as 0. A tag not of this form is ignored.
-- When a tag names a higher version than the tag on the setup record's commit, the lead says: the setup was made from rules version X, and version Y is out. Y is the highest version among the tags.
-- When no tag is on the setup record's commit, it names the tag with the highest version.
-- Otherwise, it says that no newer version is out.
-- When the network is not available, it says that it could not check.
+3. If needed reports are missing, the lead requests them through the workflow and updates the note when they arrive. Until then, it identifies what is still unconfirmed.
+4. It answers in the form above.
 
 ## What always holds
 
 - Where things stand is said only when the user asks.
 - The answer is given without reading impl.
+- A role's completed task or a missing report is not presented as a completed change. Completion follows [change.md](change.md#the-five-checks).

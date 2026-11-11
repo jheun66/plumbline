@@ -1,21 +1,16 @@
 # Layers and settings
 
-What each role reads and writes is in [roles.md](roles.md). The form of design documents is in [design-docs.md](design-docs.md).
-
 ## The three layers
 
 | Layer | Says | Read when writing it |
 |---|---|---|
-| intent | what to build and why: scope, milestones, decisions and their reasons, open questions | — |
-| design | how it is divided and what it promises: what each module does, public interfaces, invariants, decisions, verification criteria | intent, design |
-| impl | code and tests, and anything else built from the design, such as documents an AI reads | design, impl |
-
-- The last column is the read direction. Writing design reads intent and design, never impl. Writing impl reads design and impl, never intent.
-- A point belongs to the layer whose "Says" column names its kind.
+| intent | what to build and why: scope, milestones, decisions and reasons, open questions | — |
+| design | how it is divided and what it promises: responsibilities, interfaces, invariants, decisions, verification criteria | intent, design |
+| impl | code, tests and other things built from the design | design, impl |
 
 ## The settings file
 
-The settings file is `.plumbline/settings.json`. Its form:
+It is `.plumbline/settings.json`. There are three settings: `layers`, `not_in_git` and `roles`. This example describes one possible project; its roles and guard choices are not defaults.
 
 ```json
 {
@@ -24,54 +19,115 @@ The settings file is `.plumbline/settings.json`. Its form:
     "design": ["docs/design"],
     "impl": ["src", "tests"]
   },
-  "not_in_git": ["intent"]
+  "not_in_git": ["intent"],
+  "roles": {
+    "zones": [
+      {"name": "design", "layer": "design", "paths": ["docs/design"]},
+      {"name": "product", "layer": "impl", "paths": ["src"]},
+      {"name": "tests", "layer": "impl", "paths": ["tests"]}
+    ],
+    "members": [
+      {
+        "name": "builder",
+        "read_zones": ["design", "product", "tests"],
+        "write_zones": ["product"],
+        "duty": "Build the assigned design; report gaps and unfinished work.",
+        "model": "MODEL_CHOSEN_BY_PROJECT"
+      },
+      {
+        "name": "tester",
+        "read_zones": ["design", "product", "tests"],
+        "write_zones": ["tests"],
+        "duty": "Write tests from the verification criteria and perform the five checks.",
+        "model": "MODEL_CHOSEN_BY_PROJECT"
+      }
+    ],
+    "guard": {"read_zones": false, "write_zones": true, "shell": "literal"}
+  }
 }
 ```
 
-- It is one JSON object with the key `layers`, and optionally the key `not_in_git`. It has no other key.
-- `layers` is an object with exactly the keys `intent`, `design` and `impl`. The value of each is the list of that layer's locations. Every layer has at least one.
-- A location is a path from the project root: one or more names separated by single `/` characters, with no `/` at its start or end. No name is empty, `.` or `..`. A location may be a file or a folder.
-- The design location is one folder: `design` has exactly one location.
-- `not_in_git` is a list of the names of the layers kept out of git, each named at most once. When it is absent or empty, all three layers are in git.
-- No location of one layer equals, contains or lies inside a location of another layer ([Which layer a path belongs to](#which-layer-a-path-belongs-to)).
-
-A settings file that breaks any of these does not have its form.
-
-Examples:
-
-- The object above has the form. So does the same object without `not_in_git`.
-- A missing layer, an empty list of locations, two design locations, a key other than those above at any level, an unknown layer name in `not_in_git`, and a layer named twice in `not_in_git` each break the form.
-- With the design location `docs/design`, an impl location `docs/design/x` breaks the form.
-- The locations `/src`, `src/`, `./src`, `src//main` and `docs/../src` break the form.
+- `layers` has exactly `intent`, `design` and `impl`, each a nonempty list of locations. Design has exactly one location, a folder.
+- A location is relative to the project root and uses `/`. It has no leading or trailing `/`, empty component, `.` or `..`. The locations of different layers do not overlap.
+- `not_in_git` is a list of distinct layer names. It may be absent; absent or empty means all layers are in git.
+- `roles` has exactly `zones`, `members` and `guard`. The two lists may be empty. An empty role list creates no other role; whether it can carry out the planned work is checked with the workflow before reproduction.
+- `layers` and `roles` are required. Missing role settings are not replaced with a built-in role list. Unknown keys, wrong value types and repeated names break the form.
 
 ## Which layer a path belongs to
 
-- A path lies inside a location when it begins with the location followed at once by `/`. This holds for a file location too. The project root contains every path.
-- A path belongs to a layer when it equals one of the layer's locations, or lies inside one of them.
-- Sharing only the start of a name is not lying inside.
-- A path may belong to no layer.
-- Whether a path exists, and whether it is a file or a folder, does not matter.
+A path belongs to a layer when it equals a location or continues it with `/`. Thus `docs/design/a.md` belongs to design, but `docs/designer.md` and `docs` do not. Even a file location is treated this way: `docs/intent.md/x` belongs to intent. Existence does not affect membership. A path may belong to no layer.
 
-Examples:
+## Zones
 
-- With the location `docs/design`: `docs/design`, `docs/design/a.md` and `docs/design/sub/b.md` belong to design; `docs/designer.md` and `docs` do not.
-- With the file location `docs/intent.md`: that file belongs to intent, and so does a path that continues it with `/`, such as `docs/intent.md/x`. `docs/intent.md.bak` and `docs/intent` do not.
+A zone names a selection within design or impl. [Roles](roles.md) refer to that name.
+
+| Field | Holds |
+|---|---|
+| `name` | a nonempty name, unique among zones |
+| `layer` | `design` or `impl` |
+| `paths` | a nonempty list of paths; each is within the stated layer and uses the location form above |
+| `files` | optional, nonempty list of file-name patterns, relative to the project root |
+| `part` | optional object with `description` and, optionally, `recognition` |
+
+A path must lie in one of `paths` and, when `files` is present, match at least one pattern. Without `part`, the zone selects the whole matching file or subtree. With `part`, it selects only the described portions of matching files. A file-name filter applies to every target path; a matching folder name does not remove the filter from its descendants.
+
+Patterns use `/`. `*` matches zero or more characters except `/`; `?` matches one character except `/`. A whole component `**` matches zero or more path components: `src/**/*.test.ts` includes `src/a.test.ts` and `src/ui/a.test.ts`. Other characters are literal. An absolute pattern, an empty component, `.` or `..`, or `**` embedded in another component breaks the form. Pattern matching is case-sensitive.
+
+`part.description` is nonempty text saying what belongs to the part. Optional `part.recognition` makes that selection mechanical in one of two forms:
+
+- `{"kind": "markers", "begin": "BEGIN TESTS", "end": "END TESTS"}` selects complete lines from the begin line through the end line, inclusive. The nonempty, distinct marker lines are matched exactly. Neither marker means an empty selection. Exactly one of each, in that order, selects the block. A single marker, repeated markers or reversed markers give an error.
+- `{"kind": "command", "command": ["PROJECT_RECOGNIZER"]}` uses a program the project chooses. It can recognize language constructs or any other project-defined part. [roles.md](roles.md#recognizing-file-parts), defines its input and output. The command is a nonempty argument list, without shell interpretation. Its first element is a program name on PATH; arguments may name project-relative files. No element is an absolute path.
+
+Only the fields shown for each form are allowed. [Reproduction](reproduction.md) checks that the chosen method matches the description. A missing definition or disagreement is a gap to resolve with the user. When a program must be made during reproduction, its contract is settled with the user before it is used.
+
+For example, a test zone can select files under `src` whose names match `src/**/*.rs`, then select the test blocks described by the project. A quality role can read the whole source zone, while a test role writes only the test zone.
+
+A zone can overlap another zone. The selected contents are the union of a role's named zones. Giving two roles overlapping write zones is valid; the workflow decides how they coordinate.
+
+## Role entries
+
+Each member has exactly these fields:
+
+| Field | Holds |
+|---|---|
+| `name` | a nonempty role name, unique among members; `lead` is reserved |
+| `read_zones` | a list of distinct zone names, from design or impl |
+| `write_zones` | a list of distinct zone names, all from impl |
+| `duty` | nonempty text describing the role's work, in the project's own words |
+| `model` | the nonempty model selection the project wants used to start this role |
+
+Zone and role names have no tab or line break. Unknown zone names break the form. Read and write lists may be empty. An empty write list means the role reports without editing. Write permission does not add read permission; the project lists both when both are needed. The roles named in `members` are the complete list besides the lead.
+
+## Guard choices
+
+`guard` has exactly these fields; all are required:
+
+| Field | Values and meaning |
+|---|---|
+| `read_zones` | boolean: request mechanical enforcement of roles' read zones |
+| `write_zones` | boolean: request mechanical enforcement of roles' write zones |
+| `shell` | `none`: do not inspect shell commands; `literal`: block an explicit, identifiable forbidden file action; `cautious`: also block when the command may do forbidden work and cannot be resolved |
+
+There is no switch to permit a non-lead role to read intent or write design. These two restrictions apply with every choice. [roles.md](roles.md#the-role-guard), defines how they reach file tools and shell commands.
+
+When zone enforcement is requested, every part-based zone used by that permission must have `recognition`; otherwise the settings break the form. A recognition method that cannot be implemented with the available means is reported during reproduction and recorded as an instruction, as described in [Reproduction](reproduction.md). Choosing enforcement is not evidence that enforcement works.
 
 ## What each project decides
 
-The language of documents and code, the code comment policy, the form of intent, the layout and file names of the design, the kinds of figures, the names of milestones, and checks between layers that only that project needs.
+The project defines its workflow, intent format, design layout and file names, figure kinds, milestone names and project-specific checks between layers. It also chooses its document and code languages and comment policy; the rules do not prescribe or discuss language choices. The workflow is written in the project parts of rule carriers ([A change](change.md), [Reproduction](reproduction.md)), not added as a fourth setting.
 
-## When settings are decided
+## Steps
 
-1. A layer's locations are decided with the user before that layer's first file is saved: intent's before the first intent draft is saved, design's before the module map is saved, impl's before the first reproduction.
-2. Whether a layer is kept out of git is decided before that layer's first file is saved.
-3. The lead writes each decision into the settings file at once. Until the first reproduction, the file holds only what has been decided. For a layer kept out of git, the lead adds each of its locations to `.git/info/exclude` at once, as a line that is `/` followed by the location.
-4. When the settings change, the setup is reproduced again ([reproduction.md](reproduction.md)).
+1. Decide each layer's locations and whether it is kept out of git before saving its first file. Add excluded locations to `.git/info/exclude`, each as a line beginning with `/` followed by the location.
+2. Before reproduction, decide the zones, every role's five fields, and the guard choices with the user. Define the workflow as described in [A change](change.md).
+3. Write decisions into the settings as they are made. An incomplete draft is not usable by reproduction or the checks.
+4. Check the completed settings and the workflow before reproduction. When settings change later, reproduce again.
 
 ## What always holds
 
-- A path belongs to at most one layer.
-- Every location of a layer kept out of git is in `.git/info/exclude`.
-- The content of a layer kept out of git is never copied into a file of a layer in git. Where it must be referred to, only the document's path and the section's title are named.
-- A check that needs a layer is skipped where that layer is absent, such as in a clone of a repository that keeps it out of git. A layer is absent when none of its locations exists.
-- When the settings file is missing or does not have its form, the role guard and reproduction report an environment error ([roles.md](roles.md#the-role-guard), [reproduction.md](reproduction.md#when-it-stops-before-writing-anything)), and validate gives a `settings` problem line ([validate.md](validate.md#problem-lines)).
+- A path belongs to at most one layer. Zones stay within their stated layer.
+- No non-lead role has an intent zone or a design write zone.
+- Every excluded layer location is in `.git/info/exclude`. Its content is not copied into a layer in git; only a document path and section title may be named.
+- A check requiring an absent layer is skipped where that layer is absent.
+- Missing roles, models or guard choices are not filled with defaults.
+- Missing or malformed settings give an environment error from the role guard and reproduction, and a `settings` problem line from validate. A draft that is incomplete is not usable by any of them.

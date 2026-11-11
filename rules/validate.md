@@ -1,6 +1,6 @@
 # Validate
 
-validate checks the whole project by machine, when the user asks. The same input gives the same answer. Checks that need judgment are the verifier's ([change.md](change.md#what-the-verifier-checks)). Whether there are newer rules is the lead's ([status.md](status.md#newer-rules)).
+validate checks the whole project by machine, when the user asks. The same input gives the same answer. Checks that need judgment follow the project's assigned roles and workflow ([change.md](change.md#the-five-checks)). Whether there are newer rules is the lead's ([status.md](status.md#newer-rules)).
 
 ## The part
 
@@ -16,7 +16,7 @@ validate is a mechanical part ([conformance.md](conformance.md)).
 
 | What | Where |
 |---|---|
-| the layer locations and the layers kept out of git | the settings file ([layers.md](layers.md#the-settings-file)) |
+| the complete settings: layers, git exclusions, zones, members and guard choices | the settings file ([layers.md](layers.md#the-settings-file)) |
 | the setup record, the files it lists, the renderers | `.plumbline/setup-record.json` ([setup-record.md](setup-record.md)) |
 | the section titles and the figure kinds | the template's project part ([design-docs.md](design-docs.md#the-template)) |
 | design documents | every Markdown file inside the design location ([design-docs.md](design-docs.md#design-documents-and-module-documents)) |
@@ -28,7 +28,7 @@ validate is a mechanical part ([conformance.md](conformance.md)).
 
 ## Problem lines
 
-Each line is a code and its fields, separated by tabs ([conformance.md](conformance.md#output)).
+Each line is a code and its fields, separated by tabs ([conformance.md](conformance.md#the-contract-of-a-part)).
 
 | Code | Fields | When |
 |---|---|---|
@@ -53,6 +53,7 @@ Each line is a code and its fields, separated by tabs ([conformance.md](conforma
 
 ## The settings and the layers
 
+- Validate the complete settings form, including role and zone references, allowed layers, required fields and recognition declarations. Missing roles give `settings`; never substitute a default roster. An empty roster is structurally valid; reproduction separately checks whether the workflow covers the planned work.
 - `settings` is given with `.plumbline/settings.json` when it is missing, or does not have its form ([layers.md](layers.md#the-settings-file)).
 - When the settings file is missing or does not have its form, every check that needs the layers is left out: `missing-layer`, `sections`, `impl-path`, `figure`, `tracked`, and `skip layer`. There is then no design document, so no figure kind is used either.
 - A layer is present when at least one of its locations exists.
@@ -62,6 +63,8 @@ Each line is a code and its fields, separated by tabs ([conformance.md](conforma
 
 ## The setup record
 
+- Check the record's complete settings snapshot, carrier coverage, file and part references, and every enforcement combination against that snapshot. A valid snapshot may differ from live settings. Invalid live settings do not prevent checking a readable record against its own snapshot.
+- Check the form of scope, evidence and limits, not the truth of an enforcement claim. Do not invoke recognizers, inspect or execute shell commands, rerun guard cases or operate through connectors. A validate pass proves neither guard coverage nor completion of the five checks.
 - `record` is given with `.plumbline/setup-record.json` when it is missing, or does not have its form ([setup-record.md](setup-record.md#the-form)).
 - When the setup record has its form, each entry of its `files` is checked, its checksum computed as [setup-record.md](setup-record.md#checksums) states:
   - `checksum` is given when the file does not exist, or its checksum differs from the entry's;
@@ -125,7 +128,7 @@ When the user asks, the lead runs validate with the runner and entry the setup r
 
 | Lines | What to do |
 |---|---|
-| `record`, `checksum`, `part-not-found` | the setup is reproduced again ([status.md](status.md#things-to-fix)) |
+| `record`, `checksum`, `part-not-found` | the setup is reproduced again ([status.md](status.md#reporting-things-to-fix)) |
 | `settings` | the settings file is fixed with the user, then the setup is reproduced again |
 | `template` | when the template's project part is missing or wrong, the lead fixes it with the user; then the setup is reproduced again |
 | `sections`, `impl-path`, `figure` | the design is fixed |
@@ -138,5 +141,6 @@ When the user asks, the lead runs validate with the runner and entry the setup r
 - The same input gives the same answer. validate does not use the network.
 - It writes no file.
 - It runs only when the user asks.
+- Role settings and enforcement records are checked without inventing roles or promoting untested coverage to mechanical enforcement.
 
 The cases of `validate` are in [cases/validate.json](cases/validate.json) ([conformance.md](conformance.md#which-parts-have-cases)).

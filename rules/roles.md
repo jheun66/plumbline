@@ -1,130 +1,113 @@
 # Roles
 
-The order of work is in [change.md](change.md). How the role guard is connected, and how each role receives its rules, are in [reproduction.md](reproduction.md).
-
-## The three roles
+## The lead and the project-defined roles
 
 | Role | Does | Reads | Writes |
 |---|---|---|---|
-| lead | talks with the user; writes intent and design; diagnoses; starts the implementer and the verifier; reproduces | intent, design, the settings file, the work note; when reproducing, plumbline's rules | intent, design, the settings file, the work note, `.git/info/exclude`, the project parts of the template and of carrier files; when reproducing, the setup files and the setup record |
-| implementer | builds the design sections it is handed into impl; answers questions about the code | design, impl, the settings file | impl |
-| verifier | checks what changed once a change is done ([change.md](change.md#what-the-verifier-checks)) | design, impl, the settings file | nothing |
+| `lead` | talks with the user, writes intent and design, diagnoses, starts roles, reproduces the setup | intent, design, settings, work note; plumbline's rules when reproducing | intent, design, settings, work note, git exclusions, project parts of carriers and the template; setup files and setup record when reproducing |
+| each entry in `roles.members` | its `duty`, through the project's workflow, using its selected `model` | its `read_zones` | its `write_zones` |
 
-- No role reads or writes beyond its row. The lead never reads impl. The implementer and the verifier never read intent. The implementer never writes design. The verifier writes nothing.
-- A project file that belongs to no layer may be read by every role.
-- When a project file that belongs to no layer must be written, such as a git ignore list that impl needs, the lead asks the user which layer to add its path to, and adds the path to that layer's locations in the settings file. The setup is then reproduced again ([layers.md](layers.md#when-settings-are-decided)), and the role that writes that layer writes the file.
-- The setup files are the files a reproduction writes ([reproduction.md](reproduction.md)). The work note is in [change.md](change.md#the-work-note).
+- A session plays one role. An explicitly started role must exist in the settings; an unknown name is an error, not the lead. A session started without another role is the lead.
+- Every non-lead role starts as a new AI without the lead's conversation.
+- A role may read its own instructions, the settings and `.git/HEAD`, and inspect history only for its read zones. This does not permit reading another role's instructions, the work note, intent content in history, or raw repository contents outside its read zones. There is no general exemption for files outside the layers or inside `.git`.
+- When work requires writing a project file outside every layer, the role leaves it and reports it. The lead asks the user which layer it belongs to, updates the settings and reproduces as needed before assigning the work. The lead's setup and bookkeeping writes in the table above are already assigned.
 
-## Which role an AI plays
+## Common limits
 
-- Every AI plays exactly one role.
-- An AI started as the implementer, with a hand-off that names the role `implementer`, is the implementer. An AI started as the verifier, with a hand-off that names the role `verifier`, is the verifier.
-- Every other AI is the lead.
+Every non-lead role:
 
-## Starting the implementer and the verifier
+- Never reads intent, a copy of it, or searches a folder containing it. The folder or copy being outside the project changes nothing.
+- Never changes design. It writes only its write zones, and only its share of the assigned design.
+- Leaves work outside its write zones and tells the lead what remains.
+- Leaves a missing or wrong point in design unbuilt, reports the document and section title and what is missing or wrong, and continues independent work. [Roles](roles.md) do not agree between themselves on a missing design decision.
+- When blocked or unable to check a required guard, stops that operation and reports it. It does not bypass the guard through another tool or path.
 
-- The lead starts the implementer and the verifier as new AIs, without its own conversation, each with a hand-off ([Hand-offs](#hand-offs)).
-- After a design fix, the lead hands the changed sections to the same implementer. It does not start a new one.
-- The lead starts the verifier on a lighter model than its own.
-
-## The implementer's work
-
-1. It receives the hand-off, and reads the design documents and sections it names.
-2. It builds them into impl. It builds only the design sections it is handed.
-3. When it finds a gap, something missing or wrong in the design, it leaves that point unbuilt, chooses no way to build it, and goes on with the rest.
-4. When done, it reports what it built and the gaps ([Reports](#reports)).
-5. When the lead fixes the design and hands over the changed sections, it builds what it left.
-
-- A point of a kind the design says ([layers.md](layers.md#the-three-layers)) that the design does not state, or states wrongly, is a gap. A point of another kind that the design does not state is decided in impl.
-- The implementer never fills a gap in the design by itself.
-- When its work needs a write to a project file that belongs to no layer, it stops that work and reports it to the lead.
-- When the role guard blocks a read or a write, it stops that work and reports it to the lead. It never does the blocked read or write another way.
-
-## Hand-offs
-
-| To | Holds |
-|---|---|
-| the implementer, when started | the role name `implementer`; the design documents, and the sections in them, to build. For a question about the code, the question |
-| the implementer, after a design fix | the design documents and sections that changed |
-| the verifier | the role name `verifier`; the diagnosis; the layers touched; the commit checked out when the change started; the design documents and sections changed |
-| the implementer, to fix a finding | the verifier's finding: its number, the design document and section, and how impl falls short |
-| the verifier, after a finding is fixed | the numbers of the findings to check again |
-
-- A hand-off holds only what is listed above, and what [reproduction.md](reproduction.md#how-carriers-reach-roles) adds: where the role's rules are, when no carrier brings them to it, and the check of the role guard ([reproduction.md](reproduction.md#checking-connectors)).
-- A hand-off never holds content of intent.
-
-## Reports
-
-| From | Holds |
-|---|---|
-| the implementer | what it built. For each gap, the design document and section, and what is missing or wrong. For a question, the answer |
-| the verifier | that there are no findings, or numbered findings: for each, the design document and section, and how impl falls short of it. And whether the diagnosis held |
-
-- A report never copies impl content. It may name impl locations.
+The lead never reads impl. No role receives intent content in a hand-off. Reports to the lead describe results, gaps and findings in terms of design, without copying impl content; they may name impl locations. Direct messages between non-lead roles stay within the recipient's read zones. The workflow defines their routing and contents, who performs the five checks, and whether a design fix returns to the same AI or a new one ([A change](change.md)).
 
 ## The role guard
 
-Just before an AI reads or writes a file, the role guard checks the action. It blocks these two, and nothing else:
+These restrictions are required for every non-lead role:
 
-1. The implementer or the verifier reads a path that belongs to intent. Searching a folder that contains a path that belongs to intent counts as reading it.
-2. The implementer writes a path that belongs to design: editing, creating or removing it.
+1. No intent read, including a search of an ancestor folder or a known copy.
+2. No design write, including creation and deletion.
 
-- When it blocks, the AI is told in plain words what was blocked and why.
-- When the role guard cannot run, because there is no runner, or the settings file is missing or does not have its form, the AI is told of an environment error, and nothing is blocked.
-- Everything else in the table above is kept by instruction.
+The settings additionally choose whether to enforce read zones and write zones, and how to inspect shell commands. A role's named zones are combined by union. A requested read or write passes a zone check only when all of the selected contents are allowed. A partial zone never grants access to the whole file by itself.
 
-What the lead does:
+The restrictions still apply as instructions when mechanical enforcement is unavailable or a command is outside the chosen shell inspection. [Reproduction](reproduction.md) records exactly what is checked and what remains an instruction; it never labels untested coverage as mechanical.
 
-- When the implementer or the verifier reports being blocked, the lead looks at what that work needed. When it was something missing from the design, it is handled as a gap ([change.md](change.md#steps)).
-- On an environment error, the lead tells the user in plain words what is broken and how to fix it: install the runner, fix the settings, or reproduce again.
+## File actions
 
-### The part
+The part's name is `role-guard`. It keeps the input, verdict and output contract in [Conformance cases](conformance.md).
 
-The role guard is a mechanical part ([conformance.md](conformance.md)).
+- Invocation: `role-guard ROLE ACTION PATH...`, where `ACTION` is `read` or `write`, and there is at least one path. A read of a folder means a search of its whole subtree. A connector may instead supply an exact, complete list of selected paths for a narrower search.
+- Paths may be relative to the working directory (the project root) or absolute. Normalize `.` and `..` and resolve existing symbolic links, including the existing prefix of a new path. Compare complete path components, not text prefixes. Apply the same normalization to layer locations, zones and known copies.
+- A read is blocked when its path belongs to intent or contains an intent location. There is no exemption for a parent directory outside the project. A design write is blocked whether its target exists or not.
+- After the mandatory intent check, reads of the settings file, `.git/HEAD` and files in `instruction_paths` are allowed as setup reads. This exception grants no write permission.
+- The lead passes these permission checks. An unknown role, unknown action, invalid input or missing or malformed settings gives `error`.
+- When at least one target is forbidden, give `block`. Write one line per forbidden target, in argument order: `block`, normalized path, role, action, separated by tabs. Write paths relative to the project root, using `.` for the root and `..` for outside paths. Otherwise give `pass` and no result line. Tabs or line breaks in a path give `error`.
 
-- Its name is `role-guard`.
-- **Arguments**: the role, `lead`, `implementer` or `verifier`; then the action, `read` or `write`; then the paths the action touches, one or more. A search is given as a `read` of the folders it searches.
-- **Standard input**: empty.
-- It reads the settings file ([layers.md](layers.md#the-settings-file)), and nothing else.
+Standard input may be empty or one JSON object with only these optional fields:
 
-How a path is taken:
+| Field | Holds |
+|---|---|
+| `intent_copies` | paths known by the setup or tool to hold copies of intent; they are protected like intent locations |
+| `instruction_paths` | exact carrier file paths supplied from the active setup for this role, including any shared dispatch-only carrier; never folders or a list proposed by the role |
+| `ranges` | for `read` only: an object from an argument path to a nonempty list of `[start, end]` byte ranges that the operation will read |
+| `edits` | for `write` only: an object from an argument path to a nonempty list of objects with exactly `start`, `end`, `text`, describing replacements against the current file |
 
-- A path is relative to the project root, or absolute. Its names are separated by `/`.
-- Empty names and `.` names are dropped. A `..` name removes the name before it.
-- An absolute path is compared, name by name as text, with the working directory as the system reports it. Symbolic links are not followed.
-- A path that, so taken, lies outside the project root, and a path that is `.git` or lies inside it, is never blocked.
-- The project root itself is written `.`.
+Unknown keys or wrong value types give `error`. Both path-list fields default to empty lists. An omitted range or edit entry means the whole target. Entries for paths not in the arguments are invalid. Offsets are integers in UTF-8 bytes, start included and end excluded, on character boundaries. Ranges and edits are in order and do not overlap; two insertions at the same position are invalid. Edits are applied against the same original content, from the last position back to the first. Read ranges are nonempty. An edit with equal offsets inserts; an empty `text` deletes. New files have an empty initial content. Invalid offsets, unreadable files needed for a check, or an edit whose input has changed before it can be applied give `error` and require a new check. [Reproduction](reproduction.md) records the content-stability check as an instruction when the available tool cannot preserve the checked operation until it is applied.
 
-When a path is blocked:
+The connector supplies facts from the operation, not an AI's claim that it will touch only an allowed zone. The action applied must be the action checked. A whole-file replacement is checked as a whole-file write unless the connector can supply and preserve the exact replacements it represents.
 
-- The role is `implementer` or `verifier`, the action is `read`, and the path belongs to intent, or a location of intent lies inside the path, or the path is the project root ([layers.md](layers.md#which-layer-a-path-belongs-to)).
-- The role is `implementer`, the action is `write`, and the path belongs to design.
+## Recognizing file parts
 
-Whether a path exists, and whether it is a file or a folder, does not matter.
+Path and file-name matching uses [layers.md](layers.md#zones). For a part-based zone, recognize its byte ranges in the current file. For an edit, also recognize them in the proposed result before any write occurs.
 
-**Verdict**:
+- A read must lie entirely in the union of allowed ranges.
+- For an edit, every removed byte must be allowed in the current file, and every inserted byte must be allowed in the proposed file. Unchanged bytes outside the write zones are preserved, including which zones select them. An edit may not move a boundary to take ownership of other contents.
+- Whole-file creation or deletion requires whole-file write permission. An exact edit may create or remove an allowed part without changing other contents.
+- If another allowed zone already covers the whole target, a part recognizer is not needed for that target.
 
-- `error` when there are fewer than three arguments, when the role or the action is not one of the names above, or when the settings file is missing or does not have its form.
-- Otherwise, `block` when at least one path is blocked, and `pass` when none is.
+A command recognizer runs in the project root without a shell. It receives one JSON object on standard input, with exactly `path` (normalized path) and `content` (the UTF-8 text to inspect). It returns a JSON list of `[start, end]` ranges on standard output and exits with 0. Ranges are sorted, nonempty, disjoint, on character boundaries and within the supplied content. An empty list means no matching part. It examines only the supplied path and content; it does not use the network or read other project files. It is called separately for the current and proposed contents when needed. A missing program, nonzero exit, invalid result or no exit within 60 seconds gives `error`.
 
-**Output**: for each blocked path, in the order of the arguments, one line: `block`, the path, the role and the action, separated by tabs. The path is written relative to the project root, as taken above. Nothing else is written to standard output.
+Marker recognition uses the exact-line method in [layers.md](layers.md#zones). Line endings may be LF or CR LF; offsets remain offsets in the original bytes. A selected marker block includes the end marker's line ending when present. A malformed block gives `error` rather than treating the selection as the whole file.
 
-Examples, with intent at `docs/intent.md`, design at `docs/design` and impl at `src`, and fields separated by spaces here for reading:
+[Reproduction](reproduction.md) verifies custom recognizers against examples of selected and excluded contents, including boundary changes, using the project's chosen method. The shared guard cases use marker recognition so they do not depend on a project's programming language or custom program.
 
-- `implementer read docs/intent.md` gives `block docs/intent.md implementer read`. So does `implementer read ./docs//intent.md`.
-- `implementer read .` gives `block . implementer read`. `implementer read docs` gives `block docs implementer read`. `implementer read src` gives `pass`.
-- `implementer read src/a.rs docs/intent.md` gives only `block docs/intent.md implementer read`.
-- `implementer write docs/design/new.md` gives `block docs/design/new.md implementer write`, whether or not the file exists.
-- `lead read docs/intent.md`, `lead write docs/design/a.md`, `verifier read src/main.rs`, `implementer read ../elsewhere/a.md` and `implementer read .git/HEAD` give `pass`.
-- `builder read docs/intent.md` and `implementer read` give `error`.
+## Copies and indirect paths
 
-The cases of `role-guard` are in [cases/role-guard.json](cases/role-guard.json) ([conformance.md](conformance.md#which-parts-have-cases)).
+Known copy locations come from setup or tool provenance, not from a non-lead role's assertion. For example, a tool that copies a file from intent can identify its destination as an intent copy. The guard does not scan file contents to find copies. A copy whose origin cannot be recognized remains forbidden by instruction, and that limit is reported during reproduction. Symbolic links and ancestor paths are handled by path normalization even without copy metadata.
+
+## Shell commands
+
+Invocation: `role-guard ROLE shell`, with no path arguments. Standard input is one JSON object with `command` (nonempty text), `cwd` (the command's working directory, absolute or relative to the project root), and optionally `intent_copies` and `instruction_paths` as defined for file actions. No other field is allowed. The guard inspects the command without executing it.
+
+| Choice | Decision |
+|---|---|
+| `none` | give `pass` without inspecting file actions; permission rules remain instructions |
+| `literal` | check file reads, searches and writes whose targets and effects can be identified directly from the command; block only a definite violation |
+| `cautious` | check those same actions; also block a command when a possible forbidden action cannot be ruled out |
+
+The reproducing AI chooses how to analyze commands. It must distinguish file operands from search patterns, options, revision names and ordinary text. Changing directory changes the base for later paths; it is not a file read. `git -C` sets a base too. Redirections are file actions. Variable expansion, command substitution and interpreter code are not executed to discover paths. A wildcard or unknown program is not by itself proof of a forbidden action in `literal` mode; in `cautious` mode unresolved file effects are blocked.
+
+Identified file actions use the file permission checks above. A write with no exact replacement information is a whole-file write. For the lead, valid requests pass without permission restrictions, including unresolved shell effects.
+
+A definite forbidden path gives the usual `block` line with `shell` as the action. Paths appear in their order in the command, once each. Unresolved effects in `cautious` mode add one final line `block-shell` and the role, separated by a tab. Such a line is not given when a definite violation already decides the command. Explain the reason in standard error. An unavailable analyzer or a failure of the inspection machinery is `error`, not a cautious block. When a command is understood but has unresolved effects, that is a policy decision, not an environment error.
+
+## Reporting a guard result
+
+On `block`, the connector tells the role in plain words what was blocked and why. On `error`, it reports the environment problem and does not turn it into `block`. The role stops the affected operation and reports it to the lead. The lead handles a design gap through [A change](change.md), or explains what must be repaired or reproduced. The work is not retried unchanged in an endless blocking loop.
+
+## Steps
+
+The lead starts a listed role with its selected model and role-specific instructions. It receives the design parts and task selected by the workflow. It does the permitted work, leaves and reports gaps or guard problems, and reports progress and results. After a design fix, work resumes with the same or a new AI as the workflow specifies. Independent work may continue while a gap is resolved.
 
 ## What always holds
 
-- Every AI plays exactly one role.
-- The implementer and the verifier never read intent. The role guard enforces it where the setup record gives `intent-read` as `mechanical` ([setup-record.md](setup-record.md#enforcement)).
-- The implementer never writes design. The role guard enforces it where the setup record gives `design-write` as `mechanical`.
-- The lead never reads impl. The verifier writes nothing. These, and the rest of the table above, are kept by instruction.
-- The implementer never fills a gap in the design by itself.
-- The role guard never blocks when it cannot run.
+- Role names, duties, models and permissions come from settings. Only the lead is built in.
+- Every non-lead role is isolated from intent and the lead's conversation, and never changes design.
+- Every role stays within its permissions even when a guard is an instruction only.
+- The lead can learn progress and completion of the five checks without reading impl.
+- Every mechanical claim is supported by guard cases and checks through the actual connector ([Reproduction](reproduction.md)).
+
+The shared guard cases are in [cases/role-guard.json](cases/role-guard.json). Separately check project-specific recognizers and live connectors during reproduction.

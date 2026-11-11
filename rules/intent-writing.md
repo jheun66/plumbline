@@ -23,7 +23,7 @@ When intent is confirmed, its top says, in the project's own words, that the use
 ## Steps
 
 1. The lead talks with the user. The user may answer first in their own words, or the lead may listen and draft. The order is not fixed; the conversation goes both ways.
-2. The draft is written at the intent location. That location is decided first ([layers.md](layers.md#when-settings-are-decided)).
+2. The draft is written at the intent location. That location is decided first ([layers.md](layers.md#steps)).
 3. Of what intent must say, which is the goals and scope, the milestones, and the decisions and their reasons, whatever the user has not said is marked open and asked.
 4. Open items are resolved one at a time. When the user answers, the item is decided.
 5. What follows directly from earlier decisions is written as decided, without asking, and the user is told. When the user objects, it becomes open again.
